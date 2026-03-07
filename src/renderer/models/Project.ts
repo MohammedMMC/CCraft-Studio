@@ -19,11 +19,11 @@ export interface DevicePreset {
 }
 
 export const DEVICE_PRESETS: Record<DeviceType, DevicePreset> = {
-  computer: {
-    label: 'Computer',
-    description: 'Standard computer (51x19)',
-    defaultWidth: 51, defaultHeight: 19,
-    supportsColor: false, supportsTouch: false, sizeEditable: false,
+  monitor: {
+    label: 'Custom Advanced Monitor',
+    description: 'External monitor (changeable size)',
+    defaultWidth: 15, defaultHeight: 10,
+    supportsColor: true, supportsTouch: true, sizeEditable: true,
   },
   advanced_computer: {
     label: 'Advanced Computer',
@@ -31,17 +31,17 @@ export const DEVICE_PRESETS: Record<DeviceType, DevicePreset> = {
     defaultWidth: 51, defaultHeight: 19,
     supportsColor: true, supportsTouch: true, sizeEditable: false,
   },
+  computer: {
+    label: 'Computer',
+    description: 'Standard computer (51x19)',
+    defaultWidth: 51, defaultHeight: 19,
+    supportsColor: false, supportsTouch: false, sizeEditable: false,
+  },
   pocket_computer: {
-    label: 'Pocket Computer',
+    label: 'Advanced Pocket Computer',
     description: 'Portable pocket computer (26x20)',
     defaultWidth: 26, defaultHeight: 20,
     supportsColor: true, supportsTouch: true, sizeEditable: false,
-  },
-  monitor: {
-    label: 'Monitor',
-    description: 'External monitor (variable size)',
-    defaultWidth: 15, defaultHeight: 10,
-    supportsColor: true, supportsTouch: true, sizeEditable: true,
   },
   turtle: {
     label: 'Turtle',
@@ -117,18 +117,18 @@ export function createDefaultProject(overrides: Partial<CCProject> = {}): CCProj
 
 export const MONITOR_SIZES: { blocks: string; width: number; height: number }[] = [
   { blocks: '1x1', width: 7, height: 5 },
-  { blocks: '1x2', width: 7, height: 10 },
-  { blocks: '1x3', width: 7, height: 15 },
-  { blocks: '2x1', width: 15, height: 5 },
-  { blocks: '2x2', width: 15, height: 10 },
-  { blocks: '2x3', width: 15, height: 15 },
-  { blocks: '3x2', width: 29, height: 10 },
-  { blocks: '3x3', width: 29, height: 15 },
-  { blocks: '4x3', width: 29, height: 19 },
-  { blocks: '4x4', width: 39, height: 19 },
-  { blocks: '5x3', width: 39, height: 15 },
-  { blocks: '5x4', width: 39, height: 19 },
-  { blocks: '6x4', width: 49, height: 19 },
-  { blocks: '6x5', width: 49, height: 24 },
-  { blocks: '8x6', width: 65, height: 29 },
+  { blocks: '1x2', width: 7, height: 12 },
+  { blocks: '1x3', width: 7, height: 19 },
+  { blocks: '2x1', width: 18, height: 5 },
+  { blocks: '2x2', width: 18, height: 12 },
+  { blocks: '2x3', width: 18, height: 19 },
+  { blocks: '3x2', width: 29, height: 12 },
+  { blocks: '3x3', width: 29, height: 19 },
+  { blocks: '4x3', width: 39, height: 19 },
+  { blocks: '4x4', width: 39, height: 29 },
+  { blocks: '5x3', width: 50, height: 19 },
+  { blocks: '5x4', width: 39, height: 26 },
+  { blocks: '6x4', width: 61, height: 26 },
+  { blocks: '6x5', width: 61, height: 33 },
+  { blocks: '8x6', width: 82, height: 40 },
 ];

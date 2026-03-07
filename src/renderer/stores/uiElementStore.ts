@@ -28,9 +28,9 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
     const element = {
       ...defaults,
       ...overrides,
-      id: generateId(),
-      name: generateElementName(type, existingNames),
-      zIndex: maxZ + 1,
+      id: overrides.id || generateId(),
+      name: overrides.name || generateElementName(type, existingNames),
+      zIndex: overrides.zIndex ?? (maxZ + 1),
     } as UIElement;
 
     const screens = projectStore.project!.screens.map(s => {

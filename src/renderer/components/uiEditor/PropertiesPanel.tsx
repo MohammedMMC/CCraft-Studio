@@ -2,9 +2,11 @@ import React from 'react';
 import { useEditorStore } from '../../stores/editorStore';
 import { useProjectStore } from '../../stores/projectStore';
 import { useUIElementStore } from '../../stores/uiElementStore';
+import { useHistoryStore } from '../../stores/historyStore';
 import { UIElement, UIElementType } from '../../models/UIElement';
 import { CCColor } from '../../models/CCColors';
 import { ColorPicker } from './ColorPicker';
+import { generateId } from '../../utils/idGenerator';
 
 export const PropertiesPanel: React.FC = () => {
   const selectedElementId = useEditorStore((s) => s.selectedElementId);
@@ -39,12 +41,37 @@ export const PropertiesPanel: React.FC = () => {
   }
 
   const update = (updates: Partial<UIElement>) => {
-    updateElement(activeScreenId, selectedElementId, updates);
+    // Capture previous values for undo
+    const prevValues: Partial<UIElement> = {};
+    for (const key of Object.keys(updates)) {
+      (prevValues as any)[key] = (element as any)[key];
+    }
+    const sid = activeScreenId;
+    const eid = selectedElementId;
+    updateElement(sid, eid, updates);
+    useHistoryStore.getState().push({
+      id: generateId(),
+      description: `Edit ${element.name}`,
+      execute: () => updateElement(sid, eid, updates),
+      undo: () => updateElement(sid, eid, prevValues),
+    });
   };
 
   const handleDelete = () => {
-    removeElement(activeScreenId, selectedElementId);
+    const sid = activeScreenId;
+    const eid = selectedElementId;
+    const deletedElement = { ...element } as UIElement;
+    removeElement(sid, eid);
     selectElement(null);
+    useHistoryStore.getState().push({
+      id: generateId(),
+      description: `Delete ${element.name}`,
+      execute: () => { removeElement(sid, eid); selectElement(null); },
+      undo: () => {
+        useUIElementStore.getState().addElement(sid, deletedElement.type, deletedElement);
+        selectElement(deletedElement.id);
+      },
+    });
   };
 
   const handleDuplicate = () => {

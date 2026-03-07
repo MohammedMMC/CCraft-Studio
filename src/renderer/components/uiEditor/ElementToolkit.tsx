@@ -3,6 +3,8 @@ import { UIElementType, UI_ELEMENT_LABELS } from '../../models/UIElement';
 import { useUIElementStore } from '../../stores/uiElementStore';
 import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
+import { useHistoryStore } from '../../stores/historyStore';
+import { generateId } from '../../utils/idGenerator';
 
 const ELEMENT_TYPES: UIElementType[] = [
   'label', 'button', 'textInput', 'progressBar',
@@ -12,6 +14,7 @@ const ELEMENT_TYPES: UIElementType[] = [
 
 export const ElementToolkit: React.FC = () => {
   const addElement = useUIElementStore((s) => s.addElement);
+  const removeElement = useUIElementStore((s) => s.removeElement);
   const activeScreenId = useProjectStore((s) => s.activeScreenId);
   const selectElement = useEditorStore((s) => s.selectElement);
 
@@ -19,6 +22,20 @@ export const ElementToolkit: React.FC = () => {
     if (!activeScreenId) return;
     const element = addElement(activeScreenId, type);
     selectElement(element.id);
+    const sid = activeScreenId;
+    const eid = element.id;
+    useHistoryStore.getState().push({
+      id: generateId(),
+      description: `Add ${element.name}`,
+      execute: () => {
+        const el = addElement(sid, type, element as any);
+        selectElement(el.id);
+      },
+      undo: () => {
+        removeElement(sid, eid);
+        selectElement(null);
+      },
+    });
   };
 
   return (

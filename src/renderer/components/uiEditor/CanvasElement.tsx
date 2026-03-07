@@ -1,8 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { UIElement } from '../../models/UIElement';
 import { CC_COLORS } from '../../models/CCColors';
 import { useUIElementStore } from '../../stores/uiElementStore';
 import { useEditorStore } from '../../stores/editorStore';
+import { useHistoryStore } from '../../stores/historyStore';
+import { generateId } from '../../utils/idGenerator';
 
 interface CanvasElementProps {
   element: UIElement;
@@ -33,6 +35,8 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
   const [isResizing, setIsResizing] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0, elemX: 0, elemY: 0 });
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, w: 0, h: 0 });
+  const dragOrigin = useRef({ x: element.x, y: element.y });
+  const resizeOrigin = useRef({ w: element.width, h: element.height });
 
   if (!element.visible) return null;
 
@@ -45,6 +49,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
     e.stopPropagation();
     onSelect();
     setIsDragging(true);
+    dragOrigin.current = { x: element.x, y: element.y };
     setDragStart({
       x: e.clientX,
       y: e.clientY,
@@ -71,6 +76,22 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
       setIsDragging(false);
       document.removeEventListener('mousemove', handleMove);
       document.removeEventListener('mouseup', handleUp);
+      // Push undo command if position actually changed
+      const el = useUIElementStore.getState().getElementById(screenId, element.id);
+      if (el && (el.x !== dragOrigin.current.x || el.y !== dragOrigin.current.y)) {
+        const origX = dragOrigin.current.x;
+        const origY = dragOrigin.current.y;
+        const finalX = el.x;
+        const finalY = el.y;
+        const sid = screenId;
+        const eid = element.id;
+        useHistoryStore.getState().push({
+          id: generateId(),
+          description: `Move ${element.name}`,
+          execute: () => moveElement(sid, eid, finalX, finalY),
+          undo: () => moveElement(sid, eid, origX, origY),
+        });
+      }
     };
 
     document.addEventListener('mousemove', handleMove);
@@ -80,6 +101,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
   const handleResizeMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsResizing(true);
+    resizeOrigin.current = { w: element.width, h: element.height };
 
     const handleMove = (me: MouseEvent) => {
       const zoom = useEditorStore.getState().zoom;
@@ -100,6 +122,22 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
       setIsResizing(false);
       document.removeEventListener('mousemove', handleMove);
       document.removeEventListener('mouseup', handleUp);
+      // Push undo command if size actually changed
+      const el = useUIElementStore.getState().getElementById(screenId, element.id);
+      if (el && (el.width !== resizeOrigin.current.w || el.height !== resizeOrigin.current.h)) {
+        const origW = resizeOrigin.current.w;
+        const origH = resizeOrigin.current.h;
+        const finalW = el.width;
+        const finalH = el.height;
+        const sid = screenId;
+        const eid = element.id;
+        useHistoryStore.getState().push({
+          id: generateId(),
+          description: `Resize ${element.name}`,
+          execute: () => resizeElement(sid, eid, finalW, finalH),
+          undo: () => resizeElement(sid, eid, origW, origH),
+        });
+      }
     };
 
     document.addEventListener('mousemove', handleMove);

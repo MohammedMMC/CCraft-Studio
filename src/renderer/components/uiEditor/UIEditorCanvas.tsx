@@ -65,23 +65,29 @@ export const UIEditorCanvas: React.FC = () => {
     setIsPanning(false);
   };
 
-  const handleWheel = (e: React.WheelEvent) => {
-    if (e.ctrlKey) {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      useEditorStore.getState().setZoom(zoom + delta);
-    }
-  };
+  // Use native wheel listener with { passive: false } so preventDefault() works for Ctrl+scroll zoom
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const handleWheel = (e: WheelEvent) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.1 : 0.1;
+        useEditorStore.getState().setZoom(useEditorStore.getState().zoom + delta);
+      }
+    };
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, []);
 
   return (
     <div
       ref={containerRef}
-      className="flex-1 overflow-hidden bg-ide-bg relative cursor-default"
+      className="flex-1 overflow-hidden bg-ide-bg relative cursor-default select-none"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      onWheel={handleWheel}
       onClick={handleCanvasClick}
       style={{ cursor: isPanning ? 'grabbing' : tool === 'pan' ? 'grab' : 'default' }}
     >
