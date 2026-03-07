@@ -13,8 +13,6 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
   const toggleGrid = useEditorStore((s) => s.toggleGrid);
   const showPreview = useEditorStore((s) => s.showPreview);
   const togglePreview = useEditorStore((s) => s.togglePreview);
-  const snapToGrid = useEditorStore((s) => s.snapToGrid);
-  const toggleSnap = useEditorStore((s) => s.toggleSnap);
   const zoom = useEditorStore((s) => s.zoom);
   const zoomIn = useEditorStore((s) => s.zoomIn);
   const zoomOut = useEditorStore((s) => s.zoomOut);
@@ -92,22 +90,13 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
 
       {/* View Controls (UI mode only) */}
       {mode === 'ui' && (
-        <>
-          <button
-            onClick={toggleGrid}
-            className={`toolbar-btn ${showGrid ? 'text-ide-accent' : ''}`}
-            title="Toggle Grid"
-          >
-            <GridIcon />
-          </button>
-          <button
-            onClick={toggleSnap}
-            className={`toolbar-btn ${snapToGrid ? 'text-ide-accent' : ''}`}
-            title="Snap to Grid"
-          >
-            <SnapIcon />
-          </button>
-        </>
+        <button
+          onClick={toggleGrid}
+          className={`toolbar-btn ${showGrid ? 'text-ide-accent' : ''}`}
+          title="Toggle Grid"
+        >
+          <GridIcon />
+        </button>
       )}
 
       <button
@@ -161,13 +150,6 @@ const GridIcon = () => (
     <line x1="10.5" y1="1" x2="10.5" y2="15" />
     <line x1="1" y1="5.5" x2="15" y2="5.5" />
     <line x1="1" y1="10.5" x2="15" y2="10.5" />
-  </svg>
-);
-
-const SnapIcon = () => (
-  <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
-    <path d="M3 3h4v4H3zM9 3h4v4H9zM3 9h4v4H3zM9 9h4v4H9z" opacity="0.5" />
-    <circle cx="7" cy="7" r="1.5" />
   </svg>
 );
 

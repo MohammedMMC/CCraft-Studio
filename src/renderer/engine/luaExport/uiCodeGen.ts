@@ -6,7 +6,7 @@ export function generateUICode(elements: UIElement[], screenName: string, ind: n
   const lines: string[] = [];
   const i = (n: number) => indent(ind + n);
 
-  lines.push(`${indent(ind)}local function drawScreen_${sanitize(screenName)}()`);
+  lines.push(`${indent(ind)}function drawScreen_${sanitize(screenName)}()`);
   lines.push(`${i(0)}  term.setBackgroundColor(${CC_COLORS.black.luaName})`);
   lines.push(`${i(0)}  term.clear()`);
 

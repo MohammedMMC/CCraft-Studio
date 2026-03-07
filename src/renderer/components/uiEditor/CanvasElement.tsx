@@ -29,7 +29,6 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
 }) => {
   const moveElement = useUIElementStore((s) => s.moveElement);
   const resizeElement = useUIElementStore((s) => s.resizeElement);
-  const snapToGrid = useEditorStore((s) => s.snapToGrid);
 
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
@@ -63,10 +62,8 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
       const dy = (me.clientY - e.clientY) / zoom / charHeight;
       let newX = element.x + dx;
       let newY = element.y + dy;
-      if (snapToGrid) {
-        newX = Math.round(newX);
-        newY = Math.round(newY);
-      }
+      newX = Math.round(newX);
+      newY = Math.round(newY);
       newX = Math.max(1, Math.min(displayWidth - element.width + 1, newX));
       newY = Math.max(1, Math.min(displayHeight - element.height + 1, newY));
       moveElement(screenId, element.id, newX, newY);
@@ -109,10 +106,8 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
       const dy = (me.clientY - e.clientY) / zoom / charHeight;
       let newW = element.width + dx;
       let newH = element.height + dy;
-      if (snapToGrid) {
-        newW = Math.round(newW);
-        newH = Math.round(newH);
-      }
+      newW = Math.round(newW);
+      newH = Math.round(newH);
       newW = Math.max(1, Math.min(displayWidth - element.x + 1, newW));
       newH = Math.max(1, Math.min(displayHeight - element.y + 1, newH));
       resizeElement(screenId, element.id, newW, newH);

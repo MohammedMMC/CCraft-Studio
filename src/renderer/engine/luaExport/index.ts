@@ -21,8 +21,9 @@ export function exportProject(project: CCProject, options: ExportOptions): Expor
   const files: ExportFile[] = [];
   const blocklyStore = useBlocklyStore.getState();
 
-  // 1. vars.lua
-  files.push({ path: 'vars.lua', content: generateVarsFile(project) });
+  // 1. vars.lua - functions.lua
+  files.push({ path: 'utils/vars.lua', content: generateVarsFile(project) });
+  files.push({ path: 'utils/functions.lua', content: generateFunctionsFile(project) });
 
   // 2. screens/<name>.lua
   for (const screen of project.screens) {
@@ -34,7 +35,7 @@ export function exportProject(project: CCProject, options: ExportOptions): Expor
   }
 
   // 3. handlers.lua
-  files.push({ path: 'handlers.lua', content: generateHandlersFile(project) });
+  files.push({ path: 'utils/handlers.lua', content: generateHandlersFile(project) });
 
   if (options.mode === 'full') {
     // 4. logic/<screen>.lua per screen
@@ -71,10 +72,10 @@ function generateVarsFile(project: CCProject): string {
   for (const v of project.variables) {
     const safeName = sanitize(v.name);
     switch (v.type) {
-      case 'string':  lines.push(`${safeName} = "${escapeLuaString(v.defaultValue)}"`); break;
-      case 'number':  lines.push(`${safeName} = ${parseFloat(v.defaultValue) || 0}`); break;
+      case 'string': lines.push(`${safeName} = "${escapeLuaString(v.defaultValue)}"`); break;
+      case 'number': lines.push(`${safeName} = ${parseFloat(v.defaultValue) || 0}`); break;
       case 'boolean': lines.push(`${safeName} = ${v.defaultValue === 'true' ? 'true' : 'false'}`); break;
-      case 'table':   lines.push(`${safeName} = {}`); break;
+      case 'table': lines.push(`${safeName} = {}`); break;
     }
   }
   if (project.variables.length === 0) lines.push('-- (no variables defined)');
@@ -121,6 +122,73 @@ function generateVarsFile(project: CCProject): string {
       lines.push('}');
     }
   }
+  return lines.join('\n');
+}
+
+function generateFunctionsFile(project: CCProject): string {
+  const hasResponsiveElements = project.screens.some(s =>
+    s.uiElements.some(el => el.anchorH !== 'fixed' || el.anchorV !== 'fixed')
+  );
+
+  const lines: string[] = [
+    generateHeader(project.name, project.author),
+    '-- =============================================',
+    '-- Global Functions',
+    '-- =============================================',
+    '',
+  ];
+
+  lines.push('function drawCurrentScreen()');
+  lines.push('  local fn = screenDrawFunctions[currentScreen]');
+  lines.push('  if fn then fn() end');
+  lines.push('end');
+  lines.push('');
+  lines.push('function navigate(screenName)');
+  lines.push('  currentScreen = screenName');
+  if (hasResponsiveElements) lines.push('  resolveLayout()');
+  lines.push('  drawCurrentScreen()');
+  lines.push('  local h = handlers[currentScreen]');
+  lines.push('  if h and h.onLoad then h.onLoad() end');
+  lines.push('end');
+  lines.push('');
+  lines.push('function refreshScreen() drawCurrentScreen() end');
+  lines.push('');
+
+  if (hasResponsiveElements) {
+    lines.push('function resolveLayout()');
+    lines.push('  local sw, sh = term.getSize()');
+    lines.push('  for name, el in pairs(elements) do');
+    lines.push('    local ah = el.anchorH or "fixed"');
+    lines.push('    local av = el.anchorV or "fixed"');
+    lines.push('    local ml = el.marginLeft or 0');
+    lines.push('    local mr = el.marginRight or 0');
+    lines.push('    local mt = el.marginTop or 0');
+    lines.push('    local mb = el.marginBottom or 0');
+    lines.push('    if ah == "left" then');
+    lines.push('      el.x = 1 + ml');
+    lines.push('    elseif ah == "right" then');
+    lines.push('      el.x = sw - el.width - mr + 1');
+    lines.push('    elseif ah == "center" then');
+    lines.push('      el.x = math.floor((sw - el.width) / 2) + 1');
+    lines.push('    elseif ah == "stretch" then');
+    lines.push('      el.x = 1 + ml');
+    lines.push('      el.width = sw - ml - mr');
+    lines.push('    end');
+    lines.push('    if av == "top" then');
+    lines.push('      el.y = 1 + mt');
+    lines.push('    elseif av == "bottom" then');
+    lines.push('      el.y = sh - el.height - mb + 1');
+    lines.push('    elseif av == "center" then');
+    lines.push('      el.y = math.floor((sh - el.height) / 2) + 1');
+    lines.push('    elseif av == "stretch" then');
+    lines.push('      el.y = 1 + mt');
+    lines.push('      el.height = sh - mt - mb');
+    lines.push('    end');
+    lines.push('  end');
+    lines.push('end');
+    lines.push('');
+  }
+
   return lines.join('\n');
 }
 
@@ -181,71 +249,23 @@ function generateStartupFile(project: CCProject): string {
 
   const lines: string[] = [
     generateHeader(project.name, project.author),
+    'local script_path = debug.getinfo(1, "S").source:sub(2)',
+    'local script_dir = script_path:match("(.*[/\\])")',
+    '',
     '-- Load modules',
-    'dofile("vars.lua")',
+    'dofile(script_dir .. "utils/vars.lua")',
+    'dofile(script_dir .. "utils/functions.lua")',
     '',
   ];
 
-  for (const s of project.screens) lines.push(`dofile("screens/${sanitize(s.name)}.lua")`);
+  for (const s of project.screens) lines.push(`dofile(script_dir .. "screens/${sanitize(s.name)}.lua")`);
   lines.push('');
-  lines.push('dofile("handlers.lua")');
+  lines.push('dofile(script_dir .. "utils/handlers.lua")');
   lines.push('');
-
-  lines.push('-- Runtime functions');
-  lines.push('function drawCurrentScreen()');
-  lines.push('  local fn = screenDrawFunctions[currentScreen]');
-  lines.push('  if fn then fn() end');
-  lines.push('end');
-  lines.push('');
-  lines.push('function navigate(screenName)');
-  lines.push('  currentScreen = screenName');
-  if (hasResponsiveElements) lines.push('  resolveLayout()');
-  lines.push('  drawCurrentScreen()');
-  lines.push('  local h = handlers[currentScreen]');
-  lines.push('  if h and h.onLoad then h.onLoad() end');
-  lines.push('end');
-  lines.push('');
-  lines.push('function refreshScreen() drawCurrentScreen() end');
-  lines.push('');
-
-  if (hasResponsiveElements) {
-    lines.push('function resolveLayout()');
-    lines.push('  local sw, sh = term.getSize()');
-    lines.push('  for name, el in pairs(elements) do');
-    lines.push('    local ah = el.anchorH or "fixed"');
-    lines.push('    local av = el.anchorV or "fixed"');
-    lines.push('    local ml = el.marginLeft or 0');
-    lines.push('    local mr = el.marginRight or 0');
-    lines.push('    local mt = el.marginTop or 0');
-    lines.push('    local mb = el.marginBottom or 0');
-    lines.push('    if ah == "left" then');
-    lines.push('      el.x = 1 + ml');
-    lines.push('    elseif ah == "right" then');
-    lines.push('      el.x = sw - el.width - mr + 1');
-    lines.push('    elseif ah == "center" then');
-    lines.push('      el.x = math.floor((sw - el.width) / 2) + 1');
-    lines.push('    elseif ah == "stretch" then');
-    lines.push('      el.x = 1 + ml');
-    lines.push('      el.width = sw - ml - mr');
-    lines.push('    end');
-    lines.push('    if av == "top" then');
-    lines.push('      el.y = 1 + mt');
-    lines.push('    elseif av == "bottom" then');
-    lines.push('      el.y = sh - el.height - mb + 1');
-    lines.push('    elseif av == "center" then');
-    lines.push('      el.y = math.floor((sh - el.height) / 2) + 1');
-    lines.push('    elseif av == "stretch" then');
-    lines.push('      el.y = 1 + mt');
-    lines.push('      el.height = sh - mt - mb');
-    lines.push('    end');
-    lines.push('  end');
-    lines.push('end');
-    lines.push('');
-  }
 
   for (const s of project.screens) {
     const sn = sanitize(s.name);
-    lines.push(`if fs.exists("logic/${sn}.lua") then dofile("logic/${sn}.lua") end`);
+    lines.push(`if fs.exists(script_dir .. "logic/${sn}.lua") then dofile(script_dir .. "logic/${sn}.lua") end`);
   }
 
   lines.push('');
@@ -286,6 +306,12 @@ function generateStartupFile(project: CCProject): string {
     lines.push('    drawCurrentScreen()');
   }
   lines.push('  end');
+  lines.push('');
+
+  lines.push('  -- Reload Screens');
+  lines.push('  term.clear()');
+  lines.push('  refreshScreen()');
+  
   lines.push('end');
   return lines.join('\n');
 }
@@ -296,10 +322,10 @@ function generateUIOnlyStartup(project: CCProject): string {
   const lines: string[] = [
     generateHeader(project.name, project.author),
     '-- UI-Only Export',
-    'dofile("vars.lua")',
+    'dofile(script_dir .. "utils/vars.lua")',
     '',
   ];
-  for (const s of project.screens) lines.push(`dofile("screens/${sanitize(s.name)}.lua")`);
+  for (const s of project.screens) lines.push(`dofile(script_dir .. "screens/${sanitize(s.name)}.lua")`);
   lines.push('');
   lines.push(`drawScreen_${safeName}()`);
   return lines.join('\n');
@@ -340,13 +366,13 @@ function parseEventCode(code: string, screenName: string): string {
 function wrapEvent(screen: string, event: string, meta: string, body: string): string {
   const ib = body.split('\n').map(l => '  ' + l).join('\n');
   switch (event) {
-    case 'screen_load':    return `handlers["${screen}"].onLoad = function()\n${ib}\nend`;
-    case 'button_click':   return `handlers["${screen}"].onButtonClick["${meta}"] = function(mx, my, button)\n${ib}\nend`;
-    case 'key_press':      return `handlers["${screen}"].onKeyPress["${meta}"] = function(key)\n${ib}\nend`;
-    case 'timer':          return `handlers["${screen}"].onTimer["t_${meta}"] = function(timerId)\n${ib}\nend`;
-    case 'redstone':       return `handlers["${screen}"].onRedstone = function()\n${ib}\nend`;
-    case 'modem_message':  return `handlers["${screen}"].onModemMessage["ch_${meta}"] = function(side, ch, replyChannel, msg, dist)\n${ib}\nend`;
-    default:               return body;
+    case 'screen_load': return `handlers["${screen}"].onLoad = function()\n${ib}\nend`;
+    case 'button_click': return `handlers["${screen}"].onButtonClick["${meta}"] = function(mx, my, button)\n${ib}\nend`;
+    case 'key_press': return `handlers["${screen}"].onKeyPress["${meta}"] = function(key)\n${ib}\nend`;
+    case 'timer': return `handlers["${screen}"].onTimer["t_${meta}"] = function(timerId)\n${ib}\nend`;
+    case 'redstone': return `handlers["${screen}"].onRedstone = function()\n${ib}\nend`;
+    case 'modem_message': return `handlers["${screen}"].onModemMessage["ch_${meta}"] = function(side, ch, replyChannel, msg, dist)\n${ib}\nend`;
+    default: return body;
   }
 }
 

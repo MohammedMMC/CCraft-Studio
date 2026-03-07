@@ -42,7 +42,6 @@ const DEFAULT_WORKSPACE_XML = `
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="event_screen_load" x="30" y="30">
     <statement name="DO">
-      <block type="ui_draw_screen"/>
     </statement>
   </block>
 </xml>

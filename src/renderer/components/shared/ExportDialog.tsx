@@ -101,12 +101,14 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
         <div className="bg-ide-bg border border-ide-border rounded p-3">
           <div className="text-xs text-ide-text-dim mb-1">Export structure:</div>
           <div className="text-[11px] text-ide-text font-mono space-y-0.5">
-            <div>vars.lua</div>
+            <div>utils/</div>
+            <div key="0" className="pl-4">vars.lua</div>
+            <div key="1" className="pl-4">functions.lua</div>
+            <div key="2" className="pl-4">handlers.lua</div>
             <div>screens/</div>
             {project.screens.map(s => (
               <div key={s.id} className="pl-4">{s.name.replace(/[^a-zA-Z0-9_]/g, '_')}.lua</div>
             ))}
-            <div>handlers.lua</div>
             {mode === 'full' && (
               <>
                 <div>logic/</div>
