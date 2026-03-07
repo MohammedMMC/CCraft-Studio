@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 
 const electronAPI = {
   openProject: () => ipcRenderer.invoke('dialog:openProject'),
+  openProjectByPath: (filePath: string) => ipcRenderer.invoke('fs:openProjectByPath', filePath),
   saveProject: (data: { content: string; filePath?: string }) => ipcRenderer.invoke('dialog:saveProject', data),
   exportLua: (data: { content: string; defaultName: string }) => ipcRenderer.invoke('dialog:exportLua', data),
   exportMultiFile: (data: { files: { path: string; content: string }[] }) => ipcRenderer.invoke('dialog:exportMultiFile', data),

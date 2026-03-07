@@ -15,6 +15,12 @@ export function setupIPC(): void {
     return { filePath, content: JSON.parse(content) };
   });
 
+  ipcMain.handle('fs:openProjectByPath', async (_event, filePath: string) => {
+    if (!fs.existsSync(filePath)) return null;
+    const content = fs.readFileSync(filePath, 'utf-8');
+    return { filePath, content: JSON.parse(content) };
+  });
+
   ipcMain.handle('dialog:saveProject', async (_event, data: { content: string; filePath?: string }) => {
     let targetPath = data.filePath;
     if (!targetPath) {

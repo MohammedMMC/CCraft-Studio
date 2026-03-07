@@ -12,6 +12,7 @@ declare global {
   interface Window {
     electronAPI: {
       openProject: () => Promise<{ filePath: string; content: any } | null>;
+      openProjectByPath: (filePath: string) => Promise<{ filePath: string; content: any } | null>;
       saveProject: (data: { content: string; filePath?: string }) => Promise<string | null>;
       exportLua: (data: { content: string; defaultName: string }) => Promise<string | null>;
       exportMultiFile: (data: { files: { path: string; content: string }[] }) => Promise<string | null>;
@@ -54,15 +55,19 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNewProject }) =>
     }
   };
 
-  const handleOpenRecent = async (_project: RecentProject) => {
+  const handleOpenRecent = async (project: RecentProject) => {
     if (!window.electronAPI) return;
     try {
-      const result = await window.electronAPI.openProject();
+      const result = await window.electronAPI.openProjectByPath(project.path);
       if (result) {
         handleLoadProjectData(result.content, result.filePath);
+        window.electronAPI.addRecentProject({ name: result.content.name, path: result.filePath });
+      } else {
+        // File was moved or deleted — remove from recent list
+        setRecentProjects((prev) => prev.filter((p) => p.path !== project.path));
       }
     } catch {
-      // file may have been moved/deleted
+      setRecentProjects((prev) => prev.filter((p) => p.path !== project.path));
     }
   };
 
