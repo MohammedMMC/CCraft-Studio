@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body, #root {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #1e1e2e;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #45475a;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #585b70;
+  }
+
+  ::selection {
+    background: rgba(137, 180, 250, 0.3);
+  }
+}
+
+@layer components {
+  .panel-header {
+    @apply text-xs font-semibold uppercase tracking-wider text-ide-text-dim px-3 py-2 border-b border-ide-border select-none;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-ide-accent text-ide-bg rounded font-medium text-sm
+           hover:brightness-110 active:brightness-90 transition-all duration-150
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-ide-surface text-ide-text rounded font-medium text-sm
+           border border-ide-border hover:bg-ide-hover active:bg-ide-active
+           transition-all duration-150;
+  }
+
+  .input-field {
+    @apply w-full px-3 py-1.5 bg-ide-bg border border-ide-border rounded text-sm text-ide-text
+           focus:outline-none focus:border-ide-accent focus:ring-1 focus:ring-ide-accent/30
+           placeholder-ide-text-dim;
+  }
+
+  .select-field {
+    @apply w-full px-3 py-1.5 bg-ide-bg border border-ide-border rounded text-sm text-ide-text
+           focus:outline-none focus:border-ide-accent appearance-none cursor-pointer;
+  }
+
+  .toolbar-btn {
+    @apply px-1.5 py-1 text-xs text-ide-text-dim hover:text-ide-text
+           hover:bg-ide-hover rounded transition-all
+           disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent;
+  }
+}
+
+/* Block editor: diamond shape for boolean blocks */
+.clip-diamond {
+  clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 50%, calc(100% - 8px) 100%, 8px 100%, 0% 50%);
+  padding-left: 12px;
+  padding-right: 12px;
+}

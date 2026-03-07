@@ -1,0 +1,134 @@
+import { UIElement } from './UIElement';
+
+export type DeviceType =
+  | 'computer'
+  | 'advanced_computer'
+  | 'pocket_computer'
+  | 'monitor'
+  | 'turtle'
+  | 'advanced_turtle';
+
+export interface DevicePreset {
+  label: string;
+  description: string;
+  defaultWidth: number;
+  defaultHeight: number;
+  supportsColor: boolean;
+  supportsTouch: boolean;
+  sizeEditable: boolean;
+}
+
+export const DEVICE_PRESETS: Record<DeviceType, DevicePreset> = {
+  computer: {
+    label: 'Computer',
+    description: 'Standard computer (51x19)',
+    defaultWidth: 51, defaultHeight: 19,
+    supportsColor: false, supportsTouch: false, sizeEditable: false,
+  },
+  advanced_computer: {
+    label: 'Advanced Computer',
+    description: 'Advanced computer with color and touch (51x19)',
+    defaultWidth: 51, defaultHeight: 19,
+    supportsColor: true, supportsTouch: true, sizeEditable: false,
+  },
+  pocket_computer: {
+    label: 'Pocket Computer',
+    description: 'Portable pocket computer (26x20)',
+    defaultWidth: 26, defaultHeight: 20,
+    supportsColor: true, supportsTouch: true, sizeEditable: false,
+  },
+  monitor: {
+    label: 'Monitor',
+    description: 'External monitor (variable size)',
+    defaultWidth: 15, defaultHeight: 10,
+    supportsColor: true, supportsTouch: true, sizeEditable: true,
+  },
+  turtle: {
+    label: 'Turtle',
+    description: 'Standard turtle (39x13)',
+    defaultWidth: 39, defaultHeight: 13,
+    supportsColor: false, supportsTouch: false, sizeEditable: false,
+  },
+  advanced_turtle: {
+    label: 'Advanced Turtle',
+    description: 'Advanced turtle with color (39x13)',
+    defaultWidth: 39, defaultHeight: 13,
+    supportsColor: true, supportsTouch: false, sizeEditable: false,
+  },
+};
+
+export interface GlobalVariable {
+  name: string;
+  type: 'string' | 'number' | 'boolean' | 'table';
+  defaultValue: string;
+}
+
+export interface Screen {
+  id: string;
+  name: string;
+  isStartScreen: boolean;
+  uiElements: UIElement[];
+  blocklyXml?: string;
+}
+
+export interface CCProject {
+  id: string;
+  name: string;
+  author: string;
+  description: string;
+  device: DeviceType;
+  displayWidth: number;
+  displayHeight: number;
+  colorMode: 'color' | 'grayscale';
+  screens: Screen[];
+  variables: GlobalVariable[];
+  createdAt: string;
+  modifiedAt: string;
+  version: string;
+}
+
+export function createDefaultProject(overrides: Partial<CCProject> = {}): CCProject {
+  const id = crypto.randomUUID();
+  const screenId = crypto.randomUUID();
+  return {
+    id,
+    name: 'Untitled Project',
+    author: '',
+    description: '',
+    device: 'advanced_computer',
+    displayWidth: 51,
+    displayHeight: 19,
+    colorMode: 'color',
+    screens: [
+      {
+        id: screenId,
+        name: 'Main',
+        isStartScreen: true,
+        uiElements: [],
+      },
+    ],
+    variables: [],
+    createdAt: new Date().toISOString(),
+    modifiedAt: new Date().toISOString(),
+    version: '1.0.0',
+    ...overrides,
+  };
+}
+
+export const MONITOR_SIZES: { blocks: string; width: number; height: number }[] = [
+  { blocks: '1x1', width: 7, height: 5 },
+  { blocks: '1x2', width: 7, height: 10 },
+  { blocks: '1x3', width: 7, height: 15 },
+  { blocks: '2x1', width: 15, height: 5 },
+  { blocks: '2x2', width: 15, height: 10 },
+  { blocks: '2x3', width: 15, height: 15 },
+  { blocks: '3x2', width: 29, height: 10 },
+  { blocks: '3x3', width: 29, height: 15 },
+  { blocks: '4x3', width: 29, height: 19 },
+  { blocks: '4x4', width: 39, height: 19 },
+  { blocks: '5x3', width: 39, height: 15 },
+  { blocks: '5x4', width: 39, height: 19 },
+  { blocks: '6x4', width: 49, height: 19 },
+  { blocks: '6x5', width: 49, height: 24 },
+  { blocks: '8x6', width: 65, height: 29 },
+];
