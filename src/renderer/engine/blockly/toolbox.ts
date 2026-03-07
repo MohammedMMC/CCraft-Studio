@@ -3,7 +3,7 @@ export const TOOLBOX = {
   contents: [
     // Category: Events
     {
-      kind: 'category', name: 'Events', colour: '#D4A017',
+      kind: 'category', name: 'Events', categorystyle: 'events_category',
       contents: [
         { kind: 'block', type: 'event_screen_load' },
         { kind: 'block', type: 'event_button_click' },
@@ -17,7 +17,7 @@ export const TOOLBOX = {
 
     // Category: UI Actions
     {
-      kind: 'category', name: 'UI Actions', colour: '#4E9A06',
+      kind: 'category', name: 'UI Actions', categorystyle: 'ui_category',
       contents: [
         { kind: 'block', type: 'ui_draw_screen' },
         { kind: 'block', type: 'ui_navigate' },
@@ -41,7 +41,7 @@ export const TOOLBOX = {
 
     // Category: Control (built-in Blockly blocks)
     {
-      kind: 'category', name: 'Control', colour: '#E8A317',
+      kind: 'category', name: 'Control', categorystyle: 'loop_category',
       contents: [
         { kind: 'block', type: 'controls_if' },
         { kind: 'block', type: 'controls_if', extraState: { hasElse: true } },
@@ -59,7 +59,7 @@ export const TOOLBOX = {
 
     // Category: Logic
     {
-      kind: 'category', name: 'Logic', colour: '#2E8B57',
+      kind: 'category', name: 'Logic', categorystyle: 'logic_category',
       contents: [
         { kind: 'block', type: 'logic_compare' },
         { kind: 'block', type: 'logic_operation' },
@@ -70,7 +70,7 @@ export const TOOLBOX = {
 
     // Category: Math
     {
-      kind: 'category', name: 'Math', colour: '#5B67A5',
+      kind: 'category', name: 'Math', categorystyle: 'math_category',
       contents: [
         { kind: 'block', type: 'math_number', fields: { NUM: 0 } },
         { kind: 'block', type: 'math_arithmetic' },
@@ -85,7 +85,7 @@ export const TOOLBOX = {
 
     // Category: Text
     {
-      kind: 'category', name: 'Text', colour: '#5C3566',
+      kind: 'category', name: 'Text', categorystyle: 'text_category',
       contents: [
         { kind: 'block', type: 'text' },
         { kind: 'block', type: 'text_join' },
@@ -94,11 +94,11 @@ export const TOOLBOX = {
     },
 
     // Category: Variables (custom Blockly built-in)
-    { kind: 'category', name: 'Variables', colour: '#F57900', custom: 'VARIABLE' },
+    { kind: 'category', name: 'Variables', categorystyle: 'variable_category', custom: 'VARIABLE' },
 
     // Category: Lists
     {
-      kind: 'category', name: 'Lists', colour: '#CC0000',
+      kind: 'category', name: 'Lists', categorystyle: 'list_category',
       contents: [
         { kind: 'block', type: 'lists_create_with' },
         { kind: 'block', type: 'lists_length' },
@@ -107,7 +107,7 @@ export const TOOLBOX = {
     },
 
     // Category: Functions (custom Blockly built-in)
-    { kind: 'category', name: 'Functions', colour: '#75507B', custom: 'PROCEDURE' },
+    { kind: 'category', name: 'Functions', categorystyle: 'procedure_category', custom: 'PROCEDURE' },
 
     { kind: 'sep' },
 
@@ -115,7 +115,7 @@ export const TOOLBOX = {
 
     // Category: Terminal
     {
-      kind: 'category', name: 'Terminal', colour: '#3465A4',
+      kind: 'category', name: 'Terminal', categorystyle: 'terminal_category',
       contents: [
         { kind: 'label', text: '--- Write & Clear ---' },
         { kind: 'block', type: 'term_write' },
@@ -143,7 +143,7 @@ export const TOOLBOX = {
 
     // Category: Redstone
     {
-      kind: 'category', name: 'Redstone', colour: '#CC3333',
+      kind: 'category', name: 'Redstone', categorystyle: 'redstone_category',
       contents: [
         { kind: 'label', text: '--- Digital ---' },
         { kind: 'block', type: 'rs_setOutput' },
@@ -162,7 +162,7 @@ export const TOOLBOX = {
 
     // Category: Filesystem
     {
-      kind: 'category', name: 'Files', colour: '#8B6914',
+      kind: 'category', name: 'Files', categorystyle: 'filesystem_category',
       contents: [
         { kind: 'label', text: '--- Read / Write ---' },
         { kind: 'block', type: 'fs_readFile' },
@@ -184,7 +184,7 @@ export const TOOLBOX = {
 
     // Category: HTTP
     {
-      kind: 'category', name: 'HTTP', colour: '#2D7D9A',
+      kind: 'category', name: 'HTTP', categorystyle: 'http_category',
       contents: [
         { kind: 'block', type: 'http_get' },
         { kind: 'block', type: 'http_postRequest' },
@@ -194,7 +194,7 @@ export const TOOLBOX = {
 
     // Category: Peripheral
     {
-      kind: 'category', name: 'Peripheral', colour: '#7D5177',
+      kind: 'category', name: 'Peripheral', categorystyle: 'peripheral_category',
       contents: [
         { kind: 'block', type: 'peripheral_wrap' },
         { kind: 'block', type: 'peripheral_find' },
@@ -208,7 +208,7 @@ export const TOOLBOX = {
 
     // Category: Turtle (large - use subcategory-like labels)
     {
-      kind: 'category', name: 'Turtle', colour: '#4A8C3F',
+      kind: 'category', name: 'Turtle', categorystyle: 'turtle_category',
       contents: [
         { kind: 'label', text: '--- Movement ---' },
         { kind: 'block', type: 'turtle_forward' },
@@ -266,7 +266,7 @@ export const TOOLBOX = {
 
     // Category: OS
     {
-      kind: 'category', name: 'OS / System', colour: '#6E5494',
+      kind: 'category', name: 'OS / System', categorystyle: 'os_category',
       contents: [
         { kind: 'block', type: 'os_sleep' },
         { kind: 'block', type: 'sleep_secs' },
@@ -293,7 +293,7 @@ export const TOOLBOX = {
 
     // Category: Rednet
     {
-      kind: 'category', name: 'Rednet', colour: '#CF6D1F',
+      kind: 'category', name: 'Rednet', categorystyle: 'rednet_category',
       contents: [
         { kind: 'block', type: 'rednet_open' },
         { kind: 'block', type: 'rednet_close' },
@@ -311,7 +311,7 @@ export const TOOLBOX = {
 
     // Category: TextUtils
     {
-      kind: 'category', name: 'Text Utils', colour: '#5C3566',
+      kind: 'category', name: 'Text Utils', categorystyle: 'textutils_category',
       contents: [
         { kind: 'block', type: 'textutils_serialize' },
         { kind: 'block', type: 'textutils_unserialize' },
@@ -325,7 +325,7 @@ export const TOOLBOX = {
 
     // Category: PaintUtils
     {
-      kind: 'category', name: 'Paint Utils', colour: '#D35F5F',
+      kind: 'category', name: 'Paint Utils', categorystyle: 'paintutils_category',
       contents: [
         { kind: 'block', type: 'paint_drawPixel' },
         { kind: 'block', type: 'paint_drawLine' },
@@ -338,7 +338,7 @@ export const TOOLBOX = {
 
     // Category: Window
     {
-      kind: 'category', name: 'Window', colour: '#2E6B62',
+      kind: 'category', name: 'Window', categorystyle: 'window_category',
       contents: [
         { kind: 'block', type: 'window_create' },
         { kind: 'block', type: 'window_setVisible' },
@@ -354,7 +354,7 @@ export const TOOLBOX = {
 
     // Category: Settings
     {
-      kind: 'category', name: 'Settings', colour: '#808080',
+      kind: 'category', name: 'Settings', categorystyle: 'settings_category',
       contents: [
         { kind: 'block', type: 'settings_get' },
         { kind: 'block', type: 'settings_set' },
@@ -366,7 +366,7 @@ export const TOOLBOX = {
 
     // Category: GPS
     {
-      kind: 'category', name: 'GPS', colour: '#4682B4',
+      kind: 'category', name: 'GPS', categorystyle: 'gps_category',
       contents: [
         { kind: 'block', type: 'gps_locate' },
       ],
@@ -374,7 +374,7 @@ export const TOOLBOX = {
 
     // Category: Disk
     {
-      kind: 'category', name: 'Disk', colour: '#996633',
+      kind: 'category', name: 'Disk', categorystyle: 'disk_category',
       contents: [
         { kind: 'block', type: 'disk_isPresent' },
         { kind: 'block', type: 'disk_hasData' },
@@ -390,7 +390,7 @@ export const TOOLBOX = {
 
     // Category: Utility
     {
-      kind: 'category', name: 'Utility', colour: '#888888',
+      kind: 'category', name: 'Utility', categorystyle: 'utility_category',
       contents: [
         { kind: 'block', type: 'print_text' },
         { kind: 'block', type: 'sleep_secs' },

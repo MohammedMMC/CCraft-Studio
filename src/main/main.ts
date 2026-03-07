@@ -4,6 +4,11 @@ import * as fs from 'fs';
 import { setupIPC } from './ipc';
 import { buildMenu } from './menu';
 
+// Disable GPU hardware acceleration to prevent renderer crashes (0xC0000005)
+// when Blockly creates large SVG workspaces
+app.disableHardwareAcceleration();
+app.commandLine.appendSwitch('disable-gpu-rasterization');
+
 let mainWindow: BrowserWindow | null = null;
 
 function createWindow(): void {
@@ -36,6 +41,14 @@ function createWindow(): void {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
+  });
+
+  mainWindow.webContents.on('render-process-gone', (_event, details) => {
+    console.error('Renderer crashed:', details.reason, details.exitCode);
+  });
+
+  mainWindow.webContents.on('unresponsive', () => {
+    console.error('Renderer became unresponsive');
   });
 
   const menu = buildMenu(mainWindow);

@@ -15,27 +15,180 @@ function ensureInit() {
   registerAllGenerators();
 }
 
+// Set HSV saturation for richer block colors (like AI2)
+Blockly.utils.colour.setHsvSaturation(0.7);
+
 const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
   name: 'ccraftDark',
   base: Blockly.Themes.Classic,
+  blockStyles: {
+    events_blocks: {
+      colourPrimary: '#B18E35',
+      colourSecondary: '#9A7B2E',
+      colourTertiary: '#836827',
+      hat: 'cap',
+    },
+    ui_blocks: {
+      colourPrimary: '#4EBD60',
+      colourSecondary: '#3DA34E',
+      colourTertiary: '#2E8B3C',
+    },
+    terminal_blocks: {
+      colourPrimary: '#3F71B5',
+      colourSecondary: '#35619E',
+      colourTertiary: '#2B5187',
+    },
+    redstone_blocks: {
+      colourPrimary: '#E05050',
+      colourSecondary: '#CC3F3F',
+      colourTertiary: '#B33030',
+    },
+    filesystem_blocks: {
+      colourPrimary: '#C49642',
+      colourSecondary: '#AD8438',
+      colourTertiary: '#96722E',
+    },
+    http_blocks: {
+      colourPrimary: '#49A6D4',
+      colourSecondary: '#3D90BB',
+      colourTertiary: '#327AA2',
+    },
+    peripheral_blocks: {
+      colourPrimary: '#7C5385',
+      colourSecondary: '#6B4673',
+      colourTertiary: '#5A3A61',
+    },
+    turtle_blocks: {
+      colourPrimary: '#59B85A',
+      colourSecondary: '#4AA34B',
+      colourTertiary: '#3C8E3D',
+    },
+    os_blocks: {
+      colourPrimary: '#8B6FC0',
+      colourSecondary: '#7A5FAD',
+      colourTertiary: '#694F9A',
+    },
+    rednet_blocks: {
+      colourPrimary: '#D05F2D',
+      colourSecondary: '#B85228',
+      colourTertiary: '#A04523',
+    },
+    textutils_blocks: {
+      colourPrimary: '#B32D5E',
+      colourSecondary: '#9C2751',
+      colourTertiary: '#852145',
+    },
+    paintutils_blocks: {
+      colourPrimary: '#E07070',
+      colourSecondary: '#CC5E5E',
+      colourTertiary: '#B34D4D',
+    },
+    window_blocks: {
+      colourPrimary: '#3DA08E',
+      colourSecondary: '#348D7C',
+      colourTertiary: '#2B7A6B',
+    },
+    settings_blocks: {
+      colourPrimary: '#7D7D7D',
+      colourSecondary: '#6B6B6B',
+      colourTertiary: '#595959',
+    },
+    gps_blocks: {
+      colourPrimary: '#3F71B5',
+      colourSecondary: '#35619E',
+      colourTertiary: '#2B5187',
+    },
+    disk_blocks: {
+      colourPrimary: '#B88040',
+      colourSecondary: '#A37038',
+      colourTertiary: '#8E6030',
+    },
+    utility_blocks: {
+      colourPrimary: '#7D7D7D',
+      colourSecondary: '#6B6B6B',
+      colourTertiary: '#595959',
+    },
+    logic_blocks: {
+      colourPrimary: '#77AB41',
+      colourSecondary: '#689537',
+      colourTertiary: '#59802E',
+    },
+    loop_blocks: {
+      colourPrimary: '#B18E35',
+      colourSecondary: '#9A7B2E',
+      colourTertiary: '#836827',
+    },
+    math_blocks: {
+      colourPrimary: '#3F71B5',
+      colourSecondary: '#35619E',
+      colourTertiary: '#2B5187',
+    },
+    text_blocks: {
+      colourPrimary: '#B32D5E',
+      colourSecondary: '#9C2751',
+      colourTertiary: '#852145',
+    },
+    list_blocks: {
+      colourPrimary: '#49A6D4',
+      colourSecondary: '#3D90BB',
+      colourTertiary: '#327AA2',
+    },
+    variable_blocks: {
+      colourPrimary: '#D05F2D',
+      colourSecondary: '#B85228',
+      colourTertiary: '#A04523',
+    },
+    procedure_blocks: {
+      colourPrimary: '#7C5385',
+      colourSecondary: '#6B4673',
+      colourTertiary: '#5A3A61',
+    },
+  },
+  categoryStyles: {
+    events_category: { colour: '#B18E35' },
+    ui_category: { colour: '#4EBD60' },
+    terminal_category: { colour: '#3F71B5' },
+    redstone_category: { colour: '#E05050' },
+    filesystem_category: { colour: '#C49642' },
+    http_category: { colour: '#49A6D4' },
+    peripheral_category: { colour: '#7C5385' },
+    turtle_category: { colour: '#59B85A' },
+    os_category: { colour: '#8B6FC0' },
+    rednet_category: { colour: '#D05F2D' },
+    textutils_category: { colour: '#B32D5E' },
+    paintutils_category: { colour: '#E07070' },
+    window_category: { colour: '#3DA08E' },
+    settings_category: { colour: '#7D7D7D' },
+    gps_category: { colour: '#3F71B5' },
+    disk_category: { colour: '#B88040' },
+    utility_category: { colour: '#7D7D7D' },
+    logic_category: { colour: '#77AB41' },
+    loop_category: { colour: '#B18E35' },
+    math_category: { colour: '#3F71B5' },
+    text_category: { colour: '#B32D5E' },
+    list_category: { colour: '#49A6D4' },
+    variable_category: { colour: '#D05F2D' },
+    procedure_category: { colour: '#7C5385' },
+  },
   componentStyles: {
     workspaceBackgroundColour: '#1e1e2e',
     toolboxBackgroundColour: '#252535',
     toolboxForegroundColour: '#cdd6f4',
     flyoutBackgroundColour: '#2a2a3c',
     flyoutForegroundColour: '#cdd6f4',
-    flyoutOpacity: 0.95,
+    flyoutOpacity: 1,
     scrollbarColour: '#45475a',
-    insertionMarkerColour: '#89b4fa',
-    insertionMarkerOpacity: 0.5,
-    scrollbarOpacity: 0.6,
+    insertionMarkerColour: '#fff',
+    insertionMarkerOpacity: 0.3,
+    scrollbarOpacity: 0.5,
     cursorColour: '#89b4fa',
   },
   fontStyle: {
-    family: 'JetBrains Mono, Fira Code, Consolas, monospace',
-    weight: 'normal',
-    size: 11,
+    family: 'Arial, Helvetica, sans-serif',
+    weight: 'bold',
+    size: 12,
   },
+  startHats: true,
 });
 
 const DEFAULT_WORKSPACE_XML = `
@@ -64,34 +217,46 @@ export const BlocklyWorkspace: React.FC = () => {
     useProjectStore.getState().markDirty();
   }, [activeScreenId, setXml, setLuaCode]);
 
-  // Create workspace
+  // Create workspace (deferred to next frame to let DOM settle)
   useEffect(() => {
     if (!containerRef.current) return;
-    ensureInit();
+    const container = containerRef.current;
+    let disposed = false;
 
-    const ws = Blockly.inject(containerRef.current, {
-      toolbox: TOOLBOX,
-      theme: DARK_THEME,
-      grid: { spacing: 20, length: 3, colour: '#363650', snap: true },
-      zoom: { controls: true, wheel: true, startScale: 0.9, maxScale: 3, minScale: 0.3 },
-      trashcan: true,
-      move: { scrollbars: true, drag: true, wheel: true },
-      renderer: 'zelos',
-      sounds: false,
-    });
+    const rafId = requestAnimationFrame(() => {
+      if (disposed || !container) return;
+      ensureInit();
 
-    workspaceRef.current = ws;
+      const ws = Blockly.inject(container, {
+        toolbox: TOOLBOX,
+        theme: DARK_THEME,
+        grid: { spacing: 20, length: 5, colour: '#363650', snap: true },
+        zoom: { controls: true, wheel: true, startScale: 0.9, maxScale: 3, minScale: 0.1, scaleSpeed: 1.1 },
+        trashcan: true,
+        move: { scrollbars: true, drag: true, wheel: true },
+        sounds: false,
+        media: './media/',
+        collapse: true,
+        comments: true,
+      });
 
-    // Listen for changes
-    ws.addChangeListener((e: Blockly.Events.Abstract) => {
-      if (e.isUiEvent) return;
-      // Defer save to avoid re-entrancy
-      setTimeout(() => saveWorkspace(), 0);
+      workspaceRef.current = ws;
+
+      // Listen for changes
+      ws.addChangeListener((e: Blockly.Events.Abstract) => {
+        if (e.isUiEvent) return;
+        // Defer save to avoid re-entrancy
+        setTimeout(() => saveWorkspace(), 0);
+      });
     });
 
     return () => {
-      ws.dispose();
-      workspaceRef.current = null;
+      disposed = true;
+      cancelAnimationFrame(rafId);
+      if (workspaceRef.current) {
+        workspaceRef.current.dispose();
+        workspaceRef.current = null;
+      }
     };
   }, []); // workspace created once
 

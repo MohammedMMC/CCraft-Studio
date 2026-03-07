@@ -1,24 +1,5 @@
 import * as Blockly from 'blockly';
 
-// ===== Color constants for categories =====
-const EVENTS_COLOR = '#D4A017';
-const UI_COLOR = '#4E9A06';
-const TERMINAL_COLOR = '#3465A4';
-const REDSTONE_COLOR = '#CC3333';
-const FILESYSTEM_COLOR = '#8B6914';
-const HTTP_COLOR = '#2D7D9A';
-const PERIPHERAL_COLOR = '#7D5177';
-const TURTLE_COLOR = '#4A8C3F';
-const OS_COLOR = '#6E5494';
-const REDNET_COLOR = '#CF6D1F';
-const TEXTUTILS_COLOR = '#5C3566';
-const PAINTUTILS_COLOR = '#D35F5F';
-const WINDOW_COLOR = '#2E6B62';
-const SETTINGS_COLOR = '#808080';
-const GPS_COLOR = '#4682B4';
-const DISK_COLOR = '#996633';
-const UTILITY_COLOR = '#888888';
-
 // ===== Shared dropdown definitions =====
 const CC_COLORS: [string, string][] = [
   ['white', 'colors.white'],
@@ -58,7 +39,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('When this screen loads');
       this.appendStatementInput('DO');
-      this.setColour(EVENTS_COLOR);
+      this.setStyle('events_blocks');
       this.setTooltip('Runs when this screen is first displayed');
       this.setDeletable(true);
     },
@@ -71,7 +52,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldTextInput('button1'), 'BUTTON')
         .appendField('is clicked');
       this.appendStatementInput('DO');
-      this.setColour(EVENTS_COLOR);
+      this.setStyle('events_blocks');
       this.setTooltip('Runs when a button element is clicked');
     },
   };
@@ -95,7 +76,7 @@ export function defineAllBlocks() {
         ]), 'KEY')
         .appendField('is pressed');
       this.appendStatementInput('DO');
-      this.setColour(EVENTS_COLOR);
+      this.setStyle('events_blocks');
       this.setTooltip('Runs when a keyboard key is pressed');
     },
   };
@@ -107,7 +88,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldNumber(1, 0.05), 'INTERVAL')
         .appendField('seconds');
       this.appendStatementInput('DO');
-      this.setColour(EVENTS_COLOR);
+      this.setStyle('events_blocks');
       this.setTooltip('Runs repeatedly at a timed interval');
     },
   };
@@ -117,7 +98,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('When redstone input changes');
       this.appendStatementInput('DO');
-      this.setColour(EVENTS_COLOR);
+      this.setStyle('events_blocks');
       this.setTooltip('Runs when any redstone signal changes');
     },
   };
@@ -128,7 +109,7 @@ export function defineAllBlocks() {
         .appendField('When modem message on channel')
         .appendField(new Blockly.FieldNumber(1, 0, 65535), 'CHANNEL');
       this.appendStatementInput('DO');
-      this.setColour(EVENTS_COLOR);
+      this.setStyle('events_blocks');
       this.setTooltip('Runs when a modem message is received on the specified channel');
     },
   };
@@ -138,7 +119,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('When any event occurs');
       this.appendStatementInput('DO');
-      this.setColour(EVENTS_COLOR);
+      this.setStyle('events_blocks');
       this.setTooltip('Runs when any OS event occurs. Use os.pullEvent() inside to get event details.');
     },
   };
@@ -153,7 +134,7 @@ export function defineAllBlocks() {
         .appendField('Draw current screen');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(UI_COLOR);
+      this.setStyle('ui_blocks');
       this.setTooltip('Draws all UI elements on the current screen');
     },
   };
@@ -166,7 +147,7 @@ export function defineAllBlocks() {
         .appendField('text to');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(UI_COLOR);
+      this.setStyle('ui_blocks');
       this.setInputsInline(true);
       this.setTooltip('Set the text content of a UI element');
     },
@@ -184,7 +165,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(CC_COLORS), 'COLOR');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(UI_COLOR);
+      this.setStyle('ui_blocks');
       this.setTooltip('Set the background or foreground color of a UI element');
     },
   };
@@ -196,7 +177,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldTextInput('element1'), 'ELEMENT');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(UI_COLOR);
+      this.setStyle('ui_blocks');
       this.setTooltip('Make a UI element visible');
     },
   };
@@ -208,7 +189,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldTextInput('element1'), 'ELEMENT');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(UI_COLOR);
+      this.setStyle('ui_blocks');
       this.setTooltip('Hide a UI element');
     },
   };
@@ -220,7 +201,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldTextInput('Main'), 'SCREEN');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(UI_COLOR);
+      this.setStyle('ui_blocks');
       this.setTooltip('Navigate to a different screen');
     },
   };
@@ -233,7 +214,7 @@ export function defineAllBlocks() {
         .appendField('progress to');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(UI_COLOR);
+      this.setStyle('ui_blocks');
       this.setInputsInline(true);
       this.setTooltip('Set the progress value of a progress bar element');
     },
@@ -249,7 +230,7 @@ export function defineAllBlocks() {
         .appendField('y:');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(UI_COLOR);
+      this.setStyle('ui_blocks');
       this.setInputsInline(true);
       this.setTooltip('Write text at a specific screen position');
     },
@@ -261,7 +242,7 @@ export function defineAllBlocks() {
         .appendField('clear screen');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(UI_COLOR);
+      this.setStyle('ui_blocks');
       this.setTooltip('Clear the entire screen');
     },
   };
@@ -274,7 +255,7 @@ export function defineAllBlocks() {
         .appendField('visible to');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(UI_COLOR);
+      this.setStyle('ui_blocks');
       this.setInputsInline(true);
       this.setTooltip('Set the visibility of a UI element using a boolean');
     },
@@ -287,7 +268,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldTextInput('element1'), 'ELEMENT')
         .appendField('text');
       this.setOutput(true, 'String');
-      this.setColour(UI_COLOR);
+      this.setStyle('ui_blocks');
       this.setTooltip('Get the text content of a UI element');
     },
   };
@@ -299,7 +280,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldTextInput('element1'), 'ELEMENT')
         .appendField('value');
       this.setOutput(true, null);
-      this.setColour(UI_COLOR);
+      this.setStyle('ui_blocks');
       this.setTooltip('Get the current value of a UI element');
     },
   };
@@ -316,7 +297,7 @@ export function defineAllBlocks() {
         .appendField('term.write');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setInputsInline(true);
       this.setTooltip('Write text at the current cursor position');
     },
@@ -328,7 +309,7 @@ export function defineAllBlocks() {
         .appendField('term.clear()');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setTooltip('Clear the entire terminal');
     },
   };
@@ -339,7 +320,7 @@ export function defineAllBlocks() {
         .appendField('term.clearLine()');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setTooltip('Clear the current line');
     },
   };
@@ -352,7 +333,7 @@ export function defineAllBlocks() {
         .appendField('y:');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setInputsInline(true);
       this.setTooltip('Set the cursor position');
     },
@@ -364,7 +345,7 @@ export function defineAllBlocks() {
         .appendField('set cursor blink');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setInputsInline(true);
       this.setTooltip('Enable or disable cursor blinking');
     },
@@ -377,7 +358,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(CC_COLORS), 'COLOR');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setTooltip('Set the terminal text color');
     },
   };
@@ -389,7 +370,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(CC_COLORS), 'COLOR');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setTooltip('Set the terminal background color');
     },
   };
@@ -402,7 +383,7 @@ export function defineAllBlocks() {
         .appendField('lines');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setInputsInline(true);
       this.setTooltip('Scroll the terminal by N lines');
     },
@@ -418,7 +399,7 @@ export function defineAllBlocks() {
         .appendField('bg:');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setInputsInline(true);
       this.setTooltip('Write text with per-character foreground and background colors');
     },
@@ -431,7 +412,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('terminal width');
       this.setOutput(true, 'Number');
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setTooltip('Get the width of the terminal in characters');
     },
   };
@@ -441,7 +422,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('terminal height');
       this.setOutput(true, 'Number');
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setTooltip('Get the height of the terminal in characters');
     },
   };
@@ -451,7 +432,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('cursor x');
       this.setOutput(true, 'Number');
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setTooltip('Get the x position of the cursor');
     },
   };
@@ -461,7 +442,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('cursor y');
       this.setOutput(true, 'Number');
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setTooltip('Get the y position of the cursor');
     },
   };
@@ -471,7 +452,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('current text color');
       this.setOutput(true, 'Number');
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setTooltip('Get the current terminal text color');
     },
   };
@@ -481,7 +462,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('current background color');
       this.setOutput(true, 'Number');
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setTooltip('Get the current terminal background color');
     },
   };
@@ -491,7 +472,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('terminal supports color?');
       this.setOutput(true, 'Boolean');
-      this.setColour(TERMINAL_COLOR);
+      this.setStyle('terminal_blocks');
       this.setTooltip('Check if the terminal supports color');
     },
   };
@@ -513,7 +494,7 @@ export function defineAllBlocks() {
         ]), 'VALUE');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(REDSTONE_COLOR);
+      this.setStyle('redstone_blocks');
       this.setTooltip('Set digital redstone output on a side');
     },
   };
@@ -527,7 +508,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldNumber(0, 0, 15, 1), 'VALUE');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(REDSTONE_COLOR);
+      this.setStyle('redstone_blocks');
       this.setTooltip('Set analog redstone output strength (0-15) on a side');
     },
   };
@@ -540,7 +521,7 @@ export function defineAllBlocks() {
         .appendField('to');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(REDSTONE_COLOR);
+      this.setStyle('redstone_blocks');
       this.setInputsInline(true);
       this.setTooltip('Set bundled cable output on a side');
     },
@@ -554,7 +535,7 @@ export function defineAllBlocks() {
         .appendField('redstone input on')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setOutput(true, 'Boolean');
-      this.setColour(REDSTONE_COLOR);
+      this.setStyle('redstone_blocks');
       this.setTooltip('Get digital redstone input on a side');
     },
   };
@@ -565,7 +546,7 @@ export function defineAllBlocks() {
         .appendField('redstone output on')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setOutput(true, 'Boolean');
-      this.setColour(REDSTONE_COLOR);
+      this.setStyle('redstone_blocks');
       this.setTooltip('Get the current digital redstone output on a side');
     },
   };
@@ -576,7 +557,7 @@ export function defineAllBlocks() {
         .appendField('redstone strength on')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setOutput(true, 'Number');
-      this.setColour(REDSTONE_COLOR);
+      this.setStyle('redstone_blocks');
       this.setTooltip('Get analog redstone input strength (0-15) on a side');
     },
   };
@@ -587,7 +568,7 @@ export function defineAllBlocks() {
         .appendField('redstone output strength on')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setOutput(true, 'Number');
-      this.setColour(REDSTONE_COLOR);
+      this.setStyle('redstone_blocks');
       this.setTooltip('Get the current analog redstone output strength on a side');
     },
   };
@@ -598,7 +579,7 @@ export function defineAllBlocks() {
         .appendField('bundled input on')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setOutput(true, 'Number');
-      this.setColour(REDSTONE_COLOR);
+      this.setStyle('redstone_blocks');
       this.setTooltip('Get bundled cable input on a side');
     },
   };
@@ -611,7 +592,7 @@ export function defineAllBlocks() {
         .appendField('has color')
         .appendField(new Blockly.FieldDropdown(CC_COLORS), 'COLOR');
       this.setOutput(true, 'Boolean');
-      this.setColour(REDSTONE_COLOR);
+      this.setStyle('redstone_blocks');
       this.setTooltip('Test if a bundled cable input includes a specific color');
     },
   };
@@ -630,7 +611,7 @@ export function defineAllBlocks() {
         .appendField('to file');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(FILESYSTEM_COLOR);
+      this.setStyle('filesystem_blocks');
       this.setInputsInline(true);
       this.setTooltip('Write content to a file (overwrites existing content)');
     },
@@ -644,7 +625,7 @@ export function defineAllBlocks() {
         .appendField('to file');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(FILESYSTEM_COLOR);
+      this.setStyle('filesystem_blocks');
       this.setInputsInline(true);
       this.setTooltip('Append content to the end of a file');
     },
@@ -656,7 +637,7 @@ export function defineAllBlocks() {
         .appendField('delete file');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(FILESYSTEM_COLOR);
+      this.setStyle('filesystem_blocks');
       this.setInputsInline(true);
       this.setTooltip('Delete a file or directory');
     },
@@ -668,7 +649,7 @@ export function defineAllBlocks() {
         .appendField('create directory');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(FILESYSTEM_COLOR);
+      this.setStyle('filesystem_blocks');
       this.setInputsInline(true);
       this.setTooltip('Create a new directory');
     },
@@ -682,7 +663,7 @@ export function defineAllBlocks() {
         .appendField('to');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(FILESYSTEM_COLOR);
+      this.setStyle('filesystem_blocks');
       this.setInputsInline(true);
       this.setTooltip('Move a file or directory to a new location');
     },
@@ -696,7 +677,7 @@ export function defineAllBlocks() {
         .appendField('to');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(FILESYSTEM_COLOR);
+      this.setStyle('filesystem_blocks');
       this.setInputsInline(true);
       this.setTooltip('Copy a file or directory');
     },
@@ -709,7 +690,7 @@ export function defineAllBlocks() {
       this.appendValueInput('PATH').setCheck('String')
         .appendField('read file');
       this.setOutput(true, 'String');
-      this.setColour(FILESYSTEM_COLOR);
+      this.setStyle('filesystem_blocks');
       this.setTooltip('Read the entire contents of a file as a string');
     },
   };
@@ -721,7 +702,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('exists?');
       this.setOutput(true, 'Boolean');
-      this.setColour(FILESYSTEM_COLOR);
+      this.setStyle('filesystem_blocks');
       this.setInputsInline(true);
       this.setTooltip('Check if a file or directory exists');
     },
@@ -734,7 +715,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('a directory?');
       this.setOutput(true, 'Boolean');
-      this.setColour(FILESYSTEM_COLOR);
+      this.setStyle('filesystem_blocks');
       this.setInputsInline(true);
       this.setTooltip('Check if a path is a directory');
     },
@@ -745,7 +726,7 @@ export function defineAllBlocks() {
       this.appendValueInput('PATH').setCheck('String')
         .appendField('list files in');
       this.setOutput(true, 'Array');
-      this.setColour(FILESYSTEM_COLOR);
+      this.setStyle('filesystem_blocks');
       this.setTooltip('List all files and directories in a path');
     },
   };
@@ -755,7 +736,7 @@ export function defineAllBlocks() {
       this.appendValueInput('PATH').setCheck('String')
         .appendField('size of file');
       this.setOutput(true, 'Number');
-      this.setColour(FILESYSTEM_COLOR);
+      this.setStyle('filesystem_blocks');
       this.setTooltip('Get the size of a file in bytes');
     },
   };
@@ -765,7 +746,7 @@ export function defineAllBlocks() {
       this.appendValueInput('PATH').setCheck('String')
         .appendField('free space on');
       this.setOutput(true, 'Number');
-      this.setColour(FILESYSTEM_COLOR);
+      this.setStyle('filesystem_blocks');
       this.setTooltip('Get the free space available on the drive containing the path');
     },
   };
@@ -784,7 +765,7 @@ export function defineAllBlocks() {
         .appendField('body');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(HTTP_COLOR);
+      this.setStyle('http_blocks');
       this.setInputsInline(true);
       this.setTooltip('Send an HTTP POST request with a body');
     },
@@ -797,7 +778,7 @@ export function defineAllBlocks() {
       this.appendValueInput('URL').setCheck('String')
         .appendField('HTTP GET');
       this.setOutput(true, 'String');
-      this.setColour(HTTP_COLOR);
+      this.setStyle('http_blocks');
       this.setTooltip('Send an HTTP GET request and return the response body');
     },
   };
@@ -809,7 +790,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('is reachable?');
       this.setOutput(true, 'Boolean');
-      this.setColour(HTTP_COLOR);
+      this.setStyle('http_blocks');
       this.setInputsInline(true);
       this.setTooltip('Check if a URL is reachable and allowed');
     },
@@ -831,7 +812,7 @@ export function defineAllBlocks() {
         .appendField('with');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(PERIPHERAL_COLOR);
+      this.setStyle('peripheral_blocks');
       this.setInputsInline(true);
       this.setTooltip('Call a method on a peripheral with arguments');
     },
@@ -845,7 +826,7 @@ export function defineAllBlocks() {
         .appendField('wrap peripheral')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setOutput(true, null);
-      this.setColour(PERIPHERAL_COLOR);
+      this.setStyle('peripheral_blocks');
       this.setTooltip('Wrap a peripheral on a side as an object');
     },
   };
@@ -856,7 +837,7 @@ export function defineAllBlocks() {
         .appendField('find peripheral')
         .appendField(new Blockly.FieldTextInput('monitor'), 'TYPE');
       this.setOutput(true, null);
-      this.setColour(PERIPHERAL_COLOR);
+      this.setStyle('peripheral_blocks');
       this.setTooltip('Find the first connected peripheral of a given type');
     },
   };
@@ -867,7 +848,7 @@ export function defineAllBlocks() {
         .appendField('type of peripheral')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setOutput(true, 'String');
-      this.setColour(PERIPHERAL_COLOR);
+      this.setStyle('peripheral_blocks');
       this.setTooltip('Get the type name of the peripheral on a side');
     },
   };
@@ -879,7 +860,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
         .appendField('exists?');
       this.setOutput(true, 'Boolean');
-      this.setColour(PERIPHERAL_COLOR);
+      this.setStyle('peripheral_blocks');
       this.setTooltip('Check if a peripheral is connected on a side');
     },
   };
@@ -890,7 +871,7 @@ export function defineAllBlocks() {
         .appendField('methods of')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setOutput(true, 'Array');
-      this.setColour(PERIPHERAL_COLOR);
+      this.setStyle('peripheral_blocks');
       this.setTooltip('Get a list of methods available on a peripheral');
     },
   };
@@ -900,7 +881,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('all peripheral names');
       this.setOutput(true, 'Array');
-      this.setColour(PERIPHERAL_COLOR);
+      this.setStyle('peripheral_blocks');
       this.setTooltip('Get the names of all connected peripherals');
     },
   };
@@ -917,7 +898,7 @@ export function defineAllBlocks() {
         .appendField('turtle forward');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Move the turtle forward one block');
     },
   };
@@ -928,7 +909,7 @@ export function defineAllBlocks() {
         .appendField('turtle back');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Move the turtle backward one block');
     },
   };
@@ -939,7 +920,7 @@ export function defineAllBlocks() {
         .appendField('turtle up');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Move the turtle up one block');
     },
   };
@@ -950,7 +931,7 @@ export function defineAllBlocks() {
         .appendField('turtle down');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Move the turtle down one block');
     },
   };
@@ -961,7 +942,7 @@ export function defineAllBlocks() {
         .appendField('turtle turn left');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Turn the turtle 90 degrees to the left');
     },
   };
@@ -972,7 +953,7 @@ export function defineAllBlocks() {
         .appendField('turtle turn right');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Turn the turtle 90 degrees to the right');
     },
   };
@@ -985,7 +966,7 @@ export function defineAllBlocks() {
         .appendField('turtle dig forward');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Dig the block in front of the turtle');
     },
   };
@@ -996,7 +977,7 @@ export function defineAllBlocks() {
         .appendField('turtle dig up');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Dig the block above the turtle');
     },
   };
@@ -1007,7 +988,7 @@ export function defineAllBlocks() {
         .appendField('turtle dig down');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Dig the block below the turtle');
     },
   };
@@ -1018,7 +999,7 @@ export function defineAllBlocks() {
         .appendField('turtle place forward');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Place a block in front of the turtle');
     },
   };
@@ -1029,7 +1010,7 @@ export function defineAllBlocks() {
         .appendField('turtle place up');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Place a block above the turtle');
     },
   };
@@ -1040,7 +1021,7 @@ export function defineAllBlocks() {
         .appendField('turtle place down');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Place a block below the turtle');
     },
   };
@@ -1053,7 +1034,7 @@ export function defineAllBlocks() {
         .appendField('items forward');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Drop items from the selected slot in front of the turtle');
     },
   };
@@ -1066,7 +1047,7 @@ export function defineAllBlocks() {
         .appendField('items up');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Drop items from the selected slot above the turtle');
     },
   };
@@ -1079,7 +1060,7 @@ export function defineAllBlocks() {
         .appendField('items down');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Drop items from the selected slot below the turtle');
     },
   };
@@ -1092,7 +1073,7 @@ export function defineAllBlocks() {
         .appendField('items from front');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Suck items from in front of the turtle');
     },
   };
@@ -1105,7 +1086,7 @@ export function defineAllBlocks() {
         .appendField('items from above');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Suck items from above the turtle');
     },
   };
@@ -1118,7 +1099,7 @@ export function defineAllBlocks() {
         .appendField('items from below');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Suck items from below the turtle');
     },
   };
@@ -1129,7 +1110,7 @@ export function defineAllBlocks() {
         .appendField('turtle attack forward');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Attack an entity in front of the turtle');
     },
   };
@@ -1140,7 +1121,7 @@ export function defineAllBlocks() {
         .appendField('turtle attack up');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Attack an entity above the turtle');
     },
   };
@@ -1151,7 +1132,7 @@ export function defineAllBlocks() {
         .appendField('turtle attack down');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Attack an entity below the turtle');
     },
   };
@@ -1163,7 +1144,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldNumber(1, 1, 16, 1), 'SLOT');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Select an inventory slot (1-16)');
     },
   };
@@ -1174,7 +1155,7 @@ export function defineAllBlocks() {
         .appendField('refuel from selected slot');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Use items in the selected slot as fuel');
     },
   };
@@ -1185,7 +1166,7 @@ export function defineAllBlocks() {
         .appendField('equip left');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Equip the item in the selected slot to the left side');
     },
   };
@@ -1196,7 +1177,7 @@ export function defineAllBlocks() {
         .appendField('equip right');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Equip the item in the selected slot to the right side');
     },
   };
@@ -1209,7 +1190,7 @@ export function defineAllBlocks() {
         .appendField('items');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Craft items using the items in the turtle inventory');
     },
   };
@@ -1223,7 +1204,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldNumber(64, 1, 64, 1), 'COUNT');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Transfer items from the selected slot to another slot');
     },
   };
@@ -1235,7 +1216,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('turtle detect forward');
       this.setOutput(true, 'Boolean');
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Detect if there is a block in front of the turtle');
     },
   };
@@ -1245,7 +1226,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('turtle detect up');
       this.setOutput(true, 'Boolean');
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Detect if there is a block above the turtle');
     },
   };
@@ -1255,7 +1236,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('turtle detect down');
       this.setOutput(true, 'Boolean');
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Detect if there is a block below the turtle');
     },
   };
@@ -1265,7 +1246,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('turtle compare forward');
       this.setOutput(true, 'Boolean');
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Compare the block in front with the selected slot');
     },
   };
@@ -1275,7 +1256,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('turtle compare up');
       this.setOutput(true, 'Boolean');
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Compare the block above with the selected slot');
     },
   };
@@ -1285,7 +1266,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('turtle compare down');
       this.setOutput(true, 'Boolean');
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Compare the block below with the selected slot');
     },
   };
@@ -1295,7 +1276,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('turtle inspect forward');
       this.setOutput(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Get details about the block in front of the turtle');
     },
   };
@@ -1305,7 +1286,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('turtle inspect up');
       this.setOutput(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Get details about the block above the turtle');
     },
   };
@@ -1315,7 +1296,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('turtle inspect down');
       this.setOutput(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Get details about the block below the turtle');
     },
   };
@@ -1326,7 +1307,7 @@ export function defineAllBlocks() {
         .appendField('items in slot')
         .appendField(new Blockly.FieldNumber(1, 1, 16, 1), 'SLOT');
       this.setOutput(true, 'Number');
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Get the number of items in a slot');
     },
   };
@@ -1337,7 +1318,7 @@ export function defineAllBlocks() {
         .appendField('space in slot')
         .appendField(new Blockly.FieldNumber(1, 1, 16, 1), 'SLOT');
       this.setOutput(true, 'Number');
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Get the remaining space in a slot');
     },
   };
@@ -1348,7 +1329,7 @@ export function defineAllBlocks() {
         .appendField('item detail in slot')
         .appendField(new Blockly.FieldNumber(1, 1, 16, 1), 'SLOT');
       this.setOutput(true, null);
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Get detailed info about the item in a slot (name, count, damage)');
     },
   };
@@ -1358,7 +1339,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('fuel level');
       this.setOutput(true, 'Number');
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Get the current fuel level of the turtle');
     },
   };
@@ -1368,7 +1349,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('fuel limit');
       this.setOutput(true, 'Number');
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Get the maximum fuel level of the turtle');
     },
   };
@@ -1378,7 +1359,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('selected slot');
       this.setOutput(true, 'Number');
-      this.setColour(TURTLE_COLOR);
+      this.setStyle('turtle_blocks');
       this.setTooltip('Get the currently selected inventory slot number');
     },
   };
@@ -1397,7 +1378,7 @@ export function defineAllBlocks() {
         .appendField('seconds');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setInputsInline(true);
       this.setTooltip('Pause execution for a number of seconds');
     },
@@ -1408,7 +1389,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('shutdown computer');
       this.setPreviousStatement(true, null);
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setTooltip('Shut down the computer');
     },
   };
@@ -1418,7 +1399,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('reboot computer');
       this.setPreviousStatement(true, null);
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setTooltip('Reboot the computer');
     },
   };
@@ -1431,7 +1412,7 @@ export function defineAllBlocks() {
         .appendField('with');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setInputsInline(true);
       this.setTooltip('Queue a custom event with optional data');
     },
@@ -1443,7 +1424,7 @@ export function defineAllBlocks() {
         .appendField('set computer label to');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setInputsInline(true);
       this.setTooltip('Set the label of the computer');
     },
@@ -1456,7 +1437,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('seconds');
       this.setOutput(true, 'Number');
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setInputsInline(true);
       this.setTooltip('Start a timer that fires after the specified seconds. Returns timer ID.');
     },
@@ -1468,7 +1449,7 @@ export function defineAllBlocks() {
         .appendField('cancel timer');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setInputsInline(true);
       this.setTooltip('Cancel a previously started timer by ID');
     },
@@ -1479,7 +1460,7 @@ export function defineAllBlocks() {
       this.appendValueInput('TIME').setCheck('Number')
         .appendField('set alarm at');
       this.setOutput(true, 'Number');
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setInputsInline(true);
       this.setTooltip('Set an alarm at a specific in-game time (0-24). Returns alarm ID.');
     },
@@ -1491,7 +1472,7 @@ export function defineAllBlocks() {
         .appendField('cancel alarm');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setInputsInline(true);
       this.setTooltip('Cancel a previously set alarm by ID');
     },
@@ -1504,7 +1485,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('current time');
       this.setOutput(true, 'Number');
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setTooltip('Get the current in-game time');
     },
   };
@@ -1514,7 +1495,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('current day');
       this.setOutput(true, 'Number');
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setTooltip('Get the current in-game day');
     },
   };
@@ -1524,7 +1505,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('epoch time');
       this.setOutput(true, 'Number');
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setTooltip('Get the current epoch time in milliseconds');
     },
   };
@@ -1534,7 +1515,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('CPU clock');
       this.setOutput(true, 'Number');
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setTooltip('Get the amount of CPU time the computer has used');
     },
   };
@@ -1544,7 +1525,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('computer ID');
       this.setOutput(true, 'Number');
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setTooltip('Get the unique ID of this computer');
     },
   };
@@ -1554,7 +1535,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('computer label');
       this.setOutput(true, 'String');
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setTooltip('Get the label of this computer');
     },
   };
@@ -1564,7 +1545,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('OS version');
       this.setOutput(true, 'String');
-      this.setColour(OS_COLOR);
+      this.setStyle('os_blocks');
       this.setTooltip('Get the CraftOS version string');
     },
   };
@@ -1582,7 +1563,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(REDNET_COLOR);
+      this.setStyle('rednet_blocks');
       this.setTooltip('Open a modem on the given side for rednet communication');
     },
   };
@@ -1594,7 +1575,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(REDNET_COLOR);
+      this.setStyle('rednet_blocks');
       this.setTooltip('Close a modem on the given side');
     },
   };
@@ -1610,7 +1591,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldTextInput(''), 'PROTOCOL');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(REDNET_COLOR);
+      this.setStyle('rednet_blocks');
       this.setInputsInline(true);
       this.setTooltip('Send a message to a specific computer via rednet');
     },
@@ -1625,7 +1606,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldTextInput(''), 'PROTOCOL');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(REDNET_COLOR);
+      this.setStyle('rednet_blocks');
       this.setInputsInline(true);
       this.setTooltip('Broadcast a message to all computers on the network');
     },
@@ -1640,7 +1621,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldTextInput('myHost'), 'HOSTNAME');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(REDNET_COLOR);
+      this.setStyle('rednet_blocks');
       this.setTooltip('Register this computer as a host for a protocol');
     },
   };
@@ -1652,7 +1633,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldTextInput('myProtocol'), 'PROTOCOL');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(REDNET_COLOR);
+      this.setStyle('rednet_blocks');
       this.setTooltip('Stop hosting a protocol');
     },
   };
@@ -1665,7 +1646,7 @@ export function defineAllBlocks() {
         .appendField('receive message timeout')
         .appendField(new Blockly.FieldNumber(10, 0), 'TIMEOUT');
       this.setOutput(true, null);
-      this.setColour(REDNET_COLOR);
+      this.setStyle('rednet_blocks');
       this.setTooltip('Wait for a rednet message with an optional timeout');
     },
   };
@@ -1678,7 +1659,7 @@ export function defineAllBlocks() {
         .appendField('host')
         .appendField(new Blockly.FieldTextInput(''), 'HOSTNAME');
       this.setOutput(true, 'Number');
-      this.setColour(REDNET_COLOR);
+      this.setStyle('rednet_blocks');
       this.setTooltip('Look up computers hosting a specific protocol');
     },
   };
@@ -1690,7 +1671,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
         .appendField('?');
       this.setOutput(true, 'Boolean');
-      this.setColour(REDNET_COLOR);
+      this.setStyle('rednet_blocks');
       this.setTooltip('Check if rednet is open on a given side');
     },
   };
@@ -1706,7 +1687,7 @@ export function defineAllBlocks() {
       this.appendValueInput('VALUE')
         .appendField('serialize');
       this.setOutput(true, 'String');
-      this.setColour(TEXTUTILS_COLOR);
+      this.setStyle('textutils_blocks');
       this.setTooltip('Convert a Lua value to a string representation');
     },
   };
@@ -1716,7 +1697,7 @@ export function defineAllBlocks() {
       this.appendValueInput('TEXT').setCheck('String')
         .appendField('unserialize');
       this.setOutput(true, null);
-      this.setColour(TEXTUTILS_COLOR);
+      this.setStyle('textutils_blocks');
       this.setTooltip('Convert a serialized string back to a Lua value');
     },
   };
@@ -1726,7 +1707,7 @@ export function defineAllBlocks() {
       this.appendValueInput('VALUE')
         .appendField('to JSON');
       this.setOutput(true, 'String');
-      this.setColour(TEXTUTILS_COLOR);
+      this.setStyle('textutils_blocks');
       this.setTooltip('Convert a Lua value to a JSON string');
     },
   };
@@ -1736,7 +1717,7 @@ export function defineAllBlocks() {
       this.appendValueInput('TEXT').setCheck('String')
         .appendField('from JSON');
       this.setOutput(true, null);
-      this.setColour(TEXTUTILS_COLOR);
+      this.setStyle('textutils_blocks');
       this.setTooltip('Parse a JSON string into a Lua value');
     },
   };
@@ -1746,7 +1727,7 @@ export function defineAllBlocks() {
       this.appendValueInput('TEXT').setCheck('String')
         .appendField('URL encode');
       this.setOutput(true, 'String');
-      this.setColour(TEXTUTILS_COLOR);
+      this.setStyle('textutils_blocks');
       this.setTooltip('URL-encode a string for safe use in URLs');
     },
   };
@@ -1761,7 +1742,7 @@ export function defineAllBlocks() {
         .appendField('rate');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TEXTUTILS_COLOR);
+      this.setStyle('textutils_blocks');
       this.setInputsInline(true);
       this.setTooltip('Print text character by character at the given rate');
     },
@@ -1775,7 +1756,7 @@ export function defineAllBlocks() {
         .appendField('rate');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(TEXTUTILS_COLOR);
+      this.setStyle('textutils_blocks');
       this.setInputsInline(true);
       this.setTooltip('Write text character by character at the given rate (no newline)');
     },
@@ -1798,7 +1779,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(CC_COLORS), 'COLOR');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(PAINTUTILS_COLOR);
+      this.setStyle('paintutils_blocks');
       this.setInputsInline(true);
       this.setTooltip('Draw a single pixel at the given coordinates');
     },
@@ -1819,7 +1800,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(CC_COLORS), 'COLOR');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(PAINTUTILS_COLOR);
+      this.setStyle('paintutils_blocks');
       this.setInputsInline(true);
       this.setTooltip('Draw a line between two points');
     },
@@ -1840,7 +1821,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(CC_COLORS), 'COLOR');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(PAINTUTILS_COLOR);
+      this.setStyle('paintutils_blocks');
       this.setInputsInline(true);
       this.setTooltip('Draw a box outline between two corners');
     },
@@ -1861,7 +1842,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(CC_COLORS), 'COLOR');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(PAINTUTILS_COLOR);
+      this.setStyle('paintutils_blocks');
       this.setInputsInline(true);
       this.setTooltip('Draw a filled box between two corners');
     },
@@ -1877,7 +1858,7 @@ export function defineAllBlocks() {
         .appendField('y:');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(PAINTUTILS_COLOR);
+      this.setStyle('paintutils_blocks');
       this.setInputsInline(true);
       this.setTooltip('Draw a loaded image at the given coordinates');
     },
@@ -1890,7 +1871,7 @@ export function defineAllBlocks() {
       this.appendValueInput('PATH').setCheck('String')
         .appendField('load image from');
       this.setOutput(true, null);
-      this.setColour(PAINTUTILS_COLOR);
+      this.setStyle('paintutils_blocks');
       this.setTooltip('Load a paint image from a file');
     },
   };
@@ -1912,7 +1893,7 @@ export function defineAllBlocks() {
       this.appendValueInput('H').setCheck('Number')
         .appendField('h:');
       this.setOutput(true, null);
-      this.setColour(WINDOW_COLOR);
+      this.setStyle('window_blocks');
       this.setInputsInline(true);
       this.setTooltip('Create a new window on the current terminal');
     },
@@ -1926,7 +1907,7 @@ export function defineAllBlocks() {
         .appendField('visible');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(WINDOW_COLOR);
+      this.setStyle('window_blocks');
       this.setInputsInline(true);
       this.setTooltip('Show or hide a window');
     },
@@ -1946,7 +1927,7 @@ export function defineAllBlocks() {
         .appendField('h:');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(WINDOW_COLOR);
+      this.setStyle('window_blocks');
       this.setInputsInline(true);
       this.setTooltip('Reposition and resize a window');
     },
@@ -1958,7 +1939,7 @@ export function defineAllBlocks() {
         .appendField('redraw window');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(WINDOW_COLOR);
+      this.setStyle('window_blocks');
       this.setInputsInline(true);
       this.setTooltip('Redraw a window to the screen');
     },
@@ -1973,7 +1954,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('width');
       this.setOutput(true, 'Number');
-      this.setColour(WINDOW_COLOR);
+      this.setStyle('window_blocks');
       this.setInputsInline(true);
       this.setTooltip('Get the width of a window');
     },
@@ -1986,7 +1967,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('height');
       this.setOutput(true, 'Number');
-      this.setColour(WINDOW_COLOR);
+      this.setStyle('window_blocks');
       this.setInputsInline(true);
       this.setTooltip('Get the height of a window');
     },
@@ -1999,7 +1980,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('x position');
       this.setOutput(true, 'Number');
-      this.setColour(WINDOW_COLOR);
+      this.setStyle('window_blocks');
       this.setInputsInline(true);
       this.setTooltip('Get the x position of a window');
     },
@@ -2012,7 +1993,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('y position');
       this.setOutput(true, 'Number');
-      this.setColour(WINDOW_COLOR);
+      this.setStyle('window_blocks');
       this.setInputsInline(true);
       this.setTooltip('Get the y position of a window');
     },
@@ -2025,7 +2006,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('visible?');
       this.setOutput(true, 'Boolean');
-      this.setColour(WINDOW_COLOR);
+      this.setStyle('window_blocks');
       this.setInputsInline(true);
       this.setTooltip('Check if a window is currently visible');
     },
@@ -2045,7 +2026,7 @@ export function defineAllBlocks() {
         .appendField('to');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(SETTINGS_COLOR);
+      this.setStyle('settings_blocks');
       this.setInputsInline(true);
       this.setTooltip('Set a setting to a value');
     },
@@ -2058,7 +2039,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldTextInput('settingName'), 'NAME');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(SETTINGS_COLOR);
+      this.setStyle('settings_blocks');
       this.setTooltip('Remove a setting');
     },
   };
@@ -2070,7 +2051,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldTextInput('.settings'), 'PATH');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(SETTINGS_COLOR);
+      this.setStyle('settings_blocks');
       this.setTooltip('Save all settings to a file');
     },
   };
@@ -2082,7 +2063,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldTextInput('.settings'), 'PATH');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(SETTINGS_COLOR);
+      this.setStyle('settings_blocks');
       this.setTooltip('Load settings from a file');
     },
   };
@@ -2096,7 +2077,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldTextInput('settingName'), 'NAME')
         .appendField('default');
       this.setOutput(true, null);
-      this.setColour(SETTINGS_COLOR);
+      this.setStyle('settings_blocks');
       this.setInputsInline(true);
       this.setTooltip('Get a setting value, or a default if not set');
     },
@@ -2112,7 +2093,7 @@ export function defineAllBlocks() {
         .appendField('GPS locate timeout')
         .appendField(new Blockly.FieldNumber(2, 0), 'TIMEOUT');
       this.setOutput(true, null);
-      this.setColour(GPS_COLOR);
+      this.setStyle('gps_blocks');
       this.setTooltip('Locate the computer using GPS. Returns x, y, z coordinates as a table.');
     },
   };
@@ -2130,7 +2111,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(DISK_COLOR);
+      this.setStyle('disk_blocks');
       this.setTooltip('Eject a disk from a disk drive on the given side');
     },
   };
@@ -2143,7 +2124,7 @@ export function defineAllBlocks() {
         .appendField('label to');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(DISK_COLOR);
+      this.setStyle('disk_blocks');
       this.setInputsInline(true);
       this.setTooltip('Set the label of a disk in a disk drive');
     },
@@ -2158,7 +2139,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
         .appendField('?');
       this.setOutput(true, 'Boolean');
-      this.setColour(DISK_COLOR);
+      this.setStyle('disk_blocks');
       this.setTooltip('Check if a disk is present in the drive on the given side');
     },
   };
@@ -2170,7 +2151,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
         .appendField('has data?');
       this.setOutput(true, 'Boolean');
-      this.setColour(DISK_COLOR);
+      this.setStyle('disk_blocks');
       this.setTooltip('Check if a disk has data (is a floppy disk)');
     },
   };
@@ -2182,7 +2163,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
         .appendField('has audio?');
       this.setOutput(true, 'Boolean');
-      this.setColour(DISK_COLOR);
+      this.setStyle('disk_blocks');
       this.setTooltip('Check if a disk is a music disc');
     },
   };
@@ -2194,7 +2175,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
         .appendField('label');
       this.setOutput(true, 'String');
-      this.setColour(DISK_COLOR);
+      this.setStyle('disk_blocks');
       this.setTooltip('Get the label of a disk');
     },
   };
@@ -2206,7 +2187,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
         .appendField('mount path');
       this.setOutput(true, 'String');
-      this.setColour(DISK_COLOR);
+      this.setStyle('disk_blocks');
       this.setTooltip('Get the mount path of a disk');
     },
   };
@@ -2221,7 +2202,7 @@ export function defineAllBlocks() {
         .appendField('print');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(UTILITY_COLOR);
+      this.setStyle('utility_blocks');
       this.setInputsInline(true);
       this.setTooltip('Print a value to the terminal with a newline');
     },
@@ -2235,7 +2216,7 @@ export function defineAllBlocks() {
         .appendField('seconds');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(UTILITY_COLOR);
+      this.setStyle('utility_blocks');
       this.setInputsInline(true);
       this.setTooltip('Pause execution for a number of seconds');
     },
@@ -2246,7 +2227,7 @@ export function defineAllBlocks() {
       this.appendValueInput('TEXT').setCheck('String')
         .appendField('text to number');
       this.setOutput(true, 'Number');
-      this.setColour(UTILITY_COLOR);
+      this.setStyle('utility_blocks');
       this.setTooltip('Convert a text string to a number');
     },
   };
@@ -2256,7 +2237,7 @@ export function defineAllBlocks() {
       this.appendValueInput('VALUE')
         .appendField('to text');
       this.setOutput(true, 'String');
-      this.setColour(UTILITY_COLOR);
+      this.setStyle('utility_blocks');
       this.setTooltip('Convert any value to a text string');
     },
   };
@@ -2266,7 +2247,7 @@ export function defineAllBlocks() {
       this.appendValueInput('VALUE')
         .appendField('type of');
       this.setOutput(true, 'String');
-      this.setColour(UTILITY_COLOR);
+      this.setStyle('utility_blocks');
       this.setTooltip('Get the type of a value (string, number, boolean, table, nil)');
     },
   };
@@ -2276,7 +2257,7 @@ export function defineAllBlocks() {
       this.appendDummyInput()
         .appendField('read user input');
       this.setOutput(true, 'String');
-      this.setColour(UTILITY_COLOR);
+      this.setStyle('utility_blocks');
       this.setTooltip('Read a line of text input from the user');
     },
   };
@@ -2293,7 +2274,7 @@ export function defineAllBlocks() {
         .setCheck(null);
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(UTILITY_COLOR);
+      this.setStyle('utility_blocks');
       this.setTooltip('Try running code and catch any errors');
     },
   };
