@@ -8,6 +8,22 @@ import { CCColor } from '../../models/CCColors';
 import { ColorPicker } from './ColorPicker';
 import { generateId } from '../../utils/idGenerator';
 
+// Clamp a number to a safe range
+const clamp = (val: number, min: number, max: number): number =>
+  Math.max(min, Math.min(max, Math.round(val)));
+
+// Parse + clamp for number inputs (returns fallback if NaN)
+const parseNum = (raw: string, min: number, max: number, fallback: number): number => {
+  const n = parseInt(raw);
+  if (isNaN(n)) return fallback;
+  return clamp(n, min, max);
+};
+
+// Max screen dimensions: largest CC monitor is 164x81; we allow some extra headroom
+const MAX_POS = 200;
+const MAX_SIZE = 200;
+const MAX_ZINDEX = 100;
+
 export const PropertiesPanel: React.FC = () => {
   const selectedElementId = useEditorStore((s) => s.selectedElementId);
   const activeScreenId = useProjectStore((s) => s.activeScreenId);
@@ -95,7 +111,8 @@ export const PropertiesPanel: React.FC = () => {
             <input
               className="input-field text-xs"
               value={element.name}
-              onChange={(e) => update({ name: e.target.value })}
+              maxLength={30}
+              onChange={(e) => update({ name: e.target.value.slice(0, 30) })}
             />
           </PropField>
 
@@ -107,7 +124,8 @@ export const PropertiesPanel: React.FC = () => {
                 className="input-field text-xs"
                 value={element.x}
                 min={1}
-                onChange={(e) => update({ x: parseInt(e.target.value) || 1 })}
+                max={MAX_POS}
+                onChange={(e) => update({ x: parseNum(e.target.value, 1, MAX_POS, 1) })}
               />
             </PropField>
             <PropField label="Y">
@@ -116,7 +134,8 @@ export const PropertiesPanel: React.FC = () => {
                 className="input-field text-xs"
                 value={element.y}
                 min={1}
-                onChange={(e) => update({ y: parseInt(e.target.value) || 1 })}
+                max={MAX_POS}
+                onChange={(e) => update({ y: parseNum(e.target.value, 1, MAX_POS, 1) })}
               />
             </PropField>
           </div>
@@ -129,7 +148,8 @@ export const PropertiesPanel: React.FC = () => {
                 className="input-field text-xs"
                 value={element.width}
                 min={1}
-                onChange={(e) => update({ width: parseInt(e.target.value) || 1 })}
+                max={MAX_SIZE}
+                onChange={(e) => update({ width: parseNum(e.target.value, 1, MAX_SIZE, 1) })}
               />
             </PropField>
             <PropField label="Height">
@@ -138,7 +158,8 @@ export const PropertiesPanel: React.FC = () => {
                 className="input-field text-xs"
                 value={element.height}
                 min={1}
-                onChange={(e) => update({ height: parseInt(e.target.value) || 1 })}
+                max={MAX_SIZE}
+                onChange={(e) => update({ height: parseNum(e.target.value, 1, MAX_SIZE, 1) })}
               />
             </PropField>
           </div>
@@ -186,16 +207,16 @@ export const PropertiesPanel: React.FC = () => {
           {(element.anchorH !== 'fixed' || element.anchorV !== 'fixed') && (
             <div className="grid grid-cols-2 gap-2">
               <PropField label="Margin L">
-                <input type="number" className="input-field text-xs" value={element.marginLeft} min={0} onChange={(e) => update({ marginLeft: parseInt(e.target.value) || 0 })} />
+                <input type="number" className="input-field text-xs" value={element.marginLeft} min={0} max={MAX_POS} onChange={(e) => update({ marginLeft: parseNum(e.target.value, 0, MAX_POS, 0) })} />
               </PropField>
               <PropField label="Margin R">
-                <input type="number" className="input-field text-xs" value={element.marginRight} min={0} onChange={(e) => update({ marginRight: parseInt(e.target.value) || 0 })} />
+                <input type="number" className="input-field text-xs" value={element.marginRight} min={0} max={MAX_POS} onChange={(e) => update({ marginRight: parseNum(e.target.value, 0, MAX_POS, 0) })} />
               </PropField>
               <PropField label="Margin T">
-                <input type="number" className="input-field text-xs" value={element.marginTop} min={0} onChange={(e) => update({ marginTop: parseInt(e.target.value) || 0 })} />
+                <input type="number" className="input-field text-xs" value={element.marginTop} min={0} max={MAX_POS} onChange={(e) => update({ marginTop: parseNum(e.target.value, 0, MAX_POS, 0) })} />
               </PropField>
               <PropField label="Margin B">
-                <input type="number" className="input-field text-xs" value={element.marginBottom} min={0} onChange={(e) => update({ marginBottom: parseInt(e.target.value) || 0 })} />
+                <input type="number" className="input-field text-xs" value={element.marginBottom} min={0} max={MAX_POS} onChange={(e) => update({ marginBottom: parseNum(e.target.value, 0, MAX_POS, 0) })} />
               </PropField>
             </div>
           )}
@@ -220,7 +241,9 @@ export const PropertiesPanel: React.FC = () => {
               type="number"
               className="input-field text-xs"
               value={element.zIndex}
-              onChange={(e) => update({ zIndex: parseInt(e.target.value) || 0 })}
+              min={0}
+              max={MAX_ZINDEX}
+              onChange={(e) => update({ zIndex: parseNum(e.target.value, 0, MAX_ZINDEX, 0) })}
             />
           </PropField>
         </div>
@@ -252,7 +275,7 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
       return (
         <>
           <PropField label="Text">
-            <input className="input-field text-xs" value={element.text} onChange={(e) => update({ text: e.target.value } as any)} />
+            <input className="input-field text-xs" value={element.text} maxLength={200} onChange={(e) => update({ text: e.target.value.slice(0, 200) } as any)} />
           </PropField>
           <PropField label="Text Align">
             <select className="select-field text-xs" value={element.textAlign} onChange={(e) => update({ textAlign: e.target.value as any } as any)}>
@@ -268,7 +291,7 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
       return (
         <>
           <PropField label="Text">
-            <input className="input-field text-xs" value={element.text} onChange={(e) => update({ text: e.target.value } as any)} />
+            <input className="input-field text-xs" value={element.text} maxLength={200} onChange={(e) => update({ text: e.target.value.slice(0, 200) } as any)} />
           </PropField>
           <PropField label="Text Align">
             <select className="select-field text-xs" value={element.textAlign} onChange={(e) => update({ textAlign: e.target.value as any } as any)}>
@@ -286,13 +309,13 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
       return (
         <>
           <PropField label="Placeholder">
-            <input className="input-field text-xs" value={element.placeholder} onChange={(e) => update({ placeholder: e.target.value } as any)} />
+            <input className="input-field text-xs" value={element.placeholder} maxLength={50} onChange={(e) => update({ placeholder: e.target.value.slice(0, 50) } as any)} />
           </PropField>
           <PropField label="Default Value">
-            <input className="input-field text-xs" value={element.defaultValue} onChange={(e) => update({ defaultValue: e.target.value } as any)} />
+            <input className="input-field text-xs" value={element.defaultValue} maxLength={50} onChange={(e) => update({ defaultValue: e.target.value.slice(0, 50) } as any)} />
           </PropField>
           <PropField label="Max Length">
-            <input type="number" className="input-field text-xs" value={element.maxLength} min={1} onChange={(e) => update({ maxLength: parseInt(e.target.value) || 50 } as any)} />
+            <input type="number" className="input-field text-xs" value={element.maxLength} min={1} max={200} onChange={(e) => update({ maxLength: parseNum(e.target.value, 1, 200, 50) } as any)} />
           </PropField>
         </>
       );
@@ -301,10 +324,10 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
       return (
         <>
           <PropField label="Value">
-            <input type="number" className="input-field text-xs" value={element.value} min={0} onChange={(e) => update({ value: parseInt(e.target.value) || 0 } as any)} />
+            <input type="number" className="input-field text-xs" value={element.value} min={0} max={10000} onChange={(e) => update({ value: parseNum(e.target.value, 0, 10000, 0) } as any)} />
           </PropField>
           <PropField label="Max Value">
-            <input type="number" className="input-field text-xs" value={element.maxValue} min={1} onChange={(e) => update({ maxValue: parseInt(e.target.value) || 100 } as any)} />
+            <input type="number" className="input-field text-xs" value={element.maxValue} min={1} max={10000} onChange={(e) => update({ maxValue: parseNum(e.target.value, 1, 10000, 100) } as any)} />
           </PropField>
           <ColorPicker label="Fill Color" value={element.fillColor} onChange={(c) => update({ fillColor: c } as any)} />
           <ColorPicker label="Empty Color" value={element.emptyColor} onChange={(c) => update({ emptyColor: c } as any)} />
@@ -336,7 +359,7 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
       return (
         <>
           <PropField label="Title">
-            <input className="input-field text-xs" value={element.title} onChange={(e) => update({ title: e.target.value } as any)} />
+            <input className="input-field text-xs" value={element.title} maxLength={100} onChange={(e) => update({ title: e.target.value.slice(0, 100) } as any)} />
           </PropField>
           <PropField label="Border Style">
             <select className="select-field text-xs" value={element.borderStyle} onChange={(e) => update({ borderStyle: e.target.value as any } as any)}>
@@ -354,7 +377,7 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
       return (
         <>
           <PropField label="Text">
-            <input className="input-field text-xs" value={element.text} onChange={(e) => update({ text: e.target.value } as any)} />
+            <input className="input-field text-xs" value={element.text} maxLength={200} onChange={(e) => update({ text: e.target.value.slice(0, 200) } as any)} />
           </PropField>
           <PropField label="Position">
             <select className="select-field text-xs" value={element.position} onChange={(e) => update({ position: e.target.value as any } as any)}>
@@ -388,7 +411,7 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
           </PropField>
           <ColorPicker label="Border Color" value={element.borderColor} onChange={(c) => update({ borderColor: c } as any)} />
           <PropField label="Content Height">
-            <input type="number" className="input-field text-xs" value={element.contentHeight} min={1} onChange={(e) => update({ contentHeight: parseInt(e.target.value) || 1 } as any)} />
+            <input type="number" className="input-field text-xs" value={element.contentHeight} min={1} max={500} onChange={(e) => update({ contentHeight: parseNum(e.target.value, 1, 500, 20) } as any)} />
           </PropField>
           <PropField label="Show Scrollbar">
             <label className="flex items-center gap-2 cursor-pointer">
@@ -410,7 +433,7 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
             />
           </PropField>
           <PropField label="Active Tab">
-            <input type="number" className="input-field text-xs" value={element.activeTab} min={0} onChange={(e) => update({ activeTab: parseInt(e.target.value) || 0 } as any)} />
+            <input type="number" className="input-field text-xs" value={element.activeTab} min={0} max={Math.max(0, element.tabs.length - 1)} onChange={(e) => update({ activeTab: parseNum(e.target.value, 0, Math.max(0, element.tabs.length - 1), 0) } as any)} />
           </PropField>
           <ColorPicker label="Active BG" value={element.activeBgColor} onChange={(c) => update({ activeBgColor: c } as any)} />
           <ColorPicker label="Active FG" value={element.activeFgColor} onChange={(c) => update({ activeFgColor: c } as any)} />
@@ -444,7 +467,7 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
       return (
         <>
           <PropField label="Text">
-            <input className="input-field text-xs" value={element.text} onChange={(e) => update({ text: e.target.value } as any)} />
+            <input className="input-field text-xs" value={element.text} maxLength={200} onChange={(e) => update({ text: e.target.value.slice(0, 200) } as any)} />
           </PropField>
           <PropField label="Checked">
             <label className="flex items-center gap-2 cursor-pointer">
@@ -453,10 +476,10 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
             </label>
           </PropField>
           <PropField label="Checked Char">
-            <input className="input-field text-xs" value={element.checkedChar} onChange={(e) => update({ checkedChar: e.target.value } as any)} />
+            <input className="input-field text-xs" value={element.checkedChar} maxLength={5} onChange={(e) => update({ checkedChar: e.target.value.slice(0, 5) } as any)} />
           </PropField>
           <PropField label="Unchecked Char">
-            <input className="input-field text-xs" value={element.uncheckedChar} onChange={(e) => update({ uncheckedChar: e.target.value } as any)} />
+            <input className="input-field text-xs" value={element.uncheckedChar} maxLength={5} onChange={(e) => update({ uncheckedChar: e.target.value.slice(0, 5) } as any)} />
           </PropField>
           <ColorPicker label="Check Color" value={element.checkColor} onChange={(c) => update({ checkColor: c } as any)} />
         </>
@@ -473,10 +496,10 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
             />
           </PropField>
           <PropField label="Selected Index">
-            <input type="number" className="input-field text-xs" value={element.selectedIndex} min={0} onChange={(e) => update({ selectedIndex: parseInt(e.target.value) || 0 } as any)} />
+            <input type="number" className="input-field text-xs" value={element.selectedIndex} min={0} max={Math.max(0, element.items.length - 1)} onChange={(e) => update({ selectedIndex: parseNum(e.target.value, 0, Math.max(0, element.items.length - 1), 0) } as any)} />
           </PropField>
           <PropField label="Max Visible Items">
-            <input type="number" className="input-field text-xs" value={element.maxVisibleItems} min={1} onChange={(e) => update({ maxVisibleItems: parseInt(e.target.value) || 5 } as any)} />
+            <input type="number" className="input-field text-xs" value={element.maxVisibleItems} min={1} max={20} onChange={(e) => update({ maxVisibleItems: parseNum(e.target.value, 1, 20, 5) } as any)} />
           </PropField>
           <ColorPicker label="Dropdown BG" value={element.dropdownBgColor} onChange={(c) => update({ dropdownBgColor: c } as any)} />
           <ColorPicker label="Dropdown FG" value={element.dropdownFgColor} onChange={(c) => update({ dropdownFgColor: c } as any)} />

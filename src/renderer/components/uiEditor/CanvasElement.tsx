@@ -169,9 +169,11 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
         );
 
       case 'progressBar': {
-        const pct = element.maxValue > 0 ? element.value / element.maxValue : 0;
+        const pct = element.maxValue > 0
+          ? Math.max(0, Math.min(1, element.value / element.maxValue))
+          : 0;
         const fillW = Math.floor(element.width * pct);
-        const emptyW = element.width - fillW;
+        const emptyW = Math.max(0, element.width - fillW);
         return (
           <div style={style} className="px-0.5">
             <span style={{ color: CC_COLORS[element.fillColor].hex }}>
@@ -301,8 +303,8 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
         return (
           <div style={{ ...style, color: divColor }}>
             {element.orientation === 'horizontal'
-              ? dc.h.repeat(element.width)
-              : Array.from({ length: element.height }).map((_, i) => (
+              ? dc.h.repeat(Math.max(0, element.width))
+              : Array.from({ length: Math.max(0, element.height) }).map((_, i) => (
                   <div key={i} style={{ lineHeight: `${charHeight}px` }}>{dc.v}</div>
                 ))}
           </div>

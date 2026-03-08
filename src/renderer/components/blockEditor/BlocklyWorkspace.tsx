@@ -15,7 +15,6 @@ function ensureInit() {
   registerAllGenerators();
 }
 
-// Set HSV saturation for richer block colors (like AI2)
 Blockly.utils.colour.setHsvSaturation(0.7);
 
 const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
@@ -26,7 +25,6 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
       colourPrimary: '#B18E35',
       colourSecondary: '#9A7B2E',
       colourTertiary: '#836827',
-      hat: 'cap',
     },
     ui_blocks: {
       colourPrimary: '#4EBD60',
@@ -188,7 +186,6 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
     weight: 'bold',
     size: 12,
   },
-  startHats: true,
 });
 
 const DEFAULT_WORKSPACE_XML = `
@@ -206,16 +203,24 @@ export const BlocklyWorkspace: React.FC = () => {
   const activeScreenId = useProjectStore((s) => s.activeScreenId);
   const { getXml, setXml, setLuaCode } = useBlocklyStore();
 
+  // Use a ref so the change listener always calls the latest save logic
+  const activeScreenRef = useRef(activeScreenId);
+  activeScreenRef.current = activeScreenId;
+
+  // Flag to suppress saves during screen-switch loading
+  const suppressSaveRef = useRef(false);
+
   const saveWorkspace = useCallback(() => {
-    if (!workspaceRef.current || !activeScreenId) return;
+    const screenId = activeScreenRef.current;
+    if (!workspaceRef.current || !screenId || suppressSaveRef.current) return;
     const xml = Blockly.Xml.domToText(
       Blockly.Xml.workspaceToDom(workspaceRef.current)
     );
-    setXml(activeScreenId, xml);
+    setXml(screenId, xml);
     const code = luaGenerator.workspaceToCode(workspaceRef.current);
-    setLuaCode(activeScreenId, code);
+    setLuaCode(screenId, code);
     useProjectStore.getState().markDirty();
-  }, [activeScreenId, setXml, setLuaCode]);
+  }, [setXml, setLuaCode]);
 
   // Create workspace (deferred to next frame to let DOM settle)
   useEffect(() => {
@@ -234,6 +239,7 @@ export const BlocklyWorkspace: React.FC = () => {
         zoom: { controls: true, wheel: true, startScale: 0.9, maxScale: 3, minScale: 0.1, scaleSpeed: 1.1 },
         trashcan: true,
         move: { scrollbars: true, drag: true, wheel: true },
+        renderer: 'geras',
         sounds: false,
         media: './media/',
         collapse: true,
@@ -242,30 +248,55 @@ export const BlocklyWorkspace: React.FC = () => {
 
       workspaceRef.current = ws;
 
-      // Listen for changes
+      useBlocklyStore.getState().setLiveWorkspace(ws, activeScreenRef.current);
+
       ws.addChangeListener((e: Blockly.Events.Abstract) => {
-        if (e.isUiEvent) return;
-        // Defer save to avoid re-entrancy
+        if (e.isUiEvent || suppressSaveRef.current) return;
         setTimeout(() => saveWorkspace(), 0);
       });
+
+      const screenId = activeScreenRef.current;
+      if (screenId) {
+        suppressSaveRef.current = true;
+        const xml = useBlocklyStore.getState().getXml(screenId);
+        if (xml) {
+          try {
+            const dom = Blockly.utils.xml.textToDom(xml);
+            Blockly.Xml.domToWorkspace(dom, ws);
+          } catch {
+            const dom = Blockly.utils.xml.textToDom(DEFAULT_WORKSPACE_XML);
+            Blockly.Xml.domToWorkspace(dom, ws);
+          }
+        } else {
+          const dom = Blockly.utils.xml.textToDom(DEFAULT_WORKSPACE_XML);
+          Blockly.Xml.domToWorkspace(dom, ws);
+        }
+        suppressSaveRef.current = false;
+        setTimeout(() => saveWorkspace(), 50);
+      }
     });
 
     return () => {
       disposed = true;
       cancelAnimationFrame(rafId);
       if (workspaceRef.current) {
+        useBlocklyStore.getState().setLiveWorkspace(null, null);
         workspaceRef.current.dispose();
         workspaceRef.current = null;
       }
     };
-  }, []); // workspace created once
+  }, []);
 
-  // Load/save XML when screen changes
+  const prevScreenRef = useRef(activeScreenId);
   useEffect(() => {
     if (!workspaceRef.current || !activeScreenId) return;
+    if (prevScreenRef.current === activeScreenId) return;
+
     const ws = workspaceRef.current;
 
-    // Block change events while loading
+    saveWorkspace();
+
+    suppressSaveRef.current = true;
     ws.clear();
     const xml = getXml(activeScreenId);
     if (xml) {
@@ -273,17 +304,17 @@ export const BlocklyWorkspace: React.FC = () => {
         const dom = Blockly.utils.xml.textToDom(xml);
         Blockly.Xml.domToWorkspace(dom, ws);
       } catch {
-        // If corrupted, load default
         const dom = Blockly.utils.xml.textToDom(DEFAULT_WORKSPACE_XML);
         Blockly.Xml.domToWorkspace(dom, ws);
       }
     } else {
-      // New screen: inject default blocks
       const dom = Blockly.utils.xml.textToDom(DEFAULT_WORKSPACE_XML);
       Blockly.Xml.domToWorkspace(dom, ws);
-      // Save immediately
-      setTimeout(() => saveWorkspace(), 50);
     }
+    suppressSaveRef.current = false;
+    prevScreenRef.current = activeScreenId;
+    useBlocklyStore.getState().setLiveWorkspace(ws, activeScreenId);
+    setTimeout(() => saveWorkspace(), 50);
   }, [activeScreenId, getXml, saveWorkspace]);
 
   // Resize observer

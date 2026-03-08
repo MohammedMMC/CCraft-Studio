@@ -10,10 +10,24 @@ import { NewProjectWizard } from './components/welcome/NewProjectWizard';
 import { AppShell } from './components/layout/AppShell';
 import { ExportDialog } from './components/shared/ExportDialog';
 
+const flushBlocklyWorkspace = () => {
+  try {
+    const { liveWorkspace, liveScreenId, setXml } = useBlocklyStore.getState();
+    if (liveWorkspace && liveScreenId) {
+      const Blockly = require('blockly');
+      const xml = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(liveWorkspace));
+      setXml(liveScreenId, xml);
+    }
+  } catch {
+    // workspace may not be mounted
+  }
+};
+
 const handleSave = async () => {
   const projectStore = useProjectStore.getState();
   const project = projectStore.project;
   if (!project || !window.electronAPI) return;
+  flushBlocklyWorkspace();
   const blocklyXml = useBlocklyStore.getState().getAllXml();
   const saveData = { ...project, _blocklyXml: blocklyXml };
   const content = JSON.stringify(saveData, null, 2);
@@ -30,6 +44,7 @@ const handleSaveAs = async () => {
   const projectStore = useProjectStore.getState();
   const project = projectStore.project;
   if (!project || !window.electronAPI) return;
+  flushBlocklyWorkspace();
   const blocklyXml = useBlocklyStore.getState().getAllXml();
   const saveData = { ...project, _blocklyXml: blocklyXml };
   const content = JSON.stringify(saveData, null, 2);
