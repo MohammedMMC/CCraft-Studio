@@ -42,7 +42,7 @@ export const UIEditorCanvas: React.FC = () => {
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button === 1 || (e.button === 0 && tool === 'pan') || (e.button === 0 && e.altKey)) {
+    if (e.button === 1 || (e.button === 0 && tool === 'pan') || (e.button === 0)) {
       setIsPanning(true);
       setPanStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y });
       e.preventDefault();
