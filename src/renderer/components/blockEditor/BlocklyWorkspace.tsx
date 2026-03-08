@@ -5,6 +5,7 @@ import { luaGenerator, registerAllGenerators } from '../../engine/blockly/luaGen
 import { TOOLBOX } from '../../engine/blockly/toolbox';
 import { useBlocklyStore } from '../../stores/blocklyStore';
 import { useProjectStore } from '../../stores/projectStore';
+import { useEditorStore } from '../../stores/editorStore';
 
 // One-time init
 let blocksRegistered = false;
@@ -284,6 +285,10 @@ export const BlocklyWorkspace: React.FC = () => {
         workspaceRef.current.dispose();
         workspaceRef.current = null;
       }
+      // Clean up any Blockly elements injected onto document.body
+      document.querySelectorAll(
+        '.blocklyWidgetDiv, .blocklyDropDownDiv, .blocklyTooltipDiv'
+      ).forEach((el) => el.remove());
     };
   }, []);
 
@@ -321,7 +326,7 @@ export const BlocklyWorkspace: React.FC = () => {
   useEffect(() => {
     if (!containerRef.current || !workspaceRef.current) return;
     const ro = new ResizeObserver(() => {
-      Blockly.svgResize(workspaceRef.current!);
+      if (workspaceRef.current) Blockly.svgResize(workspaceRef.current);
     });
     ro.observe(containerRef.current);
     return () => ro.disconnect();
