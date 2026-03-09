@@ -12,6 +12,7 @@ interface EditorState {
   panOffset: { x: number; y: number };
   showGrid: boolean;
   showPreview: boolean;
+  previewWidth: number;
   snapToGrid: boolean;
   clipboard: string | null;
 
@@ -26,9 +27,23 @@ interface EditorState {
   setPanOffset: (offset: { x: number; y: number }) => void;
   toggleGrid: () => void;
   togglePreview: () => void;
+  setPreviewWidth: (width: number) => void;
   toggleSnap: () => void;
   setClipboard: (data: string | null) => void;
 }
+
+// Load persisted preferences from localStorage
+const loadPref = <T>(key: string, fallback: T): T => {
+  try {
+    const val = localStorage.getItem(key);
+    if (val !== null) return JSON.parse(val);
+  } catch { /* ignore */ }
+  return fallback;
+};
+
+const savePref = (key: string, value: unknown) => {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* ignore */ }
+};
 
 export const useEditorStore = create<EditorState>((set) => ({
   mode: 'ui',
@@ -38,7 +53,8 @@ export const useEditorStore = create<EditorState>((set) => ({
   zoom: 1,
   panOffset: { x: 0, y: 0 },
   showGrid: true,
-  showPreview: true,
+  showPreview: loadPref('ccraft:showPreview', true),
+  previewWidth: loadPref('ccraft:previewWidth', 320),
   snapToGrid: true,
   clipboard: null,
 
@@ -52,7 +68,16 @@ export const useEditorStore = create<EditorState>((set) => ({
   resetZoom: () => set({ zoom: 1, panOffset: { x: 0, y: 0 } }),
   setPanOffset: (offset) => set({ panOffset: offset }),
   toggleGrid: () => set((s) => ({ showGrid: !s.showGrid })),
-  togglePreview: () => set((s) => ({ showPreview: !s.showPreview })),
+  togglePreview: () => set((s) => {
+    const next = !s.showPreview;
+    savePref('ccraft:showPreview', next);
+    return { showPreview: next };
+  }),
+  setPreviewWidth: (width) => {
+    const clamped = Math.max(200, Math.min(800, width));
+    savePref('ccraft:previewWidth', clamped);
+    set({ previewWidth: clamped });
+  },
   toggleSnap: () => set((s) => ({ snapToGrid: !s.snapToGrid })),
   setClipboard: (data) => set({ clipboard: data }),
 }));
