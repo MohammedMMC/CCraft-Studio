@@ -205,10 +205,77 @@ const DEFAULT_WORKSPACE_XML = `
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="event_screen_load" x="30" y="30">
     <statement name="DO">
+      <block type="ui_clear">
+        <next>
+          <block type="ui_draw_screen"></block>
+        </next>
+      </block>
     </statement>
   </block>
 </xml>
 `.trim();
+
+function ccFunctionsFlyoutCallback(workspace: Blockly.WorkspaceSvg): Element[] {
+  const xmlList: Element[] = [];
+
+  // "define function" block
+  const defBlock = Blockly.utils.xml.createElement('block');
+  defBlock.setAttribute('type', 'cc_function_def');
+  xmlList.push(defBlock);
+
+  // "define function (return)" block
+  const defRetBlock = Blockly.utils.xml.createElement('block');
+  defRetBlock.setAttribute('type', 'cc_function_def_return');
+  xmlList.push(defRetBlock);
+
+  // For each defined function, add a matching call block
+  const allBlocks = workspace.getAllBlocks(false);
+  for (const block of allBlocks) {
+    if (block.type !== 'cc_function_def' && block.type !== 'cc_function_def_return') continue;
+
+    const funcName = block.getFieldValue('NAME') || 'doSomething';
+    const params: string[] = [];
+    let i = 0;
+    while (block.getField('PARAM_NAME_' + i)) {
+      params.push(block.getFieldValue('PARAM_NAME_' + i) || ('param' + i));
+      i++;
+    }
+
+    const isReturn = block.type === 'cc_function_def_return';
+    const callType = isReturn ? 'cc_function_call_return' : 'cc_function_call';
+
+    const callBlock = Blockly.utils.xml.createElement('block');
+    callBlock.setAttribute('type', callType);
+
+    // Set function name field
+    const nameField = Blockly.utils.xml.createElement('field');
+    nameField.setAttribute('name', 'NAME');
+    nameField.textContent = funcName;
+    callBlock.appendChild(nameField);
+
+    // Mutation to set arg count
+    if (params.length > 0) {
+      const mutation = Blockly.utils.xml.createElement('mutation');
+      mutation.setAttribute('args', String(params.length));
+      callBlock.appendChild(mutation);
+    }
+
+    xmlList.push(callBlock);
+
+    // Add param getter blocks for each param
+    for (let j = 0; j < params.length; j++) {
+      const getterBlock = Blockly.utils.xml.createElement('block');
+      getterBlock.setAttribute('type', 'cc_param_get');
+      const pField = Blockly.utils.xml.createElement('field');
+      pField.setAttribute('name', 'PARAM');
+      pField.textContent = params[j];
+      getterBlock.appendChild(pField);
+      xmlList.push(getterBlock);
+    }
+  }
+
+  return xmlList;
+}
 
 export const BlocklyWorkspace: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -261,10 +328,19 @@ export const BlocklyWorkspace: React.FC = () => {
 
       workspaceRef.current = ws;
 
+      ws.registerToolboxCategoryCallback('CC_FUNCTIONS', () =>
+        ccFunctionsFlyoutCallback(ws)
+      );
+
       useBlocklyStore.getState().setLiveWorkspace(ws, activeScreenRef.current);
 
       ws.addChangeListener((e: Blockly.Events.Abstract) => {
         if (e.isUiEvent || suppressSaveRef.current) return;
+        if (e.type === Blockly.Events.TOOLBOX_ITEM_SELECT) {
+          requestAnimationFrame(() => {
+            if (workspaceRef.current) Blockly.svgResize(workspaceRef.current);
+          });
+        }
         setTimeout(() => saveWorkspace(), 0);
       });
 

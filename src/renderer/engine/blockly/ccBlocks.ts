@@ -141,7 +141,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['ui_draw_screen'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('Draw current screen');
+        .appendField('draw current screen');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('ui_blocks');

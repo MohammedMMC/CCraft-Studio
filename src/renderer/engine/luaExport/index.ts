@@ -308,9 +308,9 @@ function generateStartupFile(project: CCProject): string {
   lines.push('  end');
   lines.push('');
 
-  lines.push('  -- Reload Screens');
-  lines.push('  term.clear()');
-  lines.push('  refreshScreen()');
+  // lines.push('  -- Reload Screens');
+  // lines.push('  term.clear()');
+  // lines.push('  refreshScreen()');
   
   lines.push('end');
   return lines.join('\n');
