@@ -84,3 +84,7 @@
 svg[display="none"] {
     display: none;
 }
+
+.blocklyText, .blocklyHtmlInput {
+  color: black;
+}

@@ -6,6 +6,7 @@ import { TOOLBOX } from '../../engine/blockly/toolbox';
 import { useBlocklyStore } from '../../stores/blocklyStore';
 import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
+import { usePromptStore } from '../shared/PromptDialog';
 
 // One-time init
 let blocksRegistered = false;
@@ -14,6 +15,17 @@ function ensureInit() {
   blocksRegistered = true;
   defineAllBlocks();
   registerAllGenerators();
+
+  // Override Blockly's prompt dialog to use our custom one
+  Blockly.dialog.setPrompt((message, defaultValue, callback) => {
+    usePromptStore.getState().open({
+      title: 'Blockly',
+      message,
+      defaultValue,
+    }).then((result) => {
+      callback(result ?? '');
+    });
+  });
 }
 
 Blockly.utils.colour.setHsvSaturation(0.7);
@@ -331,6 +343,16 @@ export const BlocklyWorkspace: React.FC = () => {
     ro.observe(containerRef.current);
     return () => ro.disconnect();
   }, []);
+
+  // Resize when switching back to blocks mode
+  const mode = useEditorStore((s) => s.mode);
+  useEffect(() => {
+    if (mode === 'blocks' && workspaceRef.current) {
+      requestAnimationFrame(() => {
+        if (workspaceRef.current) Blockly.svgResize(workspaceRef.current);
+      });
+    }
+  }, [mode]);
 
   return (
     <div className="flex-1 relative overflow-hidden">

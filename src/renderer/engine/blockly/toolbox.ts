@@ -92,10 +92,6 @@ export const TOOLBOX = {
         { kind: 'block', type: 'text_length' },
       ],
     },
-
-    // Category: Variables (custom Blockly built-in)
-    { kind: 'category', name: 'Variables', categorystyle: 'variable_category', custom: 'VARIABLE' },
-
     // Category: Lists
     {
       kind: 'category', name: 'Lists', categorystyle: 'list_category',
@@ -105,6 +101,9 @@ export const TOOLBOX = {
         { kind: 'block', type: 'lists_getIndex' },
       ],
     },
+
+    // Category: Variables (custom Blockly built-in)
+    { kind: 'category', name: 'Variables', categorystyle: 'variable_category', custom: 'VARIABLE' },
 
     // Category: Functions (custom Blockly built-in)
     { kind: 'category', name: 'Functions', categorystyle: 'procedure_category', custom: 'PROCEDURE' },

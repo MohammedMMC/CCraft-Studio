@@ -9,6 +9,7 @@ import { WelcomeScreen } from './components/welcome/WelcomeScreen';
 import { NewProjectWizard } from './components/welcome/NewProjectWizard';
 import { AppShell } from './components/layout/AppShell';
 import { ExportDialog } from './components/shared/ExportDialog';
+import { PromptDialog } from './components/shared/PromptDialog';
 
 const flushBlocklyWorkspace = () => {
   try {
@@ -235,6 +236,7 @@ const App: React.FC = () => {
         isOpen={showExport}
         onClose={() => setShowExport(false)}
       />
+      <PromptDialog />
     </>
   );
 };
