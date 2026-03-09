@@ -37,8 +37,9 @@ export function defineAllBlocks() {
   Blockly.Blocks['event_screen_load'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('When this screen loads');
-      this.appendStatementInput('DO');
+        .appendField('when screen loads');
+      this.appendStatementInput('DO')
+        .appendField("do");
       this.setStyle('events_blocks');
       this.setTooltip('Runs when this screen is first displayed');
       this.setDeletable(true);
@@ -48,10 +49,11 @@ export function defineAllBlocks() {
   Blockly.Blocks['event_button_click'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('When button')
+        .appendField('when button')
         .appendField(new Blockly.FieldTextInput('button1'), 'BUTTON')
         .appendField('is clicked');
-      this.appendStatementInput('DO');
+      this.appendStatementInput('DO')
+        .appendField("do");
       this.setStyle('events_blocks');
       this.setTooltip('Runs when a button element is clicked');
     },
@@ -60,7 +62,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['event_key_press'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('When key')
+        .appendField('when key')
         .appendField(new Blockly.FieldDropdown([
           ['any', 'any'], ['enter', 'enter'], ['space', 'space'],
           ['up', 'up'], ['down', 'down'], ['left', 'left'], ['right', 'right'],
@@ -75,7 +77,8 @@ export function defineAllBlocks() {
           ['6', '6'], ['7', '7'], ['8', '8'], ['9', '9'], ['0', '0'],
         ]), 'KEY')
         .appendField('is pressed');
-      this.appendStatementInput('DO');
+      this.appendStatementInput('DO')
+        .appendField("do");
       this.setStyle('events_blocks');
       this.setTooltip('Runs when a keyboard key is pressed');
     },
@@ -87,7 +90,8 @@ export function defineAllBlocks() {
         .appendField('Every')
         .appendField(new Blockly.FieldNumber(1, 0.05), 'INTERVAL')
         .appendField('seconds');
-      this.appendStatementInput('DO');
+      this.appendStatementInput('DO')
+        .appendField("do");
       this.setStyle('events_blocks');
       this.setTooltip('Runs repeatedly at a timed interval');
     },
@@ -96,8 +100,9 @@ export function defineAllBlocks() {
   Blockly.Blocks['event_redstone'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('When redstone input changes');
-      this.appendStatementInput('DO');
+        .appendField('when redstone input changes');
+      this.appendStatementInput('DO')
+        .appendField("do");
       this.setStyle('events_blocks');
       this.setTooltip('Runs when any redstone signal changes');
     },
@@ -106,9 +111,13 @@ export function defineAllBlocks() {
   Blockly.Blocks['event_modem_message'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('When modem message on channel')
+        .appendField('when modem receives message');
+      this.appendDummyInput()
+        .setAlign(Blockly.inputs.Align.RIGHT)
+        .appendField('channel')
         .appendField(new Blockly.FieldNumber(1, 0, 65535), 'CHANNEL');
-      this.appendStatementInput('DO');
+      this.appendStatementInput('DO')
+        .appendField("do");
       this.setStyle('events_blocks');
       this.setTooltip('Runs when a modem message is received on the specified channel');
     },
@@ -117,8 +126,9 @@ export function defineAllBlocks() {
   Blockly.Blocks['event_any'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('When any event occurs');
-      this.appendStatementInput('DO');
+        .appendField('when any event occurs');
+      this.appendStatementInput('DO')
+        .appendField("do");
       this.setStyle('events_blocks');
       this.setTooltip('Runs when any OS event occurs. Use os.pullEvent() inside to get event details.');
     },
@@ -294,7 +304,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['term_write'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('TEXT')
-        .appendField('term.write');
+        .appendField('write');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('terminal_blocks');
@@ -303,10 +313,32 @@ export function defineAllBlocks() {
     },
   };
 
+  Blockly.Blocks['print_text'] = {
+    init(this: Blockly.Block) {
+      this.appendValueInput('TEXT')
+        .appendField('print');
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setStyle('terminal_blocks');
+      this.setInputsInline(true);
+      this.setTooltip('Print a value to the terminal with a newline');
+    },
+  };
+
+  Blockly.Blocks['read_input'] = {
+    init(this: Blockly.Block) {
+      this.appendDummyInput()
+        .appendField('read user input');
+      this.setOutput(true, 'String');
+      this.setStyle('terminal_blocks');
+      this.setTooltip('Read a line of text input from the user');
+    },
+  };
+
   Blockly.Blocks['term_clear'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('term.clear()');
+        .appendField('clear');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('terminal_blocks');
@@ -317,7 +349,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['term_clearLine'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('term.clearLine()');
+        .appendField('clear line');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('terminal_blocks');
@@ -378,7 +410,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['term_scroll'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('N').setCheck('Number')
-        .appendField('scroll terminal by');
+        .appendField('scroll by');
       this.appendDummyInput()
         .appendField('lines');
       this.setPreviousStatement(true, null);
@@ -1384,6 +1416,20 @@ export function defineAllBlocks() {
     },
   };
 
+  Blockly.Blocks['sleep_secs'] = {
+    init(this: Blockly.Block) {
+      this.appendValueInput('SECS').setCheck('Number')
+        .appendField('wait');
+      this.appendDummyInput()
+        .appendField('seconds');
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setStyle('os_blocks');
+      this.setInputsInline(true);
+      this.setTooltip('Pause execution for a number of seconds');
+    },
+  };
+
   Blockly.Blocks['os_shutdown'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
@@ -2090,7 +2136,10 @@ export function defineAllBlocks() {
   Blockly.Blocks['gps_locate'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('GPS locate timeout')
+        .appendField('GPS locate');
+      this.appendDummyInput()
+        .setAlign(Blockly.inputs.Align.RIGHT)
+        .appendField('timeout')
         .appendField(new Blockly.FieldNumber(2, 0), 'TIMEOUT');
       this.setOutput(true, null);
       this.setStyle('gps_blocks');
@@ -2196,32 +2245,6 @@ export function defineAllBlocks() {
   // 17. UTILITY
   // =====================================================================
 
-  Blockly.Blocks['print_text'] = {
-    init(this: Blockly.Block) {
-      this.appendValueInput('TEXT')
-        .appendField('print');
-      this.setPreviousStatement(true, null);
-      this.setNextStatement(true, null);
-      this.setStyle('utility_blocks');
-      this.setInputsInline(true);
-      this.setTooltip('Print a value to the terminal with a newline');
-    },
-  };
-
-  Blockly.Blocks['sleep_secs'] = {
-    init(this: Blockly.Block) {
-      this.appendValueInput('SECS').setCheck('Number')
-        .appendField('wait');
-      this.appendDummyInput()
-        .appendField('seconds');
-      this.setPreviousStatement(true, null);
-      this.setNextStatement(true, null);
-      this.setStyle('utility_blocks');
-      this.setInputsInline(true);
-      this.setTooltip('Pause execution for a number of seconds');
-    },
-  };
-
   Blockly.Blocks['tonumber_val'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('TEXT').setCheck('String')
@@ -2249,16 +2272,6 @@ export function defineAllBlocks() {
       this.setOutput(true, 'String');
       this.setStyle('utility_blocks');
       this.setTooltip('Get the type of a value (string, number, boolean, table, nil)');
-    },
-  };
-
-  Blockly.Blocks['read_input'] = {
-    init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField('read user input');
-      this.setOutput(true, 'String');
-      this.setStyle('utility_blocks');
-      this.setTooltip('Read a line of text input from the user');
     },
   };
 

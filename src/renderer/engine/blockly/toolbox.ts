@@ -119,6 +119,7 @@ export const TOOLBOX = {
         { kind: 'label', text: '--- Write & Clear ---' },
         { kind: 'block', type: 'term_write' },
         { kind: 'block', type: 'print_text' },
+        { kind: 'block', type: 'read_input' },
         { kind: 'block', type: 'term_clear' },
         { kind: 'block', type: 'term_clearLine' },
         { kind: 'block', type: 'term_scroll' },
@@ -391,9 +392,6 @@ export const TOOLBOX = {
     {
       kind: 'category', name: 'Utility', categorystyle: 'utility_category',
       contents: [
-        { kind: 'block', type: 'print_text' },
-        { kind: 'block', type: 'sleep_secs' },
-        { kind: 'block', type: 'read_input' },
         { kind: 'label', text: '--- Conversion ---' },
         { kind: 'block', type: 'tonumber_val' },
         { kind: 'block', type: 'tostring_val' },
