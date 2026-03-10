@@ -17,6 +17,10 @@
       "@/*": ["src/renderer/*"]
     }
   },
-  "include": ["src/renderer/**/*", "src/preload/**/*"],
+  "include": [
+    "src/renderer/**/*",
+    "src/preload/**/*",
+    "src/types/**/*.d.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

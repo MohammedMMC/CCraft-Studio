@@ -1,4 +1,5 @@
 import * as Blockly from 'blockly';
+import { useProjectStore } from '../../stores/projectStore';
 
 // ===== Shared dropdown definitions =====
 const CC_COLORS: [string, string][] = [
@@ -28,6 +29,14 @@ const SIDES: [string, string][] = [
   ['front', 'front'],
   ['back', 'back'],
 ];
+
+function SCREENS(): [string, string][] {
+  const project = useProjectStore.getState().project;
+  if (!project || project.screens.length === 0) {
+    return [['(no screens)', '']];
+  }
+  return project.screens.map((s) => [s.name, s.name]);
+}
 
 export function defineAllBlocks() {
   // =====================================================================
@@ -138,6 +147,16 @@ export function defineAllBlocks() {
   // 2. UI ACTIONS
   // =====================================================================
 
+  Blockly.Blocks['ui_screen_select'] = {
+    init(this: Blockly.Block) {
+      this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown(SCREENS), 'SCREEN');
+      this.setOutput(true);
+      this.setStyle('ui_blocks');
+      this.setTooltip('Select a screen');
+    },
+  };
+
   Blockly.Blocks['ui_draw_screen'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
@@ -206,9 +225,8 @@ export function defineAllBlocks() {
 
   Blockly.Blocks['ui_navigate'] = {
     init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField('navigate to screen')
-        .appendField(new Blockly.FieldTextInput('Main'), 'SCREEN');
+      this.appendValueInput('SCREEN')
+        .appendField('navigate to screen');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('ui_blocks');

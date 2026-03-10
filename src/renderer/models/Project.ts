@@ -102,7 +102,7 @@ export function createDefaultProject(overrides: Partial<CCProject> = {}): CCProj
     screens: [
       {
         id: screenId,
-        name: 'Main',
+        name: 'Screen 1',
         isStartScreen: true,
         uiElements: [],
       },

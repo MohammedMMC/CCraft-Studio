@@ -19,6 +19,7 @@ export const TOOLBOX = {
     {
       kind: 'category', name: 'UI Actions', categorystyle: 'ui_category',
       contents: [
+        { kind: 'block', type: 'ui_screen_select' },
         { kind: 'block', type: 'ui_draw_screen' },
         { kind: 'block', type: 'ui_navigate' },
         { kind: 'block', type: 'ui_clear' },
@@ -47,11 +48,13 @@ export const TOOLBOX = {
         { kind: 'block', type: 'controls_if', extraState: { hasElse: true } },
         { kind: 'block', type: 'controls_repeat_ext', inputs: { TIMES: { shadow: { type: 'math_number', fields: { NUM: 10 } } } } },
         { kind: 'block', type: 'controls_whileUntil' },
-        { kind: 'block', type: 'controls_for', fields: { VAR: 'i' }, inputs: {
-          FROM: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
-          TO: { shadow: { type: 'math_number', fields: { NUM: 10 } } },
-          BY: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
-        }},
+        {
+          kind: 'block', type: 'controls_for', fields: { VAR: 'i' }, inputs: {
+            FROM: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+            TO: { shadow: { type: 'math_number', fields: { NUM: 10 } } },
+            BY: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+          }
+        },
         { kind: 'block', type: 'controls_forEach' },
         { kind: 'block', type: 'controls_flow_statements' },
       ],
@@ -75,10 +78,12 @@ export const TOOLBOX = {
         { kind: 'block', type: 'math_number', fields: { NUM: 0 } },
         { kind: 'block', type: 'math_arithmetic' },
         { kind: 'block', type: 'math_single' },
-        { kind: 'block', type: 'math_random_int', inputs: {
-          FROM: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
-          TO: { shadow: { type: 'math_number', fields: { NUM: 100 } } },
-        }},
+        {
+          kind: 'block', type: 'math_random_int', inputs: {
+            FROM: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+            TO: { shadow: { type: 'math_number', fields: { NUM: 100 } } },
+          }
+        },
         { kind: 'block', type: 'math_change' },
       ],
     },
@@ -102,10 +107,20 @@ export const TOOLBOX = {
       ],
     },
 
-    // Category: Variables (custom Blockly built-in)
-    { kind: 'category', name: 'Variables', categorystyle: 'variable_category', custom: 'VARIABLE' },
+    // Category: Variables (lexical variables plugin blocks)
+    {
+      kind: 'category', name: 'Variables', categorystyle: 'variable_category',
+      contents: [
+        { kind: 'block', type: 'global_declaration' },
+        { kind: 'block', type: 'lexical_variable_get' },
+        { kind: 'block', type: 'lexical_variable_set' },
+        { kind: 'label', text: '--- Local Scope ---' },
+        { kind: 'block', type: 'local_declaration_statement' },
+        { kind: 'block', type: 'local_declaration_expression' },
+      ],
+    },
 
-    // Category: Functions (custom Blockly built-in)
+    // Category: Functions (built-in PROCEDURE flyout, overridden by lexical variables plugin)
     { kind: 'category', name: 'Functions', categorystyle: 'procedure_category', custom: 'PROCEDURE' },
 
     { kind: 'sep' },

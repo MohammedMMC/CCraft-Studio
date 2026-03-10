@@ -82,7 +82,7 @@ function generateVarsFile(project: CCProject): string {
 
   lines.push('');
   lines.push('-- Runtime state');
-  lines.push(`currentScreen = "${sanitize(startScreen?.name ?? 'Main')}"`);
+  lines.push(`currentScreen = "${sanitize(startScreen?.name ?? 'Screen 1')}"`);
   lines.push('running = true');
   lines.push('');
   lines.push('-- Element state');
@@ -242,7 +242,7 @@ function generateLogicFile(screenName: string, blockCode: string): string {
 
 function generateStartupFile(project: CCProject): string {
   const startScreen = project.screens.find(s => s.isStartScreen) ?? project.screens[0];
-  const safeName = sanitize(startScreen?.name ?? 'Main');
+  const safeName = sanitize(startScreen?.name ?? 'Screen 1');
   const hasResponsiveElements = project.screens.some(s =>
     s.uiElements.some(el => el.anchorH !== 'fixed' || el.anchorV !== 'fixed')
   );
@@ -318,7 +318,7 @@ function generateStartupFile(project: CCProject): string {
 
 function generateUIOnlyStartup(project: CCProject): string {
   const startScreen = project.screens.find(s => s.isStartScreen) ?? project.screens[0];
-  const safeName = sanitize(startScreen?.name ?? 'Main');
+  const safeName = sanitize(startScreen?.name ?? 'Screen 1');
   const lines: string[] = [
     generateHeader(project.name, project.author),
     '-- UI-Only Export',

@@ -1,7 +1,9 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import * as Blockly from 'blockly';
+import { LexicalVariablesPlugin } from '@mit-app-inventor/blockly-block-lexical-variables';
 import { defineAllBlocks } from '../../engine/blockly/ccBlocks';
 import { luaGenerator, registerAllGenerators } from '../../engine/blockly/luaGenerator';
+import ModernTheme from '@blockly/theme-modern';
 import { TOOLBOX } from '../../engine/blockly/toolbox';
 import { useBlocklyStore } from '../../stores/blocklyStore';
 import { useProjectStore } from '../../stores/projectStore';
@@ -32,7 +34,7 @@ Blockly.utils.colour.setHsvSaturation(0.7);
 
 const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
   name: 'ccraftDark',
-  base: Blockly.Themes.Classic,
+  base: ModernTheme,
   blockStyles: {
     events_blocks: {
       colourPrimary: '#B18E35',
@@ -215,64 +217,78 @@ const DEFAULT_WORKSPACE_XML = `
 </xml>
 `.trim();
 
-function ccFunctionsFlyoutCallback(workspace: Blockly.WorkspaceSvg): Element[] {
+// Custom PROCEDURE flyout using XML format (required because the lexical
+// variables plugin only implements mutationToDom/domToMutation, not
+// saveExtraState/loadExtraState — the default JSON flyout crashes).
+function procedureFlyoutXml(workspace: Blockly.WorkspaceSvg): Element[] {
   const xmlList: Element[] = [];
 
-  // "define function" block
-  const defBlock = Blockly.utils.xml.createElement('block');
-  defBlock.setAttribute('type', 'cc_function_def');
-  xmlList.push(defBlock);
-
-  // "define function (return)" block
-  const defRetBlock = Blockly.utils.xml.createElement('block');
-  defRetBlock.setAttribute('type', 'cc_function_def_return');
-  xmlList.push(defRetBlock);
-
-  // For each defined function, add a matching call block
-  const allBlocks = workspace.getAllBlocks(false);
-  for (const block of allBlocks) {
-    if (block.type !== 'cc_function_def' && block.type !== 'cc_function_def_return') continue;
-
-    const funcName = block.getFieldValue('NAME') || 'doSomething';
-    const params: string[] = [];
-    let i = 0;
-    while (block.getField('PARAM_NAME_' + i)) {
-      params.push(block.getFieldValue('PARAM_NAME_' + i) || ('param' + i));
-      i++;
-    }
-
-    const isReturn = block.type === 'cc_function_def_return';
-    const callType = isReturn ? 'cc_function_call_return' : 'cc_function_call';
-
-    const callBlock = Blockly.utils.xml.createElement('block');
-    callBlock.setAttribute('type', callType);
-
-    // Set function name field
+  // "define function (no return)" template
+  if (Blockly.Blocks['procedures_defnoreturn']) {
+    const block = Blockly.utils.xml.createElement('block');
+    block.setAttribute('type', 'procedures_defnoreturn');
+    block.setAttribute('gap', '16');
     const nameField = Blockly.utils.xml.createElement('field');
     nameField.setAttribute('name', 'NAME');
-    nameField.textContent = funcName;
-    callBlock.appendChild(nameField);
+    nameField.appendChild(Blockly.utils.xml.createTextNode(
+      Blockly.Msg['PROCEDURES_DEFNORETURN_PROCEDURE'] ||
+      Blockly.Msg['LANG_PROCEDURES_DEFNORETURN_PROCEDURE'] ||
+      'do something'
+    ));
+    block.appendChild(nameField);
+    xmlList.push(block);
+  }
 
-    // Mutation to set arg count
-    if (params.length > 0) {
+  // "define function (with return)" template
+  if (Blockly.Blocks['procedures_defreturn']) {
+    const block = Blockly.utils.xml.createElement('block');
+    block.setAttribute('type', 'procedures_defreturn');
+    block.setAttribute('gap', '16');
+    const nameField = Blockly.utils.xml.createElement('field');
+    nameField.setAttribute('name', 'NAME');
+    nameField.appendChild(Blockly.utils.xml.createTextNode(
+      Blockly.Msg['PROCEDURES_DEFRETURN_PROCEDURE'] ||
+      Blockly.Msg['LANG_PROCEDURES_DEFRETURN_PROCEDURE'] ||
+      'do something'
+    ));
+    block.appendChild(nameField);
+    xmlList.push(block);
+  }
+
+  // "if return" block
+  if (Blockly.Blocks['procedures_ifreturn']) {
+    const block = Blockly.utils.xml.createElement('block');
+    block.setAttribute('type', 'procedures_ifreturn');
+    block.setAttribute('gap', '16');
+    xmlList.push(block);
+  }
+
+  if (xmlList.length) {
+    xmlList[xmlList.length - 1].setAttribute('gap', '24');
+  }
+
+  // Discover defined procedures and create matching call blocks
+  const allProcs = Blockly.Procedures.allProcedures(workspace);
+  function addCallers(procTuples: any[], callType: string) {
+    for (const tuple of procTuples) {
+      const name: string = tuple[0];
+      const args: string[] = tuple[1];
+      const block = Blockly.utils.xml.createElement('block');
+      block.setAttribute('type', callType);
+      block.setAttribute('gap', '16');
       const mutation = Blockly.utils.xml.createElement('mutation');
-      mutation.setAttribute('args', String(params.length));
-      callBlock.appendChild(mutation);
-    }
-
-    xmlList.push(callBlock);
-
-    // Add param getter blocks for each param
-    for (let j = 0; j < params.length; j++) {
-      const getterBlock = Blockly.utils.xml.createElement('block');
-      getterBlock.setAttribute('type', 'cc_param_get');
-      const pField = Blockly.utils.xml.createElement('field');
-      pField.setAttribute('name', 'PARAM');
-      pField.textContent = params[j];
-      getterBlock.appendChild(pField);
-      xmlList.push(getterBlock);
+      mutation.setAttribute('name', name);
+      for (const arg of args) {
+        const argEl = Blockly.utils.xml.createElement('arg');
+        argEl.setAttribute('name', arg);
+        mutation.appendChild(argEl);
+      }
+      block.appendChild(mutation);
+      xmlList.push(block);
     }
   }
+  addCallers(allProcs[0], 'procedures_callnoreturn');
+  addCallers(allProcs[1], 'procedures_callreturn');
 
   return xmlList;
 }
@@ -328,9 +344,9 @@ export const BlocklyWorkspace: React.FC = () => {
 
       workspaceRef.current = ws;
 
-      ws.registerToolboxCategoryCallback('CC_FUNCTIONS', () =>
-        ccFunctionsFlyoutCallback(ws)
-      );
+      LexicalVariablesPlugin.init(ws);
+
+      ws.registerToolboxCategoryCallback('PROCEDURE', procedureFlyoutXml);
 
       useBlocklyStore.getState().setLiveWorkspace(ws, activeScreenRef.current);
 
