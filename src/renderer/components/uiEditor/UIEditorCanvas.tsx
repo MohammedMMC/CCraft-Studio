@@ -1,14 +1,55 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { useUIElementStore } from '../../stores/uiElementStore';
+import { TerminalBuffer } from '../../engine/terminal/TerminalBuffer';
+import { TerminalRenderer } from '../../engine/terminal/TerminalRenderer';
 import { UIElement } from '../../models/UIElement';
-import { CC_COLORS } from '../../models/CCColors';
 import { CanvasElement } from './CanvasElement';
 import { GridOverlay } from './GridOverlay';
 
-const CHAR_WIDTH = 12;
-const CHAR_HEIGHT = 18;
+// Match the TerminalRenderer cell size so overlays align pixel-perfectly
+const CC_CHAR_WIDTH = 6;
+const CC_CHAR_HEIGHT = 9;
+const SCALE = 2;
+export const CHAR_WIDTH = CC_CHAR_WIDTH * SCALE;
+export const CHAR_HEIGHT = CC_CHAR_HEIGHT * SCALE;
+
+function renderElementToBuffer(buffer: TerminalBuffer, el: UIElement) {
+  const x = el.x - 1;
+  const y = el.y - 1;
+
+  switch (el.type) {
+    case 'label': {
+      buffer.fillRect(x, y, el.width, el.height, ' ', el.fgColor, el.bgColor);
+      const text = alignText(el.text, el.width, el.textAlign);
+      buffer.writeText(x, y, text.slice(0, el.width), el.fgColor, el.bgColor);
+      break;
+    }
+    case 'button': {
+      buffer.fillRect(x, y, el.width, el.height, ' ', el.fgColor, el.bgColor);
+      const midY = y + Math.floor(el.height / 2);
+      const text = alignText(el.text, el.width, el.textAlign);
+      buffer.writeText(x, midY, text.slice(0, el.width), el.fgColor, el.bgColor);
+      break;
+    }
+  }
+}
+
+function alignText(text: string, width: number, align: 'left' | 'center' | 'right'): string {
+  if (text.length >= width) return text.slice(0, width);
+  const padding = width - text.length;
+  switch (align) {
+    case 'center': {
+      const left = Math.floor(padding / 2);
+      return ' '.repeat(left) + text + ' '.repeat(padding - left);
+    }
+    case 'right':
+      return ' '.repeat(padding) + text;
+    default:
+      return text + ' '.repeat(padding);
+  }
+}
 
 export const UIEditorCanvas: React.FC = () => {
   const project = useProjectStore((s) => s.project);
@@ -22,50 +63,43 @@ export const UIEditorCanvas: React.FC = () => {
   const tool = useEditorStore((s) => s.tool);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rendererRef = useRef<TerminalRenderer | null>(null);
   const [isPanning, setIsPanning] = useState(false);
-  const [panStart, setPanStart] = useState({ x: 0, y: 0 });
+  const panStartRef = useRef({ x: 0, y: 0 });
+  const didPanRef = useRef(false);
 
-  if (!project || !activeScreenId) return null;
+  const screen = project?.screens.find((s) => s.id === activeScreenId);
 
-  const screen = project.screens.find((s) => s.id === activeScreenId);
-  if (!screen) return null;
+  const buffer = useMemo(() => {
+    if (!project) return null;
+    return new TerminalBuffer(project.displayWidth, project.displayHeight);
+  }, [project?.displayWidth, project?.displayHeight]);
 
-  const canvasWidth = project.displayWidth * CHAR_WIDTH;
-  const canvasHeight = project.displayHeight * CHAR_HEIGHT;
+  // Re-render the terminal canvas whenever elements change
+  useEffect(() => {
+    if (!buffer || !screen || !canvasRef.current) return;
 
-  const elements = [...screen.uiElements].sort((a, b) => a.zIndex - b.zIndex);
-
-  const handleCanvasClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget || (e.target as HTMLElement).dataset?.canvas) {
-      selectElement(null);
+    if (!rendererRef.current) {
+      rendererRef.current = new TerminalRenderer(canvasRef.current, buffer);
+    } else {
+      rendererRef.current.setBuffer(buffer);
     }
-  };
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button === 1 || (e.button === 0 && tool === 'pan') || (e.button === 0)) {
-      setIsPanning(true);
-      setPanStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y });
-      e.preventDefault();
+    buffer.clear('black');
+
+    const sorted = [...screen.uiElements]
+      .filter((e) => e.visible)
+      .sort((a, b) => a.zIndex - b.zIndex);
+
+    for (const el of sorted) {
+      renderElementToBuffer(buffer, el);
     }
-  };
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (isPanning) {
-        setPanOffset({
-          x: e.clientX - panStart.x,
-          y: e.clientY - panStart.y,
-        });
-      }
-    },
-    [isPanning, panStart, setPanOffset]
-  );
+    rendererRef.current.render();
+  }, [buffer, screen, screen?.uiElements]);
 
-  const handleMouseUp = () => {
-    setIsPanning(false);
-  };
-
-  // Use native wheel listener with { passive: false } so preventDefault() works for Ctrl+scroll zoom
+  // Ctrl+scroll zoom
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -80,16 +114,62 @@ export const UIEditorCanvas: React.FC = () => {
     return () => el.removeEventListener('wheel', handleWheel);
   }, []);
 
+  if (!project || !activeScreenId || !screen || !buffer) return null;
+
+  const canvasWidth = project.displayWidth * CHAR_WIDTH;
+  const canvasHeight = project.displayHeight * CHAR_HEIGHT;
+  const elements = [...screen.uiElements].sort((a, b) => a.zIndex - b.zIndex);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    // Middle-click or left-click on background to pan
+    const target = e.target as HTMLElement;
+    const isOnElement = target.closest('[data-element-overlay]');
+    if (e.button === 1 || (e.button === 0 && !isOnElement)) {
+      setIsPanning(true);
+      didPanRef.current = false;
+      panStartRef.current = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y };
+      e.preventDefault();
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isPanning) {
+      didPanRef.current = true;
+      setPanOffset({
+        x: e.clientX - panStartRef.current.x,
+        y: e.clientY - panStartRef.current.y,
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsPanning(false);
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    // Don't deselect if we just finished panning
+    if (didPanRef.current) {
+      didPanRef.current = false;
+      return;
+    }
+    // Deselect when clicking on empty canvas area (not on an element overlay)
+    const target = e.target as HTMLElement;
+    const isOnElement = target.closest('[data-element-overlay]');
+    if (!isOnElement) {
+      selectElement(null);
+    }
+  };
+
   return (
     <div
       ref={containerRef}
-      className="flex-1 overflow-hidden bg-ide-bg relative cursor-default select-none"
+      className="flex-1 overflow-hidden bg-ide-bg relative select-none"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      onClick={handleCanvasClick}
-      style={{ cursor: isPanning ? 'grabbing' : tool === 'pan' ? 'grab' : 'default' }}
+      onClick={handleClick}
+      style={{ cursor: isPanning ? 'grabbing' : 'default' }}
     >
       {/* Centered canvas with zoom and pan */}
       <div
@@ -103,16 +183,22 @@ export const UIEditorCanvas: React.FC = () => {
           marginTop: -(canvasHeight / 2),
         }}
       >
-        {/* Terminal background */}
+        {/* Terminal-style rendered canvas */}
         <div
           className="relative border border-ide-border/50 shadow-lg"
-          style={{
-            width: canvasWidth,
-            height: canvasHeight,
-            backgroundColor: CC_COLORS.black.hex,
-          }}
-          data-canvas="true"
+          style={{ width: canvasWidth, height: canvasHeight }}
         >
+          <canvas
+            ref={canvasRef}
+            className="absolute inset-0"
+            style={{
+              width: canvasWidth,
+              height: canvasHeight,
+              imageRendering: 'pixelated',
+              pointerEvents: 'none',
+            }}
+          />
+
           {/* Grid overlay */}
           {showGrid && (
             <GridOverlay
@@ -123,7 +209,7 @@ export const UIEditorCanvas: React.FC = () => {
             />
           )}
 
-          {/* UI Elements */}
+          {/* Transparent interactive overlays for each element */}
           {elements.map((element) => (
             <CanvasElement
               key={element.id}
@@ -147,5 +233,3 @@ export const UIEditorCanvas: React.FC = () => {
     </div>
   );
 };
-
-export { CHAR_WIDTH, CHAR_HEIGHT };

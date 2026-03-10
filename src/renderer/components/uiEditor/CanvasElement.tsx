@@ -1,6 +1,5 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { UIElement } from '../../models/UIElement';
-import { CC_COLORS } from '../../models/CCColors';
 import { useUIElementStore } from '../../stores/uiElementStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { useHistoryStore } from '../../stores/historyStore';
@@ -31,9 +30,6 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
   const resizeElement = useUIElementStore((s) => s.resizeElement);
 
   const [isDragging, setIsDragging] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0, elemX: 0, elemY: 0 });
-  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, w: 0, h: 0 });
   const dragOrigin = useRef({ x: element.x, y: element.y });
   const resizeOrigin = useRef({ w: element.width, h: element.height });
 
@@ -49,21 +45,13 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
     onSelect();
     setIsDragging(true);
     dragOrigin.current = { x: element.x, y: element.y };
-    setDragStart({
-      x: e.clientX,
-      y: e.clientY,
-      elemX: element.x,
-      elemY: element.y,
-    });
 
     const handleMove = (me: MouseEvent) => {
       const zoom = useEditorStore.getState().zoom;
       const dx = (me.clientX - e.clientX) / zoom / charWidth;
       const dy = (me.clientY - e.clientY) / zoom / charHeight;
-      let newX = element.x + dx;
-      let newY = element.y + dy;
-      newX = Math.round(newX);
-      newY = Math.round(newY);
+      let newX = Math.round(element.x + dx);
+      let newY = Math.round(element.y + dy);
       newX = Math.max(1, Math.min(displayWidth - element.width + 1, newX));
       newY = Math.max(1, Math.min(displayHeight - element.height + 1, newY));
       moveElement(screenId, element.id, newX, newY);
@@ -73,7 +61,6 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
       setIsDragging(false);
       document.removeEventListener('mousemove', handleMove);
       document.removeEventListener('mouseup', handleUp);
-      // Push undo command if position actually changed
       const el = useUIElementStore.getState().getElementById(screenId, element.id);
       if (el && (el.x !== dragOrigin.current.x || el.y !== dragOrigin.current.y)) {
         const origX = dragOrigin.current.x;
@@ -97,27 +84,22 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
 
   const handleResizeMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsResizing(true);
     resizeOrigin.current = { w: element.width, h: element.height };
 
     const handleMove = (me: MouseEvent) => {
       const zoom = useEditorStore.getState().zoom;
       const dx = (me.clientX - e.clientX) / zoom / charWidth;
       const dy = (me.clientY - e.clientY) / zoom / charHeight;
-      let newW = element.width + dx;
-      let newH = element.height + dy;
-      newW = Math.round(newW);
-      newH = Math.round(newH);
+      let newW = Math.round(element.width + dx);
+      let newH = Math.round(element.height + dy);
       newW = Math.max(1, Math.min(displayWidth - element.x + 1, newW));
       newH = Math.max(1, Math.min(displayHeight - element.y + 1, newH));
       resizeElement(screenId, element.id, newW, newH);
     };
 
     const handleUp = () => {
-      setIsResizing(false);
       document.removeEventListener('mousemove', handleMove);
       document.removeEventListener('mouseup', handleUp);
-      // Push undo command if size actually changed
       const el = useUIElementStore.getState().getElementById(screenId, element.id);
       if (el && (el.width !== resizeOrigin.current.w || el.height !== resizeOrigin.current.h)) {
         const origW = resizeOrigin.current.w;
@@ -139,50 +121,22 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
     document.addEventListener('mouseup', handleUp);
   };
 
-  const renderContent = () => {
-    const fgHex = CC_COLORS[element.fgColor].hex;
-    const style: React.CSSProperties = {
-      color: fgHex,
-      fontFamily: 'monospace',
-      fontSize: `${charHeight * 0.65}px`,
-      lineHeight: `${charHeight}px`,
-      whiteSpace: 'pre',
-      overflow: 'hidden',
-    };
-
-    switch (element.type) {
-      case 'label':
-        return <div style={style} className="px-0.5">{element.text}</div>;
-
-      case 'button':
-        return (
-          <div className="flex items-center justify-center w-full h-full" style={style}>
-            {element.text}
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
   return (
     <div
+      data-element-overlay
       className={`absolute ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
       style={{
         left,
         top,
         width,
         height,
-        backgroundColor: CC_COLORS[element.bgColor].hex,
+        // Transparent — the terminal canvas underneath handles rendering
         outline: isSelected ? '2px solid #89b4fa' : 'none',
         outlineOffset: '1px',
         zIndex: element.zIndex + (isSelected ? 1000 : 0),
       }}
       onMouseDown={handleMouseDown}
     >
-      {renderContent()}
-
       {/* Selection indicators */}
       {isSelected && (
         <>

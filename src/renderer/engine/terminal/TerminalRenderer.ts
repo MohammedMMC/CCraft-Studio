@@ -1,9 +1,16 @@
-import { TerminalBuffer, TerminalCell } from './TerminalBuffer';
-import { CC_COLORS, CCColor } from '../../models/CCColors';
+import { TerminalBuffer } from './TerminalBuffer';
+import { CC_COLORS } from '../../models/CCColors';
 
 const CC_CHAR_WIDTH = 6;
 const CC_CHAR_HEIGHT = 9;
 const SCALE = 2;
+const FONT_FAMILY = 'MinecraftFont';
+
+// Preload the font so canvas can use it immediately
+let fontLoaded = false;
+const fontPromise = document.fonts.load(`${CC_CHAR_HEIGHT * SCALE}px ${FONT_FAMILY}`).then(() => {
+  fontLoaded = true;
+});
 
 export class TerminalRenderer {
   private canvas: HTMLCanvasElement;
@@ -20,6 +27,11 @@ export class TerminalRenderer {
     this.charHeight = CC_CHAR_HEIGHT * SCALE;
 
     this.updateCanvasSize();
+
+    // If font isn't loaded yet, re-render once it is
+    if (!fontLoaded) {
+      fontPromise.then(() => this.render());
+    }
   }
 
   updateCanvasSize() {
@@ -43,9 +55,10 @@ export class TerminalRenderer {
     ctx.fillStyle = CC_COLORS.black.hex;
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Configure text rendering
+    // Configure text rendering — no smoothing for pixel font
+    ctx.imageSmoothingEnabled = false;
     ctx.textBaseline = 'top';
-    ctx.font = `${Math.floor(ch * 0.78)}px monospace`;
+    ctx.font = `${ch}px ${FONT_FAMILY}, monospace`;
 
     // Render cells
     for (let y = 0; y < height; y++) {
