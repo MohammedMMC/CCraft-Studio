@@ -165,7 +165,7 @@ export function registerAllGenerators() {
   });
 
   luaGenerator.addGenerator('ui_navigate', (block, gen) => {
-    const screen = block.getFieldValue('SCREEN');
+    const screen = (block.getFieldValue('SCREEN') || '').replace(/[^a-zA-Z0-9_]/g, '_');
     return `${gen.getIndent()}navigate("${screen}")`;
   });
 
@@ -1022,9 +1022,14 @@ export function registerAllGenerators() {
 
   // --- Statement blocks ---
 
-  luaGenerator.addGenerator('print_text', (block, gen) => {
+  luaGenerator.addGenerator('term_print', (block, gen) => {
     const text = gen.valueToCode(block, 'TEXT', Order.NONE);
     return `${gen.getIndent()}print(${text})`;
+  });
+
+  luaGenerator.addGenerator('term_redirect', (block, gen) => {
+    const dest = gen.valueToCode(block, 'TYPE', Order.NONE);
+    return `${gen.getIndent()}redirect(${dest})`;
   });
 
   luaGenerator.addGenerator('sleep_secs', (block, gen) => {
@@ -1059,7 +1064,7 @@ export function registerAllGenerators() {
     return [`type(${value})`, Order.ATOMIC];
   });
 
-  luaGenerator.addGenerator('read_input', () => {
+  luaGenerator.addGenerator('term_read', () => {
     return [`read()`, Order.ATOMIC];
   });
 
@@ -1280,28 +1285,120 @@ export function registerAllGenerators() {
 
   luaGenerator.addGenerator('procedures_defnoreturn', (block, gen) => {
     const name = (block.getFieldValue('NAME') || 'myFunc').replace(/[^a-zA-Z0-9_]/g, '_');
+    const args = ((block as any).arguments_ || [])
+      .map((a: string) => a.replace(/[^a-zA-Z0-9_]/g, '_'));
+    const paramList = args.join(', ');
     gen.indent();
     const body = gen.statementToCode(block, 'STACK');
     gen.deindent();
-    return `${gen.getIndent()}local function ${name}()\n${body}\n${gen.getIndent()}end`;
+    return `${gen.getIndent()}local function ${name}(${paramList})\n${body}\n${gen.getIndent()}end`;
   });
 
   luaGenerator.addGenerator('procedures_defreturn', (block, gen) => {
     const name = (block.getFieldValue('NAME') || 'myFunc').replace(/[^a-zA-Z0-9_]/g, '_');
+    const args = ((block as any).arguments_ || [])
+      .map((a: string) => a.replace(/[^a-zA-Z0-9_]/g, '_'));
+    const paramList = args.join(', ');
     gen.indent();
     const body = gen.statementToCode(block, 'STACK');
     const ret = gen.valueToCode(block, 'RETURN', Order.NONE);
     gen.deindent();
-    return `${gen.getIndent()}local function ${name}()\n${body}\n${gen.getIndent()}  return ${ret}\n${gen.getIndent()}end`;
+    return `${gen.getIndent()}local function ${name}(${paramList})\n${body}\n${gen.getIndent()}  return ${ret}\n${gen.getIndent()}end`;
   });
 
-  luaGenerator.addGenerator('procedures_callnoreturn', (block) => {
-    const name = (block.getFieldValue('NAME') || 'myFunc').replace(/[^a-zA-Z0-9_]/g, '_');
-    return `${name}()`;
+  luaGenerator.addGenerator('procedures_callnoreturn', (block, gen) => {
+    const name = (block.getFieldValue('PROCNAME') || block.getFieldValue('NAME') || 'myFunc').replace(/[^a-zA-Z0-9_]/g, '_');
+    const args: string[] = [];
+    for (let i = 0; block.getInput('ARG' + i); i++) {
+      args.push(gen.valueToCode(block, 'ARG' + i, Order.NONE));
+    }
+    return `${name}(${args.join(', ')})`;
   });
 
-  luaGenerator.addGenerator('procedures_callreturn', (block) => {
-    const name = (block.getFieldValue('NAME') || 'myFunc').replace(/[^a-zA-Z0-9_]/g, '_');
-    return [`${name}()`, Order.ATOMIC];
+  luaGenerator.addGenerator('procedures_callreturn', (block, gen) => {
+    const name = (block.getFieldValue('PROCNAME') || block.getFieldValue('NAME') || 'myFunc').replace(/[^a-zA-Z0-9_]/g, '_');
+    const args: string[] = [];
+    for (let i = 0; block.getInput('ARG' + i); i++) {
+      args.push(gen.valueToCode(block, 'ARG' + i, Order.NONE));
+    }
+    return [`${name}(${args.join(', ')})`, Order.ATOMIC];
+  });
+
+  // =================================================================
+  // Lexical Variables plugin blocks
+  // =================================================================
+
+  // Helper: strip prefix from lexical variable names (e.g. "global myVar" -> "myVar")
+  function stripVarPrefix(raw: string): string {
+    // The plugin prefixes names like "global varName" or "input paramName"
+    const prefixes = ['global ', 'input ', 'local ', 'counter ', 'item '];
+    for (const p of prefixes) {
+      if (raw.startsWith(p)) return raw.substring(p.length);
+    }
+    return raw;
+  }
+  function sanitizeVar(raw: string): string {
+    return stripVarPrefix(raw).replace(/[^a-zA-Z0-9_]/g, '_');
+  }
+
+  luaGenerator.addGenerator('global_declaration', (block, gen) => {
+    const name = sanitizeVar(block.getFieldValue('NAME') || 'myVar');
+    const value = gen.valueToCode(block, 'VALUE', Order.NONE);
+    return `${name} = ${value}`;
+  });
+
+  luaGenerator.addGenerator('lexical_variable_get', (block) => {
+    const name = sanitizeVar(block.getFieldValue('VAR') || 'x');
+    return [name, Order.ATOMIC];
+  });
+
+  luaGenerator.addGenerator('lexical_variable_set', (block, gen) => {
+    const name = sanitizeVar(block.getFieldValue('VAR') || 'x');
+    const value = gen.valueToCode(block, 'VALUE', Order.NONE);
+    return `${name} = ${value}`;
+  });
+
+  luaGenerator.addGenerator('local_declaration_statement', (block, gen) => {
+    const lines: string[] = [];
+    for (let i = 0; block.getInput('DECL' + i); i++) {
+      const varName = sanitizeVar(block.getFieldValue('VAR' + i) || `var${i}`);
+      const value = gen.valueToCode(block, 'DECL' + i, Order.NONE);
+      lines.push(`${gen.getIndent()}local ${varName} = ${value}`);
+    }
+    gen.indent();
+    const body = gen.statementToCode(block, 'STACK');
+    gen.deindent();
+    return lines.join('\n') + '\n' + body;
+  });
+
+  luaGenerator.addGenerator('local_declaration_expression', (block, gen) => {
+    const decls: string[] = [];
+    for (let i = 0; block.getInput('DECL' + i); i++) {
+      const varName = sanitizeVar(block.getFieldValue('VAR' + i) || `var${i}`);
+      const value = gen.valueToCode(block, 'DECL' + i, Order.NONE);
+      decls.push(`local ${varName} = ${value}`);
+    }
+    const returnVal = gen.valueToCode(block, 'RETURN', Order.NONE);
+    // Expression blocks need to return a value; wrap locals + return in a do-end
+    const code = `(function()\n  ${decls.join('\n  ')}\n  return ${returnVal}\nend)()`;
+    return [code, Order.ATOMIC];
+  });
+
+  luaGenerator.addGenerator('simple_local_declaration_statement', (block, gen) => {
+    const varName = sanitizeVar(block.getFieldValue('VAR') || 'x');
+    const value = gen.valueToCode(block, 'DECL', Order.NONE);
+    gen.indent();
+    const body = gen.statementToCode(block, 'DO');
+    gen.deindent();
+    return `${gen.getIndent()}local ${varName} = ${value}\n${body}`;
+  });
+
+  luaGenerator.addGenerator('controls_do_then_return', (block, gen) => {
+    gen.indent();
+    const stm = gen.statementToCode(block, 'STM');
+    gen.deindent();
+    const value = gen.valueToCode(block, 'VALUE', Order.NONE);
+    const code = `(function()\n${stm}\n  return ${value}\nend)()`;
+    return [code, Order.ATOMIC];
   });
 }

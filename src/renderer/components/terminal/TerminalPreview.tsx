@@ -3,7 +3,6 @@ import { useProjectStore } from '../../stores/projectStore';
 import { TerminalBuffer } from '../../engine/terminal/TerminalBuffer';
 import { TerminalRenderer } from '../../engine/terminal/TerminalRenderer';
 import { UIElement } from '../../models/UIElement';
-import { CCColor } from '../../models/CCColors';
 
 export const TerminalPreview: React.FC = () => {
   const project = useProjectStore((s) => s.project);
@@ -85,92 +84,6 @@ function renderElementToBuffer(buffer: TerminalBuffer, el: UIElement) {
       const midY = y + Math.floor(el.height / 2);
       const text = alignText(el.text, el.width, el.textAlign);
       buffer.writeText(x, midY, text.slice(0, el.width), el.fgColor, el.bgColor);
-      break;
-    }
-
-    case 'textInput': {
-      buffer.fillRect(x, y, el.width, el.height, ' ', el.fgColor, el.bgColor);
-      const displayText = el.defaultValue || el.placeholder;
-      const fg: CCColor = el.defaultValue ? el.fgColor : 'lightGray';
-      buffer.writeText(x, y, displayText.slice(0, el.width), fg, el.bgColor);
-      break;
-    }
-
-    case 'progressBar': {
-      const pct = el.maxValue > 0 ? el.value / el.maxValue : 0;
-      const fillW = Math.floor(el.width * pct);
-      for (let i = 0; i < el.width; i++) {
-        const isFill = i < fillW;
-        buffer.setCell(
-          x + i, y,
-          isFill ? el.fillChar : el.emptyChar,
-          isFill ? el.fillColor : el.emptyColor,
-          el.bgColor
-        );
-      }
-      if (el.showPercentage) {
-        const pctText = `${Math.round(pct * 100)}%`;
-        const px = x + Math.floor((el.width - pctText.length) / 2);
-        buffer.writeText(px, y, pctText, el.fgColor, el.bgColor);
-      }
-      break;
-    }
-
-    case 'list': {
-      buffer.fillRect(x, y, el.width, el.height, ' ', el.fgColor, el.bgColor);
-      for (let i = 0; i < el.height && i + el.scrollOffset < el.items.length; i++) {
-        const itemIdx = i + el.scrollOffset;
-        const item = el.items[itemIdx] || '';
-        const isSelected = itemIdx === el.selectedIndex;
-        const fg = isSelected ? el.selectedFgColor : el.fgColor;
-        const bg = isSelected ? el.selectedBgColor : el.bgColor;
-        buffer.fillRect(x, y + i, el.width, 1, ' ', fg, bg);
-        buffer.writeText(x, y + i, item.slice(0, el.width), fg, bg);
-      }
-      break;
-    }
-
-    case 'panel': {
-      if (el.filled) {
-        buffer.fillRect(x, y, el.width, el.height, ' ', el.fgColor, el.bgColor);
-      }
-      if (el.borderStyle !== 'none') {
-        const c = el.borderStyle === 'rounded'
-          ? { tl: '\u256d', tr: '\u256e', bl: '\u2570', br: '\u256f', h: '\u2500', v: '\u2502' }
-          : el.borderStyle === 'double'
-            ? { tl: '\u2554', tr: '\u2557', bl: '\u255a', br: '\u255d', h: '\u2550', v: '\u2551' }
-            : { tl: '\u250c', tr: '\u2510', bl: '\u2514', br: '\u2518', h: '\u2500', v: '\u2502' };
-
-        buffer.setCell(x, y, c.tl, el.borderColor, el.bgColor);
-        buffer.setCell(x + el.width - 1, y, c.tr, el.borderColor, el.bgColor);
-        buffer.setCell(x, y + el.height - 1, c.bl, el.borderColor, el.bgColor);
-        buffer.setCell(x + el.width - 1, y + el.height - 1, c.br, el.borderColor, el.bgColor);
-
-        for (let i = 1; i < el.width - 1; i++) {
-          buffer.setCell(x + i, y, c.h, el.borderColor, el.bgColor);
-          buffer.setCell(x + i, y + el.height - 1, c.h, el.borderColor, el.bgColor);
-        }
-        for (let i = 1; i < el.height - 1; i++) {
-          buffer.setCell(x, y + i, c.v, el.borderColor, el.bgColor);
-          buffer.setCell(x + el.width - 1, y + i, c.v, el.borderColor, el.bgColor);
-        }
-
-        if (el.title) {
-          buffer.writeText(x + 2, y, el.title.slice(0, el.width - 4), el.fgColor, el.bgColor);
-        }
-      }
-      break;
-    }
-
-    case 'statusBar': {
-      buffer.fillRect(x, y, el.width, el.height, ' ', el.fgColor, el.bgColor);
-      const text = alignText(el.text, el.width, el.textAlign);
-      buffer.writeText(x, y, text.slice(0, el.width), el.fgColor, el.bgColor);
-      break;
-    }
-
-    case 'image': {
-      buffer.fillRect(x, y, el.width, el.height, '?', el.fgColor, el.bgColor);
       break;
     }
   }

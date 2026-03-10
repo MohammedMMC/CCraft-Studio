@@ -38,6 +38,15 @@ function SCREENS(): [string, string][] {
   return project.screens.map((s) => [s.name, s.name]);
 }
 
+function BUTTONS(): [string, string][] {
+  const store = useProjectStore.getState();
+  const screen = store.getActiveScreen();
+  if (!screen) return [['(no buttons)', '']];
+  const buttons = screen.uiElements.filter((el) => el.type === 'button');
+  if (buttons.length === 0) return [['(no buttons)', '']];
+  return buttons.map((b) => [b.name, b.name]);
+}
+
 export function defineAllBlocks() {
   // =====================================================================
   // 1. EVENTS (hat blocks)
@@ -46,7 +55,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['event_screen_load'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('when screen loads');
+        .appendField('when this screen loads');
       this.appendStatementInput('DO')
         .appendField("do");
       this.setStyle('events_blocks');
@@ -59,7 +68,7 @@ export function defineAllBlocks() {
     init(this: Blockly.Block) {
       this.appendDummyInput()
         .appendField('when button')
-        .appendField(new Blockly.FieldTextInput('button1'), 'BUTTON')
+        .appendField(new Blockly.FieldDropdown(BUTTONS), 'BUTTON')
         .appendField('is clicked');
       this.appendStatementInput('DO')
         .appendField("do");
@@ -225,12 +234,13 @@ export function defineAllBlocks() {
 
   Blockly.Blocks['ui_navigate'] = {
     init(this: Blockly.Block) {
-      this.appendValueInput('SCREEN')
-        .appendField('navigate to screen');
+      this.appendDummyInput()
+        .appendField('navigate to screen')
+        .appendField(new Blockly.FieldDropdown(SCREENS), 'SCREEN');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('ui_blocks');
-      this.setTooltip('Navigate to a different screen');
+      this.setTooltip('Navigate to a different screen (auto draws the new screen)');
     },
   };
 
@@ -331,7 +341,7 @@ export function defineAllBlocks() {
     },
   };
 
-  Blockly.Blocks['print_text'] = {
+  Blockly.Blocks['term_print'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('TEXT')
         .appendField('print');
@@ -343,7 +353,19 @@ export function defineAllBlocks() {
     },
   };
 
-  Blockly.Blocks['read_input'] = {
+  Blockly.Blocks['term_redirect'] = {
+    init(this: Blockly.Block) {
+      this.appendValueInput('TYPE')
+        .appendField('redirect');
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setStyle('terminal_blocks');
+      this.setInputsInline(true);
+      this.setTooltip('Redirects terminal output (ex: monitor)');
+    },
+  };
+
+  Blockly.Blocks['term_read'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
         .appendField('read user input');

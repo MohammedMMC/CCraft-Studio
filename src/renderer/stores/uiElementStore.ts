@@ -22,7 +22,6 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
     if (!screen) throw new Error(`Screen ${screenId} not found`);
 
     const existingNames = screen.uiElements.map(e => e.name);
-    const maxZ = screen.uiElements.reduce((max, e) => Math.max(max, e.zIndex), 0);
     const defaults = UI_ELEMENT_DEFAULTS[type];
 
     const element = {
@@ -30,7 +29,7 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
       ...overrides,
       id: overrides.id || generateId(),
       name: overrides.name || generateElementName(type, existingNames),
-      zIndex: overrides.zIndex ?? (maxZ + 1),
+      zIndex: overrides.zIndex ?? 0,
     } as UIElement;
 
     const screens = projectStore.project!.screens.map(s => {
@@ -88,7 +87,6 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
     if (!screen || !original) return null;
 
     const existingNames = screen.uiElements.map(e => e.name);
-    const maxZ = screen.uiElements.reduce((max, e) => Math.max(max, e.zIndex), 0);
 
     const duplicate = {
       ...original,
@@ -96,7 +94,7 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
       name: generateElementName(original.type, existingNames),
       x: original.x + 2,
       y: original.y + 1,
-      zIndex: maxZ + 1,
+      zIndex: 0,
     } as UIElement;
 
     const screens = projectStore.project!.screens.map(s => {

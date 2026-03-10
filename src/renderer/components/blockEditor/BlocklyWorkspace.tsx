@@ -207,11 +207,6 @@ const DEFAULT_WORKSPACE_XML = `
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="event_screen_load" x="30" y="30">
     <statement name="DO">
-      <block type="ui_clear">
-        <next>
-          <block type="ui_draw_screen"></block>
-        </next>
-      </block>
     </statement>
   </block>
 </xml>
@@ -301,7 +296,8 @@ export const BlocklyWorkspace: React.FC = () => {
 
   // Use a ref so the change listener always calls the latest save logic
   const activeScreenRef = useRef(activeScreenId);
-  activeScreenRef.current = activeScreenId;
+  // Do NOT update activeScreenRef here eagerly — it's updated in the
+  // screen-switch effect AFTER saving the old screen.
 
   // Flag to suppress saves during screen-switch loading
   const suppressSaveRef = useRef(false);
@@ -404,6 +400,7 @@ export const BlocklyWorkspace: React.FC = () => {
     const ws = workspaceRef.current;
 
     saveWorkspace();
+    activeScreenRef.current = activeScreenId;
 
     suppressSaveRef.current = true;
     ws.clear();

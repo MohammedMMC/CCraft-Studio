@@ -115,17 +115,6 @@ export function generateElementsInit(screenName: string, elements: { name: strin
     lines.push(`elements["${escapeLuaString(el.name)}"] = {`);
     lines.push(`  x = ${el.x}, y = ${el.y}, width = ${el.width}, height = ${el.height},`);
     lines.push(`  visible = ${el.visible},`);
-    if (el.type === 'progressBar') {
-      lines.push(`  value = ${el.value ?? 0},`);
-    }
-    if (el.type === 'textInput') {
-      lines.push(`  value = "${escapeLuaString(el.defaultValue ?? '')}",`);
-    }
-    if (el.type === 'list') {
-      const items = (el.items ?? []).map((item: string) => `"${escapeLuaString(item)}"`).join(', ');
-      lines.push(`  items = {${items}},`);
-      lines.push(`  selectedIndex = ${(el.selectedIndex ?? 0) + 1},`);
-    }
     if (el.text !== undefined) {
       lines.push(`  text = "${escapeLuaString(el.text)}",`);
     }

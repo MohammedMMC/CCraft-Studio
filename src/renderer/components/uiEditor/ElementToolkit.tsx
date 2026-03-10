@@ -7,9 +7,7 @@ import { useHistoryStore } from '../../stores/historyStore';
 import { generateId } from '../../utils/idGenerator';
 
 const ELEMENT_TYPES: UIElementType[] = [
-  'label', 'button', 'textInput', 'progressBar',
-  'list', 'panel', 'image', 'statusBar',
-  'scrollView', 'tabBar', 'divider', 'checkbox', 'dropdown',
+  'label', 'button',
 ];
 
 export const ElementToolkit: React.FC = () => {
