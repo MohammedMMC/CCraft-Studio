@@ -11,8 +11,10 @@ interface UIElementState {
   moveElement: (screenId: string, elementId: string, x: number, y: number) => void;
   resizeElement: (screenId: string, elementId: string, width: number, height: number) => void;
   reorderElement: (screenId: string, elementId: string, newZIndex: number) => void;
+  setParent: (screenId: string, elementId: string, parentId: string | null) => void;
   getElements: (screenId: string) => UIElement[];
   getElementById: (screenId: string, elementId: string) => UIElement | undefined;
+  getChildren: (screenId: string, parentId: string) => UIElement[];
 }
 
 export const useUIElementStore = create<UIElementState>((_set, _get) => ({
@@ -29,6 +31,7 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
       ...overrides,
       id: overrides.id || generateId(),
       name: overrides.name || generateElementName(type, existingNames),
+      parentId: (overrides as any).parentId ?? null,
       zIndex: overrides.zIndex ?? 0,
     } as UIElement;
 
@@ -51,7 +54,12 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
 
     const screens = projectStore.project.screens.map(s => {
       if (s.id !== screenId) return s;
-      return { ...s, uiElements: s.uiElements.filter(e => e.id !== elementId) };
+      return {
+        ...s,
+        uiElements: s.uiElements
+          .filter(e => e.id !== elementId)
+          .map(e => e.parentId === elementId ? { ...e, parentId: null } as UIElement : e),
+      };
     });
 
     useProjectStore.setState((state) => ({
@@ -97,9 +105,24 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
       zIndex: 0,
     } as UIElement;
 
+    const newElements: UIElement[] = [duplicate];
+
+    if (original.type === 'container') {
+      const children = screen.uiElements.filter(e => e.parentId === elementId);
+      for (const child of children) {
+        const allNames = [...existingNames, ...newElements.map(e => e.name)];
+        newElements.push({
+          ...child,
+          id: generateId(),
+          name: generateElementName(child.type, allNames),
+          parentId: duplicate.id,
+        } as UIElement);
+      }
+    }
+
     const screens = projectStore.project!.screens.map(s => {
       if (s.id !== screenId) return s;
-      return { ...s, uiElements: [...s.uiElements, duplicate] };
+      return { ...s, uiElements: [...s.uiElements, ...newElements] };
     });
 
     useProjectStore.setState((state) => ({
@@ -170,6 +193,39 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
     }));
   },
 
+  setParent: (screenId, elementId, parentId) => {
+    const projectStore = useProjectStore.getState();
+    if (!projectStore.project) return;
+
+    const screens = projectStore.project.screens.map(s => {
+      if (s.id !== screenId) return s;
+
+      if (parentId !== null) {
+        const parent = s.uiElements.find(e => e.id === parentId);
+        if (!parent || parent.type !== 'container') return s;
+        // Prevent circular nesting (ancestor can't become child of descendant)
+        let ancestor: string | null = parentId;
+        while (ancestor !== null) {
+          if (ancestor === elementId) return s; // circular!
+          const a = s.uiElements.find(e => e.id === ancestor);
+          ancestor = a?.parentId ?? null;
+        }
+      }
+
+      return {
+        ...s,
+        uiElements: s.uiElements.map(e =>
+          e.id === elementId ? { ...e, parentId } as UIElement : e
+        ),
+      };
+    });
+
+    useProjectStore.setState((state) => ({
+      project: state.project ? { ...state.project, screens } : null,
+      isDirty: true,
+    }));
+  },
+
   getElements: (screenId) => {
     const project = useProjectStore.getState().project;
     const screen = project?.screens.find(s => s.id === screenId);
@@ -180,5 +236,11 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
     const project = useProjectStore.getState().project;
     const screen = project?.screens.find(s => s.id === screenId);
     return screen?.uiElements.find(e => e.id === elementId);
+  },
+
+  getChildren: (screenId, parentId) => {
+    const project = useProjectStore.getState().project;
+    const screen = project?.screens.find(s => s.id === screenId);
+    return screen?.uiElements.filter(e => e.parentId === parentId) ?? [];
   },
 }));

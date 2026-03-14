@@ -13,7 +13,7 @@ const electronAPI = {
     const actions = [
       'menu:newProject', 'menu:openProject', 'menu:save', 'menu:saveAs',
       'menu:export', 'menu:undo', 'menu:redo', 'menu:delete', 'menu:selectAll',
-      'menu:togglePreview', 'menu:zoomIn', 'menu:zoomOut', 'menu:zoomReset', 'menu:about',
+      'menu:zoomIn', 'menu:zoomOut', 'menu:zoomReset', 'menu:about',
     ];
     const handlers = actions.map(action => {
       const handler = () => callback(action);

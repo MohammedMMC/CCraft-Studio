@@ -126,9 +126,6 @@ const App: React.FC = () => {
           }
           break;
         }
-        case 'menu:togglePreview':
-          useEditorStore.getState().togglePreview();
-          break;
         case 'menu:zoomIn':
           useEditorStore.getState().zoomIn();
           break;

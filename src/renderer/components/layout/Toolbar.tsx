@@ -11,8 +11,6 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
   const setMode = useEditorStore((s) => s.setMode);
   const showGrid = useEditorStore((s) => s.showGrid);
   const toggleGrid = useEditorStore((s) => s.toggleGrid);
-  const showPreview = useEditorStore((s) => s.showPreview);
-  const togglePreview = useEditorStore((s) => s.togglePreview);
   const zoom = useEditorStore((s) => s.zoom);
   const zoomIn = useEditorStore((s) => s.zoomIn);
   const zoomOut = useEditorStore((s) => s.zoomOut);
@@ -99,14 +97,6 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
         </button>
       )}
 
-      <button
-        onClick={togglePreview}
-        className={`toolbar-btn ${showPreview ? 'text-ide-accent' : ''}`}
-        title="Toggle Terminal Preview"
-      >
-        <PreviewIcon />
-      </button>
-
       <div className="w-px h-5 bg-ide-border mx-1" />
 
       {/* Zoom */}
@@ -150,12 +140,5 @@ const GridIcon = () => (
     <line x1="10.5" y1="1" x2="10.5" y2="15" />
     <line x1="1" y1="5.5" x2="15" y2="5.5" />
     <line x1="1" y1="10.5" x2="15" y2="10.5" />
-  </svg>
-);
-
-const PreviewIcon = () => (
-  <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <rect x="1" y="2" width="14" height="10" rx="1" />
-    <line x1="5" y1="14" x2="11" y2="14" />
   </svg>
 );

@@ -77,6 +77,32 @@ export function defineAllBlocks() {
     },
   };
 
+  Blockly.Blocks['event_button_focus'] = {
+    init(this: Blockly.Block) {
+      this.appendDummyInput()
+        .appendField('while button')
+        .appendField(new Blockly.FieldDropdown(BUTTONS), 'BUTTON')
+        .appendField('is focused');
+      this.appendStatementInput('DO')
+        .appendField("do");
+      this.setStyle('events_blocks');
+      this.setTooltip('Runs while a button is held down (focused)');
+    },
+  };
+
+  Blockly.Blocks['event_button_release'] = {
+    init(this: Blockly.Block) {
+      this.appendDummyInput()
+        .appendField('when button')
+        .appendField(new Blockly.FieldDropdown(BUTTONS), 'BUTTON')
+        .appendField('is released');
+      this.appendStatementInput('DO')
+        .appendField("do");
+      this.setStyle('events_blocks');
+      this.setTooltip('Runs when a button is released after being clicked');
+    },
+  };
+
   Blockly.Blocks['event_key_press'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()

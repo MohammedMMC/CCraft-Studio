@@ -7,7 +7,7 @@ import { useHistoryStore } from '../../stores/historyStore';
 import { generateId } from '../../utils/idGenerator';
 
 const ELEMENT_TYPES: UIElementType[] = [
-  'label', 'button',
+  'label', 'button', 'container',
 ];
 
 export const ElementToolkit: React.FC = () => {

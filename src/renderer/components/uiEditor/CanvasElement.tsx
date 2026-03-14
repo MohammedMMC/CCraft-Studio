@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { UIElement } from '../../models/UIElement';
+import { UIElement, resolveSize } from '../../models/UIElement';
 import { useUIElementStore } from '../../stores/uiElementStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { useHistoryStore } from '../../stores/historyStore';
@@ -7,6 +7,7 @@ import { generateId } from '../../utils/idGenerator';
 
 interface CanvasElementProps {
   element: UIElement;
+  resolvedPosition: { x: number; y: number; width: number; height: number };
   charWidth: number;
   charHeight: number;
   isSelected: boolean;
@@ -14,10 +15,12 @@ interface CanvasElementProps {
   screenId: string;
   displayWidth: number;
   displayHeight: number;
+  depth: number;
 }
 
 export const CanvasElement: React.FC<CanvasElementProps> = ({
   element,
+  resolvedPosition,
   charWidth,
   charHeight,
   isSelected,
@@ -25,6 +28,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
   screenId,
   displayWidth,
   displayHeight,
+  depth,
 }) => {
   const moveElement = useUIElementStore((s) => s.moveElement);
   const resizeElement = useUIElementStore((s) => s.resizeElement);
@@ -35,25 +39,33 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
 
   if (!element.visible) return null;
 
-  const left = (element.x - 1) * charWidth;
-  const top = (element.y - 1) * charHeight;
-  const width = element.width * charWidth;
-  const height = element.height * charHeight;
+  const isChild = element.parentId !== null;
+  const left = (resolvedPosition.x - 1) * charWidth;
+  const top = (resolvedPosition.y - 1) * charHeight;
+  const width = resolvedPosition.width * charWidth;
+  const height = resolvedPosition.height * charHeight;
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
     onSelect();
+
+    // Don't allow positional dragging for children inside containers
+    if (isChild) return;
+
     setIsDragging(true);
     dragOrigin.current = { x: element.x, y: element.y };
 
     const handleMove = (me: MouseEvent) => {
       const zoom = useEditorStore.getState().zoom;
+      const el = useUIElementStore.getState().getElementById(screenId, element.id);
+      const rw = el ? resolveSize(el, displayWidth, displayHeight).width : resolvedPosition.width;
+      const rh = el ? resolveSize(el, displayWidth, displayHeight).height : resolvedPosition.height;
       const dx = (me.clientX - e.clientX) / zoom / charWidth;
       const dy = (me.clientY - e.clientY) / zoom / charHeight;
       let newX = Math.round(element.x + dx);
       let newY = Math.round(element.y + dy);
-      newX = Math.max(1, Math.min(displayWidth - element.width + 1, newX));
-      newY = Math.max(1, Math.min(displayHeight - element.height + 1, newY));
+      newX = Math.max(1, Math.min(displayWidth - rw + 1, newX));
+      newY = Math.max(1, Math.min(displayHeight - rh + 1, newY));
       moveElement(screenId, element.id, newX, newY);
     };
 
@@ -83,6 +95,9 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
   };
 
   const handleResizeMouseDown = (e: React.MouseEvent) => {
+    // Don't allow resize for children inside containers
+    if (isChild) return;
+
     e.stopPropagation();
     resizeOrigin.current = { w: element.width, h: element.height };
 
@@ -90,10 +105,23 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
       const zoom = useEditorStore.getState().zoom;
       const dx = (me.clientX - e.clientX) / zoom / charWidth;
       const dy = (me.clientY - e.clientY) / zoom / charHeight;
-      let newW = Math.round(element.width + dx);
-      let newH = Math.round(element.height + dy);
-      newW = Math.max(1, Math.min(displayWidth - element.x + 1, newW));
-      newH = Math.max(1, Math.min(displayHeight - element.y + 1, newH));
+
+      const maxW = displayWidth - element.x + 1;
+      const maxH = displayHeight - element.y + 1;
+
+      let newResolvedW = Math.round(resolvedPosition.width + dx);
+      let newResolvedH = Math.round(resolvedPosition.height + dy);
+      newResolvedW = Math.max(1, Math.min(maxW, newResolvedW));
+      newResolvedH = Math.max(1, Math.min(maxH, newResolvedH));
+
+      let newW = newResolvedW;
+      if (element.widthUnit === '%') newW = Math.max(1, Math.min(100, Math.round((newResolvedW / displayWidth) * 100)));
+      else if (element.widthUnit === 'fill') newW = element.width;
+
+      let newH = newResolvedH;
+      if (element.heightUnit === '%') newH = Math.max(1, Math.min(100, Math.round((newResolvedH / displayHeight) * 100)));
+      else if (element.heightUnit === 'fill') newH = element.height;
+
       resizeElement(screenId, element.id, newW, newH);
     };
 
@@ -121,37 +149,40 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
     document.addEventListener('mouseup', handleUp);
   };
 
+  const isContainer = element.type === 'container';
+
   return (
     <div
       data-element-overlay
-      className={`absolute ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+      className={`absolute ${isChild ? 'cursor-default' : isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
       style={{
         left,
         top,
         width,
         height,
-        // Transparent — the terminal canvas underneath handles rendering
-        outline: isSelected ? '2px solid #89b4fa' : 'none',
+        outline: isSelected
+          ? `2px ${isContainer ? 'dashed' : 'solid'} #89b4fa`
+          : 'none',
         outlineOffset: '1px',
-        zIndex: element.zIndex + (isSelected ? 1000 : 0),
+        zIndex: element.zIndex + depth * 100 + (isSelected ? 1000 : 0),
       }}
       onMouseDown={handleMouseDown}
     >
-      {/* Selection indicators */}
       {isSelected && (
         <>
-          {/* Element name tag */}
           <div
             className="absolute -top-4 left-0 text-[9px] px-1 rounded-t bg-ide-accent text-ide-bg font-medium whitespace-nowrap"
           >
             {element.name}
           </div>
 
-          {/* Resize handle */}
-          <div
-            className="absolute -right-1.5 -bottom-1.5 w-3 h-3 bg-ide-accent cursor-se-resize rounded-sm"
-            onMouseDown={handleResizeMouseDown}
-          />
+          {/* Resize handle (not for children inside containers) */}
+          {!isChild && (
+            <div
+              className="absolute -right-1.5 -bottom-1.5 w-3 h-3 bg-ide-accent cursor-se-resize rounded-sm"
+              onMouseDown={handleResizeMouseDown}
+            />
+          )}
         </>
       )}
     </div>

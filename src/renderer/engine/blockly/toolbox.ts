@@ -7,6 +7,8 @@ export const TOOLBOX = {
       contents: [
         { kind: 'block', type: 'event_screen_load' },
         { kind: 'block', type: 'event_button_click' },
+        { kind: 'block', type: 'event_button_focus' },
+        { kind: 'block', type: 'event_button_release' },
         { kind: 'block', type: 'event_key_press' },
         { kind: 'block', type: 'event_timer' },
         { kind: 'block', type: 'event_redstone' },

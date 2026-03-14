@@ -33,8 +33,6 @@ export function buildMenu(win: BrowserWindow): Menu {
     {
       label: 'View',
       submenu: [
-        { label: 'Toggle Terminal Preview', accelerator: 'CmdOrCtrl+T', click: () => win.webContents.send('menu:togglePreview') },
-        { type: 'separator' },
         { label: 'Zoom In', accelerator: 'CmdOrCtrl+=', click: () => win.webContents.send('menu:zoomIn') },
         { label: 'Zoom Out', accelerator: 'CmdOrCtrl+-', click: () => win.webContents.send('menu:zoomOut') },
         { label: 'Reset Zoom', accelerator: 'CmdOrCtrl+0', click: () => win.webContents.send('menu:zoomReset') },

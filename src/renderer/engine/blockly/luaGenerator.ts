@@ -105,6 +105,18 @@ export function registerAllGenerators() {
     return `-- [EVENT:button_click:${btn}]\n${body}\n-- [/EVENT:button_click:${btn}]`;
   });
 
+  luaGenerator.addGenerator('event_button_focus', (block, gen) => {
+    const btn = block.getFieldValue('BUTTON');
+    const body = gen.statementToCode(block, 'DO');
+    return `-- [EVENT:button_focus:${btn}]\n${body}\n-- [/EVENT:button_focus:${btn}]`;
+  });
+
+  luaGenerator.addGenerator('event_button_release', (block, gen) => {
+    const btn = block.getFieldValue('BUTTON');
+    const body = gen.statementToCode(block, 'DO');
+    return `-- [EVENT:button_release:${btn}]\n${body}\n-- [/EVENT:button_release:${btn}]`;
+  });
+
   luaGenerator.addGenerator('event_key_press', (block, gen) => {
     const key = block.getFieldValue('KEY');
     const body = gen.statementToCode(block, 'DO');

@@ -5,14 +5,16 @@ interface ColorPickerProps {
   value: CCColor;
   onChange: (color: CCColor) => void;
   label?: string;
+  exclude?: CCColor[];
 }
 
-export const ColorPicker: React.FC<ColorPickerProps> = ({ value, onChange, label }) => {
+export const ColorPicker: React.FC<ColorPickerProps> = ({ value, onChange, label, exclude }) => {
+  const colors = exclude ? CC_COLOR_NAMES.filter(c => !exclude.includes(c)) : CC_COLOR_NAMES;
   return (
     <div>
       {label && <label className="block text-[10px] text-ide-text-dim mb-1">{label}</label>}
-      <div className="grid grid-cols-8 gap-0.5">
-        {CC_COLOR_NAMES.map((color) => (
+      <div className="grid grid-cols-9 gap-0.5">
+        {colors.map((color) => (
           <button
             key={color}
             onClick={() => onChange(color)}
@@ -21,7 +23,9 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({ value, onChange, label
                 ? 'border-ide-accent ring-1 ring-ide-accent scale-110'
                 : 'border-transparent hover:border-ide-text-dim'
             }`}
-            style={{ backgroundColor: CC_COLORS[color].hex }}
+            style={color === 'transparent' ? {
+              background: 'repeating-conic-gradient(#808080 0% 25%, #c0c0c0 0% 50%) 50% / 8px 8px',
+            } : { backgroundColor: CC_COLORS[color].hex }}
             title={color}
           />
         ))}

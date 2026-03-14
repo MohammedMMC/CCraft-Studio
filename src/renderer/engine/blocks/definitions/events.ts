@@ -33,6 +33,40 @@ export const eventBlocks: BlockDefinition[] = [
     },
   },
   {
+    id: 'event_button_focus',
+    category: 'events',
+    type: 'hat',
+    label: 'While %1 is focused',
+    inputs: [
+      { name: 'button', type: 'dropdown', label: 'button', dropdownOptions: [] },
+    ],
+    canHaveNext: true,
+    hasBranch: false,
+    branchCount: 0,
+    tooltip: 'Runs while a button is held down (focused)',
+    luaGenerator: (block, ctx) => {
+      const btn = ctx.generateInput(block.inputValues.button, ctx);
+      return `${ctx.getIndent()}-- While ${btn} is focused`;
+    },
+  },
+  {
+    id: 'event_button_release',
+    category: 'events',
+    type: 'hat',
+    label: 'When %1 is released',
+    inputs: [
+      { name: 'button', type: 'dropdown', label: 'button', dropdownOptions: [] },
+    ],
+    canHaveNext: true,
+    hasBranch: false,
+    branchCount: 0,
+    tooltip: 'Runs when a button is released after being clicked',
+    luaGenerator: (block, ctx) => {
+      const btn = ctx.generateInput(block.inputValues.button, ctx);
+      return `${ctx.getIndent()}-- When ${btn} is released`;
+    },
+  },
+  {
     id: 'event_key_press',
     category: 'events',
     type: 'hat',

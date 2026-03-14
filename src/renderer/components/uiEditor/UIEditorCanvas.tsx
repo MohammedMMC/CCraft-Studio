@@ -4,7 +4,7 @@ import { useEditorStore } from '../../stores/editorStore';
 import { useUIElementStore } from '../../stores/uiElementStore';
 import { TerminalBuffer } from '../../engine/terminal/TerminalBuffer';
 import { TerminalRenderer } from '../../engine/terminal/TerminalRenderer';
-import { UIElement } from '../../models/UIElement';
+import { UIElement, ContainerElement, resolveSize, resolveContainerLayout } from '../../models/UIElement';
 import { CanvasElement } from './CanvasElement';
 import { GridOverlay } from './GridOverlay';
 
@@ -15,22 +15,92 @@ const SCALE = 2;
 export const CHAR_WIDTH = CC_CHAR_WIDTH * SCALE;
 export const CHAR_HEIGHT = CC_CHAR_HEIGHT * SCALE;
 
-function renderElementToBuffer(buffer: TerminalBuffer, el: UIElement) {
+function renderElementToBuffer(
+  buffer: TerminalBuffer,
+  el: UIElement,
+  allElements: UIElement[],
+  displayWidth: number,
+  displayHeight: number,
+) {
   const x = el.x - 1;
   const y = el.y - 1;
+  const { width, height } = resolveSize(el, displayWidth, displayHeight);
 
   switch (el.type) {
     case 'label': {
-      buffer.fillRect(x, y, el.width, el.height, ' ', el.fgColor, el.bgColor);
-      const text = alignText(el.text, el.width, el.textAlign);
-      buffer.writeText(x, y, text.slice(0, el.width), el.fgColor, el.bgColor);
+      buffer.fillRect(x, y, width, height, ' ', el.fgColor, el.bgColor);
+      const text = alignText(el.text, width, el.textAlign);
+      buffer.writeText(x, y, text.slice(0, width), el.fgColor, el.bgColor);
       break;
     }
     case 'button': {
-      buffer.fillRect(x, y, el.width, el.height, ' ', el.fgColor, el.bgColor);
-      const midY = y + Math.floor(el.height / 2);
-      const text = alignText(el.text, el.width, el.textAlign);
-      buffer.writeText(x, midY, text.slice(0, el.width), el.fgColor, el.bgColor);
+      buffer.fillRect(x, y, width, height, ' ', el.fgColor, el.bgColor);
+      const midY = y + Math.floor(height / 2);
+      const text = alignText(el.text, width, el.textAlign);
+      buffer.writeText(x, midY, text.slice(0, width), el.fgColor, el.bgColor);
+      break;
+    }
+    case 'container': {
+      // Fill container background
+      buffer.fillRect(x, y, width, height, ' ', el.fgColor, el.bgColor);
+
+      // Find and render children
+      const children = allElements
+        .filter(c => c.parentId === el.id && c.visible)
+        .sort((a, b) => a.zIndex - b.zIndex);
+
+      const positions = resolveContainerLayout(
+        el, children, el.x, el.y, width, height, displayWidth, displayHeight,
+      );
+
+      for (const pos of positions) {
+        const child = children.find(c => c.id === pos.id);
+        if (!child) continue;
+        renderChildAtPosition(buffer, child, allElements, pos.x, pos.y, pos.width, pos.height);
+      }
+      break;
+    }
+  }
+}
+
+function renderChildAtPosition(
+  buffer: TerminalBuffer,
+  child: UIElement,
+  allElements: UIElement[],
+  absX: number, absY: number,
+  width: number, height: number,
+) {
+  const x = absX - 1;
+  const y = absY - 1;
+
+  switch (child.type) {
+    case 'label': {
+      buffer.fillRect(x, y, width, height, ' ', child.fgColor, child.bgColor);
+      const text = alignText(child.text, width, child.textAlign);
+      buffer.writeText(x, y, text.slice(0, width), child.fgColor, child.bgColor);
+      break;
+    }
+    case 'button': {
+      buffer.fillRect(x, y, width, height, ' ', child.fgColor, child.bgColor);
+      const midY = y + Math.floor(height / 2);
+      const text = alignText(child.text, width, child.textAlign);
+      buffer.writeText(x, midY, text.slice(0, width), child.fgColor, child.bgColor);
+      break;
+    }
+    case 'container': {
+      buffer.fillRect(x, y, width, height, ' ', child.fgColor, child.bgColor);
+      const grandchildren = allElements
+        .filter(c => c.parentId === child.id && c.visible)
+        .sort((a, b) => a.zIndex - b.zIndex);
+      const positions = resolveContainerLayout(
+        child as ContainerElement, grandchildren,
+        absX, absY, width, height, width, height,
+      );
+      for (const pos of positions) {
+        const gc = grandchildren.find(c => c.id === pos.id);
+        if (!gc) continue;
+        renderChildAtPosition(buffer, gc, allElements, pos.x, pos.y, pos.width, pos.height);
+      }
       break;
     }
   }
@@ -51,6 +121,46 @@ function alignText(text: string, width: number, align: 'left' | 'center' | 'righ
   }
 }
 
+/** Compute resolved {x, y, width, height} for every element including container children */
+function buildResolvedPositionMap(
+  elements: UIElement[],
+  displayWidth: number,
+  displayHeight: number,
+): Map<string, { x: number; y: number; width: number; height: number }> {
+  const map = new Map<string, { x: number; y: number; width: number; height: number }>();
+
+  function resolveContainer(
+    container: ContainerElement,
+    cx: number, cy: number,
+    cw: number, ch: number,
+  ) {
+    const children = elements
+      .filter(c => c.parentId === container.id && c.visible)
+      .sort((a, b) => a.zIndex - b.zIndex);
+    const positions = resolveContainerLayout(
+      container, children, cx, cy, cw, ch, cw, ch,
+    );
+    for (const pos of positions) {
+      map.set(pos.id, { x: pos.x, y: pos.y, width: pos.width, height: pos.height });
+      const child = children.find(c => c.id === pos.id);
+      if (child?.type === 'container') {
+        resolveContainer(child as ContainerElement, pos.x, pos.y, pos.width, pos.height);
+      }
+    }
+  }
+
+  for (const el of elements) {
+    if (el.parentId !== null) continue;
+    const resolved = resolveSize(el, displayWidth, displayHeight);
+    map.set(el.id, { x: el.x, y: el.y, width: resolved.width, height: resolved.height });
+
+    if (el.type === 'container') {
+      resolveContainer(el as ContainerElement, el.x, el.y, resolved.width, resolved.height);
+    }
+  }
+  return map;
+}
+
 export const UIEditorCanvas: React.FC = () => {
   const project = useProjectStore((s) => s.project);
   const activeScreenId = useProjectStore((s) => s.activeScreenId);
@@ -60,7 +170,6 @@ export const UIEditorCanvas: React.FC = () => {
   const showGrid = useEditorStore((s) => s.showGrid);
   const selectedElementId = useEditorStore((s) => s.selectedElementId);
   const selectElement = useEditorStore((s) => s.selectElement);
-  const tool = useEditorStore((s) => s.tool);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -76,9 +185,15 @@ export const UIEditorCanvas: React.FC = () => {
     return new TerminalBuffer(project.displayWidth, project.displayHeight);
   }, [project?.displayWidth, project?.displayHeight]);
 
+  // Resolved position map for overlays
+  const resolvedPositionMap = useMemo(() => {
+    if (!screen || !project) return new Map();
+    return buildResolvedPositionMap(screen.uiElements, project.displayWidth, project.displayHeight);
+  }, [screen?.uiElements, project?.displayWidth, project?.displayHeight]);
+
   // Re-render the terminal canvas whenever elements change
   useEffect(() => {
-    if (!buffer || !screen || !canvasRef.current) return;
+    if (!buffer || !screen || !canvasRef.current || !project) return;
 
     if (!rendererRef.current) {
       rendererRef.current = new TerminalRenderer(canvasRef.current, buffer);
@@ -88,12 +203,13 @@ export const UIEditorCanvas: React.FC = () => {
 
     buffer.clear('black');
 
+    // Only render top-level elements; children are rendered by their container
     const sorted = [...screen.uiElements]
-      .filter((e) => e.visible)
+      .filter((e) => e.visible && e.parentId === null)
       .sort((a, b) => a.zIndex - b.zIndex);
 
     for (const el of sorted) {
-      renderElementToBuffer(buffer, el);
+      renderElementToBuffer(buffer, el, screen.uiElements, project.displayWidth, project.displayHeight);
     }
 
     rendererRef.current.render();
@@ -120,8 +236,22 @@ export const UIEditorCanvas: React.FC = () => {
   const canvasHeight = project.displayHeight * CHAR_HEIGHT;
   const elements = [...screen.uiElements].sort((a, b) => a.zIndex - b.zIndex);
 
+  // Compute nesting depth so children overlay above their parent container
+  const depthMap = useMemo(() => {
+    const map = new Map<string, number>();
+    const getDepth = (el: UIElement): number => {
+      if (map.has(el.id)) return map.get(el.id)!;
+      if (el.parentId === null) { map.set(el.id, 0); return 0; }
+      const parent = screen!.uiElements.find(e => e.id === el.parentId);
+      const d = parent ? getDepth(parent) + 1 : 0;
+      map.set(el.id, d);
+      return d;
+    };
+    for (const el of screen!.uiElements) getDepth(el);
+    return map;
+  }, [screen?.uiElements]);
+
   const handleMouseDown = (e: React.MouseEvent) => {
-    // Middle-click or left-click on background to pan
     const target = e.target as HTMLElement;
     const isOnElement = target.closest('[data-element-overlay]');
     if (e.button === 1 || (e.button === 0 && !isOnElement)) {
@@ -147,12 +277,10 @@ export const UIEditorCanvas: React.FC = () => {
   };
 
   const handleClick = (e: React.MouseEvent) => {
-    // Don't deselect if we just finished panning
     if (didPanRef.current) {
       didPanRef.current = false;
       return;
     }
-    // Deselect when clicking on empty canvas area (not on an element overlay)
     const target = e.target as HTMLElement;
     const isOnElement = target.closest('[data-element-overlay]');
     if (!isOnElement) {
@@ -171,7 +299,6 @@ export const UIEditorCanvas: React.FC = () => {
       onClick={handleClick}
       style={{ cursor: isPanning ? 'grabbing' : 'default' }}
     >
-      {/* Centered canvas with zoom and pan */}
       <div
         className="absolute"
         style={{
@@ -183,7 +310,6 @@ export const UIEditorCanvas: React.FC = () => {
           marginTop: -(canvasHeight / 2),
         }}
       >
-        {/* Terminal-style rendered canvas */}
         <div
           className="relative border border-ide-border/50 shadow-lg"
           style={{ width: canvasWidth, height: canvasHeight }}
@@ -199,7 +325,6 @@ export const UIEditorCanvas: React.FC = () => {
             }}
           />
 
-          {/* Grid overlay */}
           {showGrid && (
             <GridOverlay
               width={project.displayWidth}
@@ -209,23 +334,27 @@ export const UIEditorCanvas: React.FC = () => {
             />
           )}
 
-          {/* Transparent interactive overlays for each element */}
-          {elements.map((element) => (
-            <CanvasElement
-              key={element.id}
-              element={element}
-              charWidth={CHAR_WIDTH}
-              charHeight={CHAR_HEIGHT}
-              isSelected={element.id === selectedElementId}
-              onSelect={() => selectElement(element.id)}
-              screenId={activeScreenId}
-              displayWidth={project.displayWidth}
-              displayHeight={project.displayHeight}
-            />
-          ))}
+          {elements.map((element) => {
+            const resolvedPos = resolvedPositionMap.get(element.id);
+            if (!resolvedPos) return null;
+            return (
+              <CanvasElement
+                key={element.id}
+                element={element}
+                resolvedPosition={resolvedPos}
+                charWidth={CHAR_WIDTH}
+                charHeight={CHAR_HEIGHT}
+                isSelected={element.id === selectedElementId}
+                onSelect={() => selectElement(element.id)}
+                screenId={activeScreenId}
+                displayWidth={project.displayWidth}
+                displayHeight={project.displayHeight}
+                depth={depthMap.get(element.id) ?? 0}
+              />
+            );
+          })}
         </div>
 
-        {/* Dimension labels */}
         <div className="absolute -bottom-5 left-0 right-0 text-center text-[10px] text-ide-text-dim">
           {project.displayWidth} x {project.displayHeight}
         </div>
