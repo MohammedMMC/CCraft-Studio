@@ -48,35 +48,35 @@
 
 @layer components {
   .panel-header {
-    @apply text-xs font-semibold uppercase tracking-wider text-ide-text-dim px-3 py-2 border-b border-ide-border select-none;
+    @apply text-xs font-semibold uppercase tracking-wider text-app-text-dim px-3 py-2 border-b border-app-border select-none;
   }
 
   .btn-primary {
-    @apply px-4 py-2 bg-ide-accent text-ide-bg rounded font-medium text-sm
+    @apply px-4 py-2 bg-app-accent text-app-bg rounded font-medium text-sm
            hover:brightness-110 active:brightness-90 transition-all duration-150
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply px-4 py-2 bg-ide-surface text-ide-text rounded font-medium text-sm
-           border border-ide-border hover:bg-ide-hover active:bg-ide-active
+    @apply px-4 py-2 bg-app-surface text-app-text rounded font-medium text-sm
+           border border-app-border hover:bg-app-hover active:bg-app-active
            transition-all duration-150;
   }
 
   .input-field {
-    @apply w-full px-3 py-1.5 bg-ide-bg border border-ide-border rounded text-sm text-ide-text
-           focus:outline-none focus:border-ide-accent focus:ring-1 focus:ring-ide-accent/30
-           placeholder-ide-text-dim;
+    @apply w-full px-3 py-1.5 bg-app-bg border border-app-border rounded text-sm text-app-text
+           focus:outline-none focus:border-app-accent focus:ring-1 focus:ring-app-accent/30
+           placeholder-app-text-dim;
   }
 
   .select-field {
-    @apply w-full px-3 py-1.5 bg-ide-bg border border-ide-border rounded text-sm text-ide-text
-           focus:outline-none focus:border-ide-accent appearance-none cursor-pointer;
+    @apply w-full px-3 py-1.5 bg-app-bg border border-app-border rounded text-sm text-app-text
+           focus:outline-none focus:border-app-accent appearance-none cursor-pointer;
   }
 
   .toolbar-btn {
-    @apply px-1.5 py-1 text-xs text-ide-text-dim hover:text-ide-text
-           hover:bg-ide-hover rounded transition-all
+    @apply px-1.5 py-1 text-xs text-app-text-dim hover:text-app-text
+           hover:bg-app-hover rounded transition-all
            disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent;
   }
 }

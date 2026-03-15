@@ -17,7 +17,7 @@ function createWindow(): void {
     height: 900,
     minWidth: 1000,
     minHeight: 700,
-    title: 'CCraft IDE',
+    title: 'CCraft Studio',
     backgroundColor: '#1e1e2e',
     webPreferences: {
       preload: path.join(__dirname, '../preload/preload.js'),

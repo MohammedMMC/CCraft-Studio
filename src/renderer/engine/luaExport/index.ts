@@ -329,11 +329,11 @@ function generateStartupFile(project: CCProject): string {
   lines.push('        if h and h.onButtonClick[btn.name] then h.onButtonClick[btn.name](mx, my, button) end');
   lines.push('        focusedButton = btn.name');
   lines.push('        local sc = screenComponents[currentScreen]');
+  lines.push('        if h and h.onButtonFocus[btn.name] then h.onButtonFocus[btn.name](mx, my, button) end');
   lines.push('        if sc then');
   lines.push('          local comp = sc[btn.name:gsub("[^%w_]", "_")]');
   lines.push('          if comp and comp.drawFocused then comp:drawFocused() end');
   lines.push('        end');
-  lines.push('        if h and h.onButtonFocus[btn.name] then h.onButtonFocus[btn.name](mx, my, button) end');
   lines.push('        break');
   lines.push('      end');
   lines.push('    end');

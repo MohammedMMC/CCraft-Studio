@@ -80,27 +80,27 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
   if (!project) return null;
 
   return (
-    <div className="flex items-center h-10 bg-ide-surface border-b border-ide-border px-2 gap-1 select-none">
+    <div className="flex items-center h-10 bg-app-surface border-b border-app-border px-2 gap-1 select-none">
       {/* Project Name */}
       <div className="flex items-center gap-2 px-2 mr-4">
-        <span className="text-sm font-semibold text-ide-accent">CC</span>
-        <span className="text-sm text-ide-text-bright truncate max-w-[200px]">
+        <span className="text-sm font-semibold text-app-accent">CC</span>
+        <span className="text-sm text-app-text-bright truncate max-w-[200px]">
           {project.name}
         </span>
-        {isDirty && <span className="w-2 h-2 rounded-full bg-ide-warning" title="Unsaved changes" />}
+        {isDirty && <span className="w-2 h-2 rounded-full bg-app-warning" title="Unsaved changes" />}
       </div>
 
       {/* Divider */}
-      <div className="w-px h-5 bg-ide-border" />
+      <div className="w-px h-5 bg-app-border" />
 
       {/* Editor Mode Toggle */}
-      <div className="flex items-center bg-ide-bg rounded mx-2">
+      <div className="flex items-center bg-app-bg rounded mx-2">
         <button
           onClick={() => setMode('ui')}
           className={`px-3 py-1 text-xs rounded transition-all ${
             mode === 'ui'
-              ? 'bg-ide-accent text-ide-bg font-medium'
-              : 'text-ide-text-dim hover:text-ide-text'
+              ? 'bg-app-accent text-app-bg font-medium'
+              : 'text-app-text-dim hover:text-app-text'
           }`}
         >
           UI Editor
@@ -109,15 +109,15 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
           onClick={() => setMode('blocks')}
           className={`px-3 py-1 text-xs rounded transition-all ${
             mode === 'blocks'
-              ? 'bg-ide-accent text-ide-bg font-medium'
-              : 'text-ide-text-dim hover:text-ide-text'
+              ? 'bg-app-accent text-app-bg font-medium'
+              : 'text-app-text-dim hover:text-app-text'
           }`}
         >
           Blocks
         </button>
       </div>
 
-      <div className="w-px h-5 bg-ide-border" />
+      <div className="w-px h-5 bg-app-border" />
 
       {/* Undo/Redo */}
       <button onClick={undo} disabled={!canUndo} className="toolbar-btn" title="Undo (Ctrl+Z)">
@@ -127,20 +127,20 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
         <RedoIcon />
       </button>
 
-      <div className="w-px h-5 bg-ide-border mx-1" />
+      <div className="w-px h-5 bg-app-border mx-1" />
 
       {/* View Controls (UI mode only) */}
       {mode === 'ui' && (
         <button
           onClick={toggleGrid}
-          className={`toolbar-btn ${showGrid ? 'text-ide-accent' : ''}`}
+          className={`toolbar-btn ${showGrid ? 'text-app-accent' : ''}`}
           title="Toggle Grid"
         >
           <GridIcon />
         </button>
       )}
 
-      <div className="w-px h-5 bg-ide-border mx-1" />
+      <div className="w-px h-5 bg-app-border mx-1" />
 
       {/* Zoom */}
       <button onClick={zoomOut} className="toolbar-btn" title="Zoom Out">-</button>
@@ -152,16 +152,16 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
       {/* Screen Size Preview (UI mode only) */}
       {mode === 'ui' && (
         <>
-          <div className="w-px h-5 bg-ide-border mx-1" />
+          <div className="w-px h-5 bg-app-border mx-1" />
           <MonitorIcon />
           <select
             value={screenSizeValue}
             onChange={(e) => handleScreenSizeChange(e.target.value)}
-            className="bg-ide-bg border border-ide-border rounded text-xs text-ide-text px-1.5 py-1 cursor-pointer focus:outline-none focus:border-ide-accent"
+            className="bg-app-bg border border-app-border rounded text-xs text-app-text px-1.5 py-1 cursor-pointer focus:outline-none focus:border-app-accent"
             title="Preview screen size"
           >
             <optgroup label="Devices">
-              {(Object.entries(DEVICE_PRESETS) as [DeviceType, typeof DEVICE_PRESETS[DeviceType]][]).filter(([key, preset]) => preset.supportsColor).map(([key, preset]) => (
+              {(Object.entries(DEVICE_PRESETS) as [DeviceType, typeof DEVICE_PRESETS[DeviceType]][]).filter(([key, preset]) => preset.supportsColor && !preset.sizeEditable).map(([key, preset]) => (
                 <option key={`device:${key}`} value={`device:${key}`}>
                   {preset.label} ({preset.defaultWidth}x{preset.defaultHeight})
                 </option>
@@ -216,7 +216,7 @@ const GridIcon = () => (
 );
 
 const MonitorIcon = () => (
-  <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-ide-text-dim mr-0.5">
+  <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-app-text-dim mr-0.5">
     <rect x="1" y="2" width="14" height="10" rx="1" />
     <line x1="5" y1="14" x2="11" y2="14" />
     <line x1="8" y1="12" x2="8" y2="14" />

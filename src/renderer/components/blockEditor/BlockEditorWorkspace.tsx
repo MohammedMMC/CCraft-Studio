@@ -51,7 +51,7 @@ export const BlockEditorWorkspace: React.FC = () => {
 
   return (
     <div
-      className="flex-1 overflow-hidden bg-ide-bg relative"
+      className="flex-1 overflow-hidden bg-app-bg relative"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -80,7 +80,7 @@ export const BlockEditorWorkspace: React.FC = () => {
 
         {topLevelBlocks.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="text-ide-text-dim text-sm text-center">
+            <div className="text-app-text-dim text-sm text-center">
               <div className="text-lg mb-2">Block Editor</div>
               <div className="text-xs">Click blocks from the palette to add them here</div>
               <div className="text-xs mt-1">Right-click a block to delete it</div>

@@ -17,14 +17,14 @@ export const StatusBar: React.FC = () => {
   const elementCount = screen?.uiElements.length ?? 0;
 
   return (
-    <div className="flex items-center h-6 bg-ide-panel border-t border-ide-border px-3 text-[10px] text-ide-text-dim select-none gap-4">
-      <span className="text-ide-accent font-medium">{preset.label}</span>
+    <div className="flex items-center h-6 bg-app-panel border-t border-app-border px-3 text-[10px] text-app-text-dim select-none gap-4">
+      <span className="text-app-accent font-medium">{preset.label}</span>
       <span>{project.displayWidth}x{project.displayHeight}</span>
       <span>{project.colorMode === 'color' ? '16 Colors' : 'Grayscale'}</span>
-      <div className="w-px h-3 bg-ide-border" />
+      <div className="w-px h-3 bg-app-border" />
       <span>Screen: {screen?.name ?? '?'}</span>
       <span>Elements: {elementCount}</span>
-      {selectedElementId && <span className="text-ide-accent">Selected: {selectedElementId.slice(0, 8)}</span>}
+      {selectedElementId && <span className="text-app-accent">Selected: {selectedElementId.slice(0, 8)}</span>}
       <div className="flex-1" />
       <span>Mode: {mode === 'ui' ? 'UI Editor' : 'Block Editor'}</span>
       <span>Zoom: {Math.round(zoom * 100)}%</span>

@@ -132,7 +132,7 @@ export const BlockComponent: React.FC<BlockComponentProps> = ({ blockId, isTopLe
           <div className="ml-4 border-l-4 min-h-[24px] py-1 pl-2" style={{ borderColor: meta.color }}>
             {branchBlockId && <BlockChain startBlockId={branchBlockId} />}
             {!branchBlockId && (
-              <div className="text-[10px] text-ide-text-dim italic px-2 py-1">empty</div>
+              <div className="text-[10px] text-app-text-dim italic px-2 py-1">empty</div>
             )}
           </div>
         </div>

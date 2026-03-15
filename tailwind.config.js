@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        ide: {
+        app: {
           bg: '#1e1e2e',
           surface: '#252535',
           panel: '#2a2a3c',

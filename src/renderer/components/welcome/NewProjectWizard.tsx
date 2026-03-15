@@ -52,7 +52,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({ isOpen, onCl
     () => (
       <div className="space-y-4">
         <div>
-          <label className="block text-xs text-ide-text-dim mb-1">Project Name *</label>
+          <label className="block text-xs text-app-text-dim mb-1">Project Name *</label>
           <input
             className="input-field"
             value={name}
@@ -62,7 +62,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({ isOpen, onCl
           />
         </div>
         <div>
-          <label className="block text-xs text-ide-text-dim mb-1">Author</label>
+          <label className="block text-xs text-app-text-dim mb-1">Author</label>
           <input
             className="input-field"
             value={author}
@@ -71,7 +71,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({ isOpen, onCl
           />
         </div>
         <div>
-          <label className="block text-xs text-ide-text-dim mb-1">Description</label>
+          <label className="block text-xs text-app-text-dim mb-1">Description</label>
           <textarea
             className="input-field resize-none h-20"
             value={description}
@@ -85,7 +85,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({ isOpen, onCl
     // Step 1: Device Selection
     () => (
       <div className="space-y-3">
-        <p className="text-xs text-ide-text-dim mb-2">Select the target device for your program:</p>
+        <p className="text-xs text-app-text-dim mb-2">Select the target device for your program:</p>
         <div className="grid grid-cols-2 gap-2">
           {(Object.entries(DEVICE_PRESETS) as [DeviceType, typeof DEVICE_PRESETS[DeviceType]][]).map(
             ([key, dev]) => (
@@ -94,18 +94,18 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({ isOpen, onCl
                 onClick={() => setDevice(key)}
                 className={`p-3 rounded border text-left transition-all ${
                   device === key
-                    ? 'border-ide-accent bg-ide-accent/10 text-ide-text-bright'
-                    : 'border-ide-border bg-ide-bg hover:bg-ide-hover text-ide-text'
+                    ? 'border-app-accent bg-app-accent/10 text-app-text-bright'
+                    : 'border-app-border bg-app-bg hover:bg-app-hover text-app-text'
                 }`}
               >
                 <div className="text-sm font-medium">{dev.label}</div>
-                <div className="text-xs text-ide-text-dim mt-1">{dev.description}</div>
+                <div className="text-xs text-app-text-dim mt-1">{dev.description}</div>
                 <div className="flex gap-2 mt-2">
                   {dev.supportsColor && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-ide-accent/20 text-ide-accent">Color</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-app-accent/20 text-app-accent">Color</span>
                   )}
                   {dev.supportsTouch && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-ide-success/20 text-ide-success">Touch</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-app-success/20 text-app-success">Touch</span>
                   )}
                 </div>
               </button>
@@ -122,7 +122,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({ isOpen, onCl
         <div className="space-y-4">
           {device === 'monitor' && (
             <div>
-              <label className="block text-xs text-ide-text-dim mb-1">Monitor Size (blocks)</label>
+              <label className="block text-xs text-app-text-dim mb-1">Monitor Size (blocks)</label>
               <select
                 className="select-field"
                 value={monitorSize}
@@ -137,29 +137,29 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({ isOpen, onCl
             </div>
           )}
 
-          <div className="flex items-center gap-4 p-3 bg-ide-bg rounded border border-ide-border">
+          <div className="flex items-center gap-4 p-3 bg-app-bg rounded border border-app-border">
             <div className="text-center">
-              <div className="text-2xl font-mono text-ide-accent">{size.width}</div>
-              <div className="text-[10px] text-ide-text-dim">Width</div>
+              <div className="text-2xl font-mono text-app-accent">{size.width}</div>
+              <div className="text-[10px] text-app-text-dim">Width</div>
             </div>
-            <div className="text-ide-text-dim">&times;</div>
+            <div className="text-app-text-dim">&times;</div>
             <div className="text-center">
-              <div className="text-2xl font-mono text-ide-accent">{size.height}</div>
-              <div className="text-[10px] text-ide-text-dim">Height</div>
+              <div className="text-2xl font-mono text-app-accent">{size.height}</div>
+              <div className="text-[10px] text-app-text-dim">Height</div>
             </div>
-            <div className="text-xs text-ide-text-dim ml-4">characters</div>
+            <div className="text-xs text-app-text-dim ml-4">characters</div>
           </div>
 
           {preset.supportsColor && (
             <div>
-              <label className="block text-xs text-ide-text-dim mb-2">Color Mode</label>
+              <label className="block text-xs text-app-text-dim mb-2">Color Mode</label>
               <div className="flex gap-2">
                 <button
                   onClick={() => setColorMode('color')}
                   className={`flex-1 p-2 rounded border text-sm transition-all ${
                     colorMode === 'color'
-                      ? 'border-ide-accent bg-ide-accent/10 text-ide-text-bright'
-                      : 'border-ide-border bg-ide-bg hover:bg-ide-hover'
+                      ? 'border-app-accent bg-app-accent/10 text-app-text-bright'
+                      : 'border-app-border bg-app-bg hover:bg-app-hover'
                   }`}
                 >
                   <div className="flex gap-1 justify-center mb-1">
@@ -177,8 +177,8 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({ isOpen, onCl
                   onClick={() => setColorMode('grayscale')}
                   className={`flex-1 p-2 rounded border text-sm transition-all ${
                     colorMode === 'grayscale'
-                      ? 'border-ide-accent bg-ide-accent/10 text-ide-text-bright'
-                      : 'border-ide-border bg-ide-bg hover:bg-ide-hover'
+                      ? 'border-app-accent bg-app-accent/10 text-app-text-bright'
+                      : 'border-app-border bg-app-bg hover:bg-app-hover'
                   }`}
                 >
                   <div className="flex gap-1 justify-center mb-1">
@@ -198,8 +198,8 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({ isOpen, onCl
 
           {/* Preview */}
           <div className="mt-4">
-            <label className="block text-xs text-ide-text-dim mb-2">Terminal Preview</label>
-            <div className="bg-black rounded border border-ide-border p-2 flex items-center justify-center overflow-hidden">
+            <label className="block text-xs text-app-text-dim mb-2">Terminal Preview</label>
+            <div className="bg-black rounded border border-app-border p-2 flex items-center justify-center overflow-hidden">
               <div
                 className="border border-cc-gray"
                 style={{
@@ -233,25 +233,25 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({ isOpen, onCl
               onClick={() => setStep(i)}
               className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-all ${
                 i === step
-                  ? 'bg-ide-accent/20 text-ide-accent font-medium'
+                  ? 'bg-app-accent/20 text-app-accent font-medium'
                   : i < step
-                    ? 'text-ide-success cursor-pointer hover:bg-ide-hover'
-                    : 'text-ide-text-dim'
+                    ? 'text-app-success cursor-pointer hover:bg-app-hover'
+                    : 'text-app-text-dim'
               }`}
             >
               <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
                 i === step
-                  ? 'bg-ide-accent text-ide-bg'
+                  ? 'bg-app-accent text-app-bg'
                   : i < step
-                    ? 'bg-ide-success text-ide-bg'
-                    : 'bg-ide-border text-ide-text-dim'
+                    ? 'bg-app-success text-app-bg'
+                    : 'bg-app-border text-app-text-dim'
               }`}>
                 {i < step ? '\u2713' : i + 1}
               </span>
               {title}
             </button>
             {i < stepTitles.length - 1 && (
-              <div className={`flex-1 h-px ${i < step ? 'bg-ide-success' : 'bg-ide-border'}`} />
+              <div className={`flex-1 h-px ${i < step ? 'bg-app-success' : 'bg-app-border'}`} />
             )}
           </React.Fragment>
         ))}
@@ -261,7 +261,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({ isOpen, onCl
       {steps[step]()}
 
       {/* Navigation */}
-      <div className="flex justify-between mt-6 pt-4 border-t border-ide-border">
+      <div className="flex justify-between mt-6 pt-4 border-t border-app-border">
         <button
           onClick={() => step > 0 ? setStep(step - 1) : onClose()}
           className="btn-secondary"

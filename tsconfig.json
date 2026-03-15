@@ -12,6 +12,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/renderer/*"]
@@ -20,7 +21,7 @@
   "include": [
     "src/renderer/**/*",
     "src/preload/**/*",
-    "src/types/**/*.d.ts"
+    "types.d.ts"
   ],
   "exclude": ["node_modules", "dist"]
 }

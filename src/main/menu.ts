@@ -43,7 +43,7 @@ export function buildMenu(win: BrowserWindow): Menu {
     {
       label: 'Help',
       submenu: [
-        { label: 'About CCraft IDE', click: () => win.webContents.send('menu:about') },
+        { label: 'About CCraft Studio', click: () => win.webContents.send('menu:about') },
         { label: 'CC:Tweaked Documentation', click: () => {
           require('electron').shell.openExternal('https://tweaked.cc/');
         }},

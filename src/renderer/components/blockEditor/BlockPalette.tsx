@@ -24,7 +24,7 @@ export const BlockPalette: React.FC = () => {
   };
 
   return (
-    <div className="w-52 bg-ide-panel border-r border-ide-border flex flex-col h-full">
+    <div className="w-52 bg-app-panel border-r border-app-border flex flex-col h-full">
       <div className="panel-header">Blocks</div>
 
       {/* Search */}
@@ -49,7 +49,7 @@ export const BlockPalette: React.FC = () => {
                 className={`text-[10px] px-1.5 py-0.5 rounded transition-all ${
                   activeCategory === cat
                     ? 'text-white font-medium'
-                    : 'text-ide-text-dim hover:text-ide-text bg-ide-bg'
+                    : 'text-app-text-dim hover:text-app-text bg-app-bg'
                 }`}
                 style={activeCategory === cat ? { backgroundColor: meta.color } : {}}
               >
@@ -86,7 +86,7 @@ export const BlockPalette: React.FC = () => {
           );
         })}
         {blocks.length === 0 && (
-          <div className="text-xs text-ide-text-dim text-center py-4">
+          <div className="text-xs text-app-text-dim text-center py-4">
             {searchQuery ? 'No blocks found' : 'No blocks in this category'}
           </div>
         )}

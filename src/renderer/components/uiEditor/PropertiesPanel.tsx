@@ -39,9 +39,9 @@ export const PropertiesPanel: React.FC = () => {
 
   if (!activeScreenId || !selectedElementId) {
     return (
-      <div className="w-60 bg-ide-panel border-l border-ide-border flex flex-col">
+      <div className="w-60 bg-app-panel border-l border-app-border flex flex-col">
         <div className="panel-header">Properties</div>
-        <div className="p-3 text-xs text-ide-text-dim text-center">
+        <div className="p-3 text-xs text-app-text-dim text-center">
           Select an element to edit its properties
         </div>
       </div>
@@ -51,9 +51,9 @@ export const PropertiesPanel: React.FC = () => {
   const element = getElementById(activeScreenId, selectedElementId);
   if (!element) {
     return (
-      <div className="w-60 bg-ide-panel border-l border-ide-border flex flex-col">
+      <div className="w-60 bg-app-panel border-l border-app-border flex flex-col">
         <div className="panel-header">Properties</div>
-        <div className="flex-1 flex items-center justify-center text-xs text-ide-text-dim p-4">
+        <div className="flex-1 flex items-center justify-center text-xs text-app-text-dim p-4">
           Element not found
         </div>
       </div>
@@ -100,10 +100,10 @@ export const PropertiesPanel: React.FC = () => {
   };
 
   return (
-    <div className="w-60 bg-ide-panel border-l border-ide-border flex flex-col h-full">
+    <div className="w-60 bg-app-panel border-l border-app-border flex flex-col h-full">
       <div className="panel-header flex items-center justify-between">
         <span>Properties</span>
-        <span className="text-[10px] text-ide-accent font-normal normal-case tracking-normal">
+        <span className="text-[10px] text-app-accent font-normal normal-case tracking-normal">
           {element.type}
         </span>
       </div>
@@ -122,7 +122,7 @@ export const PropertiesPanel: React.FC = () => {
 
           {/* Position */}
           {element.parentId !== null && (
-            <div className="text-[10px] text-ide-text-dim italic">
+            <div className="text-[10px] text-app-text-dim italic">
               Position managed by container
             </div>
           )}
@@ -225,7 +225,7 @@ export const PropertiesPanel: React.FC = () => {
             </PropField>
           </div>
 
-          <div className="h-px bg-ide-border" />
+          <div className="h-px bg-app-border" />
 
           {/* Colors */}
           {element.type !== 'container' && (
@@ -242,12 +242,12 @@ export const PropertiesPanel: React.FC = () => {
             onChange={(bgColor) => update({ bgColor })}
           />
 
-          <div className="h-px bg-ide-border" />
+          <div className="h-px bg-app-border" />
 
           {/* Type-specific properties */}
           {renderTypeSpecificProps(element, update)}
 
-          <div className="h-px bg-ide-border" />
+          <div className="h-px bg-app-border" />
 
           {/* Visibility */}
           <PropField label="Visible">
@@ -256,9 +256,9 @@ export const PropertiesPanel: React.FC = () => {
                 type="checkbox"
                 checked={element.visible}
                 onChange={(e) => update({ visible: e.target.checked })}
-                className="accent-ide-accent"
+                className="accent-app-accent"
               />
-              <span className="text-xs text-ide-text">{element.visible ? 'Yes' : 'No'}</span>
+              <span className="text-xs text-app-text">{element.visible ? 'Yes' : 'No'}</span>
             </label>
           </PropField>
 
@@ -267,11 +267,11 @@ export const PropertiesPanel: React.FC = () => {
       </div>
 
       {/* Actions */}
-      <div className="p-2 border-t border-ide-border space-y-1">
+      <div className="p-2 border-t border-app-border space-y-1">
         <button onClick={handleDuplicate} className="w-full btn-secondary text-xs py-1">
           Duplicate
         </button>
-        <button onClick={handleDelete} className="w-full text-xs py-1 px-4 bg-ide-error/10 text-ide-error rounded hover:bg-ide-error/20 transition-colors">
+        <button onClick={handleDelete} className="w-full text-xs py-1 px-4 bg-app-error/10 text-app-error rounded hover:bg-app-error/20 transition-colors">
           Delete
         </button>
       </div>
@@ -281,7 +281,7 @@ export const PropertiesPanel: React.FC = () => {
 
 const PropField: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
   <div>
-    <label className="block text-[10px] text-ide-text-dim mb-1">{label}</label>
+    <label className="block text-[10px] text-app-text-dim mb-1">{label}</label>
     {children}
   </div>
 );
@@ -297,7 +297,7 @@ const UnitToggle: React.FC<{ value: SizeUnit; onChange: (u: SizeUnit) => void }>
 
   return (
     <button
-      className="w-7 h-auto flex items-center justify-center rounded text-[10px] font-bold border border-ide-border bg-ide-bg-hover text-ide-text-dim hover:text-ide-accent hover:border-ide-accent/50 transition-colors flex-shrink-0"
+      className="w-7 h-auto flex items-center justify-center rounded text-[10px] font-bold border border-app-border bg-app-bg-hover text-app-text-dim hover:text-app-accent hover:border-app-accent/50 transition-colors flex-shrink-0"
       onClick={cycle}
       title={`Unit: ${value} (click to cycle)`}
     >
@@ -398,7 +398,7 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
                 value={element.gap} min={0} max={element.gapUnit === '%' ? 100 : 50}
                 onChange={(e) => update({ gap: parseNum(e.target.value, 0, element.gapUnit === '%' ? 100 : 50, 0) } as any)} />
               <button
-                className="w-7 h-auto flex items-center justify-center rounded text-[10px] font-bold border border-ide-border bg-ide-bg-hover text-ide-text-dim hover:text-ide-accent hover:border-ide-accent/50 transition-colors flex-shrink-0"
+                className="w-7 h-auto flex items-center justify-center rounded text-[10px] font-bold border border-app-border bg-app-bg-hover text-app-text-dim hover:text-app-accent hover:border-app-accent/50 transition-colors flex-shrink-0"
                 onClick={() => update({ gapUnit: element.gapUnit === 'px' ? '%' : 'px' } as any)}
               >
                 {element.gapUnit === 'px' ? 'px' : '%'}
@@ -411,7 +411,7 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
               <input type="number" className="input-field text-xs flex-1 min-w-0" value={element.padding} min={0} max={element.paddingUnit === '%' ? 50 : 10}
                 onChange={(e) => update({ padding: parseNum(e.target.value, 0, element.paddingUnit === '%' ? 50 : 10, 0) } as any)} />
               <button
-                className="w-7 h-auto flex items-center justify-center rounded text-[10px] font-bold border border-ide-border bg-ide-bg-hover text-ide-text-dim hover:text-ide-accent hover:border-ide-accent/50 transition-colors flex-shrink-0"
+                className="w-7 h-auto flex items-center justify-center rounded text-[10px] font-bold border border-app-border bg-app-bg-hover text-app-text-dim hover:text-app-accent hover:border-app-accent/50 transition-colors flex-shrink-0"
                 onClick={() => update({ paddingUnit: element.paddingUnit === 'px' ? '%' : 'px' } as any)}
               >
                 {element.paddingUnit === 'px' ? 'px' : '%'}

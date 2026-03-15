@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Blockly from 'blockly';
 import { Modal } from '../shared/Modal';
 import { useProjectStore } from '../../stores/projectStore';
@@ -40,7 +40,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
     if (files.length > 0) {
       setPreviewFiles(files);
       setActivePreviewIdx(0);
-      setShowPreview(true);
+      setShowPreview(!showPreview);
     }
   };
 
@@ -63,23 +63,33 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
     onClose();
   };
 
+  useEffect(() => {
+    flushLiveWorkspace();
+    const options: ExportOptions = { mode, minify };
+    const files = exportProject(project, options);
+    if (files.length > 0) {
+      setPreviewFiles(files);
+      setActivePreviewIdx(0);
+    }
+  }, [minify, mode]);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Export Lua Program" width="max-w-2xl">
       <div className="space-y-5">
         {/* Export Mode */}
         <div>
-          <label className="block text-xs text-ide-text-dim mb-2">Export Mode</label>
+          <label className="block text-xs text-app-text-dim mb-2">Export Mode</label>
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => setMode('full')}
               className={`p-3 rounded border text-left transition-all ${
                 mode === 'full'
-                  ? 'border-ide-accent bg-ide-accent/10'
-                  : 'border-ide-border bg-ide-bg hover:bg-ide-hover'
+                  ? 'border-app-accent bg-app-accent/10'
+                  : 'border-app-border bg-app-bg hover:bg-app-hover'
               }`}
             >
-              <div className="text-sm font-medium text-ide-text-bright">Full Export</div>
-              <div className="text-[10px] text-ide-text-dim mt-1">
+              <div className="text-sm font-medium text-app-text-bright">Full Export</div>
+              <div className="text-[10px] text-app-text-dim mt-1">
                 UI rendering + block logic + event loop. Ready to run.
               </div>
             </button>
@@ -87,12 +97,12 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
               onClick={() => setMode('uiOnly')}
               className={`p-3 rounded border text-left transition-all ${
                 mode === 'uiOnly'
-                  ? 'border-ide-accent bg-ide-accent/10'
-                  : 'border-ide-border bg-ide-bg hover:bg-ide-hover'
+                  ? 'border-app-accent bg-app-accent/10'
+                  : 'border-app-border bg-app-bg hover:bg-app-hover'
               }`}
             >
-              <div className="text-sm font-medium text-ide-text-bright">UI Only</div>
-              <div className="text-[10px] text-ide-text-dim mt-1">
+              <div className="text-sm font-medium text-app-text-bright">UI Only</div>
+              <div className="text-[10px] text-app-text-dim mt-1">
                 Just screen drawing functions. Code your own logic.
               </div>
             </button>
@@ -106,25 +116,19 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
               type="checkbox"
               checked={minify}
               onChange={(e) => setMinify(e.target.checked)}
-              className="accent-ide-accent"
+              className="accent-app-accent"
             />
-            <span className="text-xs text-ide-text">Minify output</span>
-            <span className="text-[10px] text-ide-text-dim">(remove comments and extra whitespace)</span>
+            <span className="text-xs text-app-text">Minify output</span>
+            <span className="text-[10px] text-app-text-dim">(remove comments and extra whitespace)</span>
           </label>
         </div>
 
         {/* File structure info */}
-        <div className="bg-ide-bg border border-ide-border rounded p-3">
-          <div className="text-xs text-ide-text-dim mb-1">Export structure:</div>
-          <div className="text-[11px] text-ide-text font-mono space-y-0.5">
-            <div>utils/</div>
-            <div key="0" className="pl-4">vars.lua</div>
-            <div key="1" className="pl-4">functions.lua</div>
-            <div key="2" className="pl-4">handlers.lua</div>
-            <div>screens/</div>
-            {project.screens.map(s => (
-              <div key={s.id} className="pl-4">{s.name.replace(/[^a-zA-Z0-9_]/g, '_')}.lua</div>
-            ))}
+        <div className="bg-app-bg border border-app-border rounded p-3">
+          <div className="text-xs text-app-text-dim mb-1">Export structure:</div>
+          <div className="text-[11px] text-app-text font-mono space-y-0.5">
+            <div>components/</div>
+            <div key="0" className="pl-4">...</div>
             {mode === 'full' && (
               <>
                 <div>logic/</div>
@@ -133,6 +137,14 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
                 ))}
               </>
             )}
+            <div>screens/</div>
+            {project.screens.map(s => (
+              <div key={s.id} className="pl-4">{s.name.replace(/[^a-zA-Z0-9_]/g, '_')}.lua</div>
+            ))}
+            <div>utils/</div>
+            <div key="0" className="pl-4">vars.lua</div>
+            <div key="1" className="pl-4">functions.lua</div>
+            <div key="2" className="pl-4">handlers.lua</div>
             <div>startup.lua</div>
           </div>
         </div>
@@ -148,8 +160,8 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
                     onClick={() => setActivePreviewIdx(i)}
                     className={`px-2 py-0.5 text-[10px] rounded whitespace-nowrap ${
                       i === activePreviewIdx
-                        ? 'bg-ide-accent text-ide-bg'
-                        : 'bg-ide-bg text-ide-text-dim hover:text-ide-text'
+                        ? 'bg-app-accent text-app-bg'
+                        : 'bg-app-bg text-app-text-dim hover:text-app-text'
                     }`}
                   >
                     {f.path}
@@ -160,19 +172,19 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
                 onClick={() => {
                   navigator.clipboard.writeText(previewFiles[activePreviewIdx].content);
                 }}
-                className="text-[10px] text-ide-accent hover:text-ide-accent/80 ml-2 whitespace-nowrap"
+                className="text-[10px] text-app-accent hover:text-app-accent/80 ml-2 whitespace-nowrap"
               >
                 Copy
               </button>
             </div>
-            <pre className="bg-ide-bg border border-ide-border rounded p-3 text-[11px] text-ide-text font-mono max-h-80 overflow-auto whitespace-pre">
+            <pre className="bg-app-bg border border-app-border rounded p-3 text-[11px] text-app-text font-mono max-h-80 overflow-auto whitespace-pre">
               {previewFiles[activePreviewIdx].content}
             </pre>
           </div>
         )}
 
         {/* Actions */}
-        <div className="flex justify-between pt-2 border-t border-ide-border">
+        <div className="flex justify-between pt-2 border-t border-app-border">
           <button onClick={handlePreview} className="btn-secondary text-xs">
             Preview Code
           </button>

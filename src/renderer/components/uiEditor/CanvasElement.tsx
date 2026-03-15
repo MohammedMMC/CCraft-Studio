@@ -171,7 +171,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
       {isSelected && (
         <>
           <div
-            className="absolute -top-4 left-0 text-[9px] px-1 rounded-t bg-ide-accent text-ide-bg font-medium whitespace-nowrap"
+            className="absolute -top-4 left-0 text-[9px] px-1 rounded-t bg-app-accent text-app-bg font-medium whitespace-nowrap"
           >
             {element.name}
           </div>
@@ -179,7 +179,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
           {/* Resize handle (not for children inside containers) */}
           {!isChild && (
             <div
-              className="absolute -right-1.5 -bottom-1.5 w-3 h-3 bg-ide-accent cursor-se-resize rounded-sm"
+              className="absolute -right-1.5 -bottom-1.5 w-3 h-3 bg-app-accent cursor-se-resize rounded-sm"
               onMouseDown={handleResizeMouseDown}
             />
           )}

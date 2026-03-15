@@ -1,5 +1,5 @@
-appId: com.ccraft.ide
-productName: CCraft IDE
+appId: studio.ccraft
+productName: CCraft Studio
 directories:
   output: release
 files:

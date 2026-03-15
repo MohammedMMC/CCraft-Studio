@@ -41,7 +41,7 @@ export const TabBar: React.FC = () => {
 
   return (
     <>
-      <div className="flex items-center h-8 bg-ide-panel border-b border-ide-border px-1 gap-0.5 select-none overflow-x-auto">
+      <div className="flex items-center h-8 bg-app-panel border-b border-app-border px-1 gap-0.5 select-none overflow-x-auto">
         {project.screens.map((screen) => (
           <button
             key={screen.id}
@@ -50,16 +50,16 @@ export const TabBar: React.FC = () => {
             onContextMenu={(e) => handleContextMenu(e, screen.id)}
             className={`flex items-center gap-1.5 px-3 py-1 text-xs rounded-t transition-all whitespace-nowrap ${
               screen.id === activeScreenId
-                ? 'bg-ide-bg text-ide-text-bright border-t-2 border-t-ide-accent'
-                : 'text-ide-text-dim hover:text-ide-text hover:bg-ide-hover'
+                ? 'bg-app-bg text-app-text-bright border-t-2 border-t-app-accent'
+                : 'text-app-text-dim hover:text-app-text hover:bg-app-hover'
             }`}
           >
             {screen.isStartScreen && (
-              <span className="text-ide-success text-[10px]" title="Start Screen">&#9654;</span>
+              <span className="text-app-success text-[10px]" title="Start Screen">&#9654;</span>
             )}
             {renamingId === screen.id ? (
               <input
-                className="bg-transparent border-b border-ide-accent text-xs text-ide-text-bright outline-none w-20"
+                className="bg-transparent border-b border-app-accent text-xs text-app-text-bright outline-none w-20"
                 value={renameValue}
                 onChange={(e) => setRenameValue(e.target.value)}
                 onBlur={handleFinishRename}
@@ -78,7 +78,7 @@ export const TabBar: React.FC = () => {
 
         <button
           onClick={handleAddScreen}
-          className="px-2 py-1 text-xs text-ide-text-dim hover:text-ide-accent transition-colors"
+          className="px-2 py-1 text-xs text-app-text-dim hover:text-app-accent transition-colors"
           title="Add Screen"
         >
           +
@@ -90,11 +90,11 @@ export const TabBar: React.FC = () => {
         <>
           <div className="fixed inset-0 z-40" onClick={() => setContextMenu(null)} />
           <div
-            className="fixed z-50 bg-ide-surface border border-ide-border rounded shadow-xl py-1 min-w-[150px]"
+            className="fixed z-50 bg-app-surface border border-app-border rounded shadow-xl py-1 min-w-[150px]"
             style={{ left: contextMenu.x, top: contextMenu.y }}
           >
             <button
-              className="w-full px-3 py-1.5 text-xs text-left text-ide-text hover:bg-ide-hover"
+              className="w-full px-3 py-1.5 text-xs text-left text-app-text hover:bg-app-hover"
               onClick={() => {
                 const screen = project.screens.find(s => s.id === contextMenu.screenId);
                 if (screen) handleStartRename(screen.id, screen.name);
@@ -103,7 +103,7 @@ export const TabBar: React.FC = () => {
               Rename
             </button>
             <button
-              className="w-full px-3 py-1.5 text-xs text-left text-ide-text hover:bg-ide-hover"
+              className="w-full px-3 py-1.5 text-xs text-left text-app-text hover:bg-app-hover"
               onClick={() => {
                 setStartScreen(contextMenu.screenId);
                 setContextMenu(null);
@@ -113,9 +113,9 @@ export const TabBar: React.FC = () => {
             </button>
             {project.screens.length > 1 && (
               <>
-                <div className="h-px bg-ide-border my-1" />
+                <div className="h-px bg-app-border my-1" />
                 <button
-                  className="w-full px-3 py-1.5 text-xs text-left text-ide-error hover:bg-ide-hover"
+                  className="w-full px-3 py-1.5 text-xs text-left text-app-error hover:bg-app-hover"
                   onClick={() => {
                     removeScreen(contextMenu.screenId);
                     setContextMenu(null);

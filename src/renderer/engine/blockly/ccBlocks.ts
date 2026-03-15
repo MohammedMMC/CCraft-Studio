@@ -80,7 +80,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['event_button_focus'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('while button')
+        .appendField('when button')
         .appendField(new Blockly.FieldDropdown(BUTTONS), 'BUTTON')
         .appendField('is focused');
       this.appendStatementInput('DO')

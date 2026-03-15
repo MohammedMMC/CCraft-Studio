@@ -220,11 +220,9 @@ export const UIEditorCanvas: React.FC = () => {
     const el = containerRef.current;
     if (!el) return;
     const handleWheel = (e: WheelEvent) => {
-      if (e.ctrlKey) {
-        e.preventDefault();
-        const delta = e.deltaY > 0 ? -0.1 : 0.1;
-        useEditorStore.getState().setZoom(useEditorStore.getState().zoom + delta);
-      }
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      useEditorStore.getState().setZoom(useEditorStore.getState().zoom + delta);
     };
     el.addEventListener('wheel', handleWheel, { passive: false });
     return () => el.removeEventListener('wheel', handleWheel);
@@ -291,7 +289,7 @@ export const UIEditorCanvas: React.FC = () => {
   return (
     <div
       ref={containerRef}
-      className="flex-1 overflow-hidden bg-ide-bg relative select-none"
+      className="flex-1 overflow-hidden bg-app-bg relative select-none"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -302,7 +300,7 @@ export const UIEditorCanvas: React.FC = () => {
       <div
         className="absolute"
         style={{
-          transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoom})`,
+          transform: `translate(calc(${panOffset.x}px - ${(zoom - 1) * 100 / 2}%), calc(${panOffset.y}px - ${(zoom - 1) * 100 / 2}%)) scale(${zoom})`,
           transformOrigin: '0 0',
           left: '50%',
           top: '50%',
@@ -311,7 +309,7 @@ export const UIEditorCanvas: React.FC = () => {
         }}
       >
         <div
-          className="relative border border-ide-border/50 shadow-lg"
+          className="relative border border-app-border/50 shadow-lg"
           style={{ width: canvasWidth, height: canvasHeight }}
         >
           <canvas
@@ -355,7 +353,7 @@ export const UIEditorCanvas: React.FC = () => {
           })}
         </div>
 
-        <div className="absolute -bottom-5 left-0 right-0 text-center text-[10px] text-ide-text-dim">
+        <div className="absolute -bottom-5 left-0 right-0 text-center text-[10px] text-app-text-dim">
           {project.displayWidth} x {project.displayHeight}
         </div>
       </div>

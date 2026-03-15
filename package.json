@@ -1,5 +1,5 @@
 {
-  "name": "ccraft-ide",
+  "name": "ccraft-studio",
   "version": "1.0.0",
   "description": "Visual UI Builder & Block Programmer for ComputerCraft: Tweaked",
   "main": "dist/main/main.js",

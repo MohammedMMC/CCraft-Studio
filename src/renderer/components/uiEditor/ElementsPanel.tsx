@@ -221,7 +221,7 @@ export const ElementsPanel: React.FC = () => {
     return (
       <div
         key={`drop-${parentId ?? 'root'}-${index}`}
-        className="h-0.5 bg-ide-accent rounded-full mx-1"
+        className="h-0.5 bg-app-accent rounded-full mx-1"
         style={{ marginLeft: 8 + depth * 16 }}
       />
     );
@@ -246,8 +246,8 @@ export const ElementsPanel: React.FC = () => {
           onDrop={handleDrop}
           onDragEnd={handleDragEnd}
           className={`flex items-center gap-2 px-2 py-1.5 rounded text-left text-xs transition-colors cursor-grab
-            ${isSelected ? 'bg-ide-accent/20 text-ide-accent' : 'hover:bg-ide-bg-hover text-ide-text'}
-            ${isNestTarget ? 'ring-1 ring-ide-accent ring-inset bg-ide-accent/10' : ''}
+            ${isSelected ? 'bg-app-accent/20 text-app-accent' : 'hover:bg-app-bg-hover text-app-text'}
+            ${isNestTarget ? 'ring-1 ring-app-accent ring-inset bg-app-accent/10' : ''}
             ${isDragged ? 'opacity-40' : ''}
           `}
           style={{ paddingLeft: 8 + depth * 16 }}
@@ -255,17 +255,17 @@ export const ElementsPanel: React.FC = () => {
         >
           <span
             className={`w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold flex-shrink-0 ${
-              isSelected ? 'bg-ide-accent text-ide-bg' : 'bg-ide-bg-hover text-ide-text-dim'
+              isSelected ? 'bg-app-accent text-app-bg' : 'bg-app-bg-hover text-app-text-dim'
             }`}
           >
             {meta.icon}
           </span>
           <span className="truncate flex-1">{el.name}</span>
           {!el.visible && (
-            <span className="text-[9px] text-ide-text-dim opacity-50">hidden</span>
+            <span className="text-[9px] text-app-text-dim opacity-50">hidden</span>
           )}
           {isContainer && (
-            <span className="text-[9px] text-ide-text-dim">{children.length}</span>
+            <span className="text-[9px] text-app-text-dim">{children.length}</span>
           )}
         </div>
         {/* Render children indented */}
@@ -282,7 +282,7 @@ export const ElementsPanel: React.FC = () => {
     <div className="flex flex-col h-full">
       <div className="panel-header flex items-center justify-between">
         <span>Elements</span>
-        <span className="text-[10px] font-normal text-ide-text-dim normal-case tracking-normal">
+        <span className="text-[10px] font-normal text-app-text-dim normal-case tracking-normal">
           {elements.length}
         </span>
       </div>
@@ -293,7 +293,7 @@ export const ElementsPanel: React.FC = () => {
         onDrop={handleDrop}
       >
         {elements.length === 0 ? (
-          <div className="p-3 text-xs text-ide-text-dim text-center">
+          <div className="p-3 text-xs text-app-text-dim text-center">
             No elements on this screen
           </div>
         ) : (

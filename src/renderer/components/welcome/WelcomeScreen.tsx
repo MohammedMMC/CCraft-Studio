@@ -72,14 +72,14 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNewProject }) =>
   };
 
   return (
-    <div className="flex items-center justify-center w-full h-full bg-ide-bg">
+    <div className="flex items-center justify-center w-full h-full bg-app-bg">
       <div className="flex flex-col items-center max-w-2xl w-full px-8">
         {/* Logo / Title */}
         <div className="mb-10 text-center">
-          <h1 className="text-4xl font-bold text-ide-text-bright mb-2 tracking-tight">
-            <span className="text-ide-accent">CC</span>raft IDE
+          <h1 className="text-4xl font-bold text-app-text-bright mb-2 tracking-tight">
+            <span className="text-app-accent">CC</span>raft Studio
           </h1>
-          <p className="text-sm text-ide-text-dim">
+          <p className="text-sm text-app-text-dim">
             Visual UI Builder & Block Programmer for ComputerCraft: Tweaked
           </p>
         </div>
@@ -103,7 +103,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNewProject }) =>
         {/* Recent Projects */}
         {recentProjects.length > 0 && (
           <div className="w-full max-w-md">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-ide-text-dim mb-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-app-text-dim mb-3">
               Recent Projects
             </h3>
             <div className="space-y-1">
@@ -112,18 +112,18 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNewProject }) =>
                   key={i}
                   onClick={() => handleOpenRecent(project)}
                   className="w-full flex items-center justify-between px-4 py-2 rounded
-                             bg-ide-surface border border-ide-border hover:bg-ide-hover
+                             bg-app-surface border border-app-border hover:bg-app-hover
                              transition-colors text-left group"
                 >
                   <div>
-                    <span className="text-sm text-ide-text group-hover:text-ide-text-bright">
+                    <span className="text-sm text-app-text group-hover:text-app-text-bright">
                       {project.name}
                     </span>
-                    <span className="block text-xs text-ide-text-dim truncate max-w-xs">
+                    <span className="block text-xs text-app-text-dim truncate max-w-xs">
                       {project.path}
                     </span>
                   </div>
-                  <span className="text-xs text-ide-text-dim">
+                  <span className="text-xs text-app-text-dim">
                     {new Date(project.openedAt).toLocaleDateString()}
                   </span>
                 </button>
@@ -133,7 +133,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNewProject }) =>
         )}
 
         {/* Version */}
-        <div className="mt-10 text-xs text-ide-text-dim">
+        <div className="mt-10 text-xs text-app-text-dim">
           v1.0.0 &middot; CC:Tweaked
         </div>
       </div>

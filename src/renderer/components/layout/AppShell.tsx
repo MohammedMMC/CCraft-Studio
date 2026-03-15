@@ -32,7 +32,7 @@ export const AppShell: React.FC<AppShellProps> = ({ onExport }) => {
 
         {/* Elements Panel */}
         {mode === 'ui' && (
-          <div className="w-52 border-l border-ide-border bg-ide-panel flex flex-col overflow-hidden">
+          <div className="w-52 border-l border-app-border bg-app-panel flex flex-col overflow-hidden">
             <ElementsPanel />
           </div>
         )}

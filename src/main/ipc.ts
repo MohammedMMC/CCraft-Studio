@@ -68,7 +68,7 @@ export function setupIPC(): void {
   ipcMain.handle('fs:getRecentProjects', async () => {
     const configDir = path.join(
       process.env.APPDATA || process.env.HOME || '',
-      '.ccraft-ide'
+      '.ccraft-studio'
     );
     const recentFile = path.join(configDir, 'recent.json');
     if (!fs.existsSync(recentFile)) return [];
@@ -82,7 +82,7 @@ export function setupIPC(): void {
   ipcMain.handle('fs:addRecentProject', async (_event, entry: { name: string; path: string }) => {
     const configDir = path.join(
       process.env.APPDATA || process.env.HOME || '',
-      '.ccraft-ide'
+      '.ccraft-studio'
     );
     if (!fs.existsSync(configDir)) fs.mkdirSync(configDir, { recursive: true });
     const recentFile = path.join(configDir, 'recent.json');

@@ -62,10 +62,10 @@ export const PromptDialog: React.FC = () => {
       className="fixed inset-0 z-[9999] flex items-center justify-center"
       style={{ background: 'rgba(0,0,0,0.5)' }}
     >
-      <div className="bg-ide-surface border border-ide-border rounded-lg shadow-xl w-80 p-5">
-        <h3 className="text-sm font-semibold text-ide-text mb-2">{title}</h3>
+      <div className="bg-app-surface border border-app-border rounded-lg shadow-xl w-80 p-5">
+        <h3 className="text-sm font-semibold text-app-text mb-2">{title}</h3>
         {message && (
-          <p className="text-xs text-ide-text-dim mb-3">{message}</p>
+          <p className="text-xs text-app-text-dim mb-3">{message}</p>
         )}
         <input
           ref={inputRef}

@@ -48,14 +48,14 @@ export const TerminalPreview: React.FC = () => {
     <div className="flex flex-col h-full">
       <div className="panel-header flex items-center justify-between">
         <span>Terminal Preview</span>
-        <span className="text-[10px] font-normal text-ide-text-dim normal-case tracking-normal">
+        <span className="text-[10px] font-normal text-app-text-dim normal-case tracking-normal">
           {project.displayWidth}x{project.displayHeight}
         </span>
       </div>
       <div className="flex-1 flex items-center justify-center p-3 bg-black/30 overflow-auto">
         <canvas
           ref={canvasRef}
-          className="border border-ide-border/30"
+          className="border border-app-border/30"
           style={{
             maxWidth: '100%',
             maxHeight: '100%',
