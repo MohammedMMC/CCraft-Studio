@@ -128,12 +128,22 @@ function generateComponentInstance(
   const lines: string[] = [];
   const escapedName = escapeLuaString(el.name);
 
+  // Build unit metadata lines for responsive layout
+  const unitLines: string[] = [];
+  if (el.widthUnit !== 'px') {
+    unitLines.push(`  widthUnit = "${el.widthUnit}", rawWidth = ${el.width},`);
+  }
+  if (el.heightUnit !== 'px') {
+    unitLines.push(`  heightUnit = "${el.heightUnit}", rawHeight = ${el.height},`);
+  }
+
   switch (el.type) {
     case 'label': {
       const fg = luaColor(el.fgColor);
       const bg = luaColor(el.bgColor);
       lines.push(`${varName} = Label:new("${escapedName}", {`);
       lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
+      lines.push(...unitLines);
       lines.push(`  text = "${escapeLuaString(el.text)}", textAlign = "${el.textAlign}",`);
       lines.push(`  fgColor = ${fg ?? 'nil'}, bgColor = ${bg ?? 'nil'},`);
       lines.push(`  visible = ${el.visible},`);
@@ -148,6 +158,7 @@ function generateComponentInstance(
       const focusBg = luaColor(el.focusBgColor);
       lines.push(`${varName} = Button:new("${escapedName}", {`);
       lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
+      lines.push(...unitLines);
       lines.push(`  text = "${escapeLuaString(el.text)}", textAlign = "${el.textAlign}",`);
       lines.push(`  fgColor = ${fg ?? 'nil'}, bgColor = ${bg ?? 'nil'},`);
       lines.push(`  focusTextColor = ${focusFg ?? 'nil'}, focusBgColor = ${focusBg ?? 'nil'},`);
@@ -161,6 +172,7 @@ function generateComponentInstance(
       const bg = luaColor(el.bgColor);
       lines.push(`${varName} = Container:new("${escapedName}", {`);
       lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
+      lines.push(...unitLines);
       lines.push(`  fgColor = ${fg ?? 'nil'}, bgColor = ${bg ?? 'nil'},`);
       lines.push(`  visible = ${el.visible},`);
       lines.push('})');

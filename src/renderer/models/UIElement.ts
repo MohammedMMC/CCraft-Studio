@@ -53,6 +53,7 @@ export interface ContainerElement extends BaseElement {
   gridTemplateCols: number;
   gridTemplateRows: number;
   padding: number;
+  paddingUnit: 'px' | '%';
 }
 
 export type UIElement =
@@ -94,7 +95,7 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     alignItems: 'start',
     justifyContent: 'start',
     gridTemplateCols: 2, gridTemplateRows: 2,
-    padding: 0,
+    padding: 0, paddingUnit: 'px',
   },
 };
 
@@ -153,7 +154,12 @@ export function resolveContainerLayout(
   displayWidth: number,
   displayHeight: number,
 ): ResolvedChildPosition[] {
-  const pad = container.padding;
+  // Resolve padding
+  let pad = container.padding;
+  if (container.paddingUnit === '%') {
+    const ref = Math.min(containerWidth, containerHeight);
+    pad = Math.max(0, Math.round((container.padding / 100) * ref));
+  }
   const innerX = containerX + pad;
   const innerY = containerY + pad;
   const innerW = Math.max(1, containerWidth - pad * 2);
@@ -186,12 +192,29 @@ function resolveFlexLayout(
   const isRow = container.flexDirection === 'row';
   const results: ResolvedChildPosition[] = [];
 
-  const totalMain = childSizes.reduce(
-    (sum, s) => sum + (isRow ? s.width : s.height), 0
-  ) + gap * Math.max(0, children.length - 1);
-
   const mainSpace = isRow ? innerW : innerH;
   const crossSpace = isRow ? innerH : innerW;
+  const totalGap = gap * Math.max(0, children.length - 1);
+
+  // Shrink children proportionally if they overflow the main axis
+  const totalChildMain = childSizes.reduce(
+    (sum, s) => sum + (isRow ? s.width : s.height), 0
+  );
+  if (totalChildMain > 0 && totalChildMain + totalGap > mainSpace) {
+    const availableForChildren = Math.max(children.length, mainSpace - totalGap);
+    const ratio = availableForChildren / totalChildMain;
+    for (const s of childSizes) {
+      if (isRow) {
+        s.width = Math.max(1, Math.floor(s.width * ratio));
+      } else {
+        s.height = Math.max(1, Math.floor(s.height * ratio));
+      }
+    }
+  }
+
+  const totalMain = childSizes.reduce(
+    (sum, s) => sum + (isRow ? s.width : s.height), 0
+  ) + totalGap;
 
   let mainOffset = 0;
   let spaceBetween = gap;
@@ -205,8 +228,8 @@ function resolveFlexLayout(
       break;
     case 'space-between':
       if (children.length > 1) {
-        const totalChildMain = childSizes.reduce((s, c) => s + (isRow ? c.width : c.height), 0);
-        spaceBetween = Math.floor((mainSpace - totalChildMain) / Math.max(1, children.length - 1));
+        const childMainSum = childSizes.reduce((s, c) => s + (isRow ? c.width : c.height), 0);
+        spaceBetween = Math.floor((mainSpace - childMainSum) / Math.max(1, children.length - 1));
       }
       mainOffset = 0;
       break;

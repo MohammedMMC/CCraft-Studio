@@ -407,8 +407,16 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
           </PropField>
 
           <PropField label="Padding">
-            <input type="number" className="input-field text-xs" value={element.padding} min={0} max={10}
-              onChange={(e) => update({ padding: parseNum(e.target.value, 0, 10, 0) } as any)} />
+            <div className="flex gap-1">
+              <input type="number" className="input-field text-xs flex-1 min-w-0" value={element.padding} min={0} max={element.paddingUnit === '%' ? 50 : 10}
+                onChange={(e) => update({ padding: parseNum(e.target.value, 0, element.paddingUnit === '%' ? 50 : 10, 0) } as any)} />
+              <button
+                className="w-7 h-auto flex items-center justify-center rounded text-[10px] font-bold border border-ide-border bg-ide-bg-hover text-ide-text-dim hover:text-ide-accent hover:border-ide-accent/50 transition-colors flex-shrink-0"
+                onClick={() => update({ paddingUnit: element.paddingUnit === 'px' ? '%' : 'px' } as any)}
+              >
+                {element.paddingUnit === 'px' ? 'px' : '%'}
+              </button>
+            </div>
           </PropField>
         </>
       );

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { useHistoryStore } from '../../stores/historyStore';
 import { useBlocklyStore } from '../../stores/blocklyStore';
+import { DEVICE_PRESETS, MONITOR_SIZES, DeviceType } from '../../models/Project';
 
 export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
   const project = useProjectStore((s) => s.project);
@@ -19,6 +20,48 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
   const canRedo = useHistoryStore((s) => s.redoStack.length > 0);
   const undo = useHistoryStore((s) => s.undo);
   const redo = useHistoryStore((s) => s.redo);
+  const updateProjectInfo = useProjectStore((s) => s.updateProjectInfo);
+
+  // Build current screen size value for the dropdown
+  const screenSizeValue = useMemo(() => {
+    if (!project) return '';
+    const { device, displayWidth, displayHeight } = project;
+    // Check if it matches a monitor size
+    if (device === 'monitor') {
+      const match = MONITOR_SIZES.find(m => m.width === displayWidth && m.height === displayHeight);
+      if (match) return `monitor:${match.blocks}`;
+    }
+    // Check if it matches a device preset
+    const preset = DEVICE_PRESETS[device];
+    if (preset && preset.defaultWidth === displayWidth && preset.defaultHeight === displayHeight) {
+      return `device:${device}`;
+    }
+    // Custom size - show as monitor with closest match or just the current device
+    return `device:${device}`;
+  }, [project]);
+
+  const handleScreenSizeChange = (value: string) => {
+    const [type, key] = value.split(':');
+    if (type === 'device') {
+      const preset = DEVICE_PRESETS[key as DeviceType];
+      if (preset) {
+        updateProjectInfo({
+          device: key as DeviceType,
+          displayWidth: preset.defaultWidth,
+          displayHeight: preset.defaultHeight,
+        });
+      }
+    } else if (type === 'monitor') {
+      const monitor = MONITOR_SIZES.find(m => m.blocks === key);
+      if (monitor) {
+        updateProjectInfo({
+          device: 'monitor',
+          displayWidth: monitor.width,
+          displayHeight: monitor.height,
+        });
+      }
+    }
+  };
 
   const handleSave = async () => {
     if (!project || !window.electronAPI) return;
@@ -106,6 +149,35 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
       </button>
       <button onClick={zoomIn} className="toolbar-btn" title="Zoom In">+</button>
 
+      {/* Screen Size Preview (UI mode only) */}
+      {mode === 'ui' && (
+        <>
+          <div className="w-px h-5 bg-ide-border mx-1" />
+          <MonitorIcon />
+          <select
+            value={screenSizeValue}
+            onChange={(e) => handleScreenSizeChange(e.target.value)}
+            className="bg-ide-bg border border-ide-border rounded text-xs text-ide-text px-1.5 py-1 cursor-pointer focus:outline-none focus:border-ide-accent"
+            title="Preview screen size"
+          >
+            <optgroup label="Devices">
+              {(Object.entries(DEVICE_PRESETS) as [DeviceType, typeof DEVICE_PRESETS[DeviceType]][]).filter(([key, preset]) => preset.supportsColor).map(([key, preset]) => (
+                <option key={`device:${key}`} value={`device:${key}`}>
+                  {preset.label} ({preset.defaultWidth}x{preset.defaultHeight})
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Monitors">
+              {MONITOR_SIZES.map((m) => (
+                <option key={`monitor:${m.blocks}`} value={`monitor:${m.blocks}`}>
+                  {m.blocks} Monitor ({m.width}x{m.height})
+                </option>
+              ))}
+            </optgroup>
+          </select>
+        </>
+      )}
+
       {/* Spacer */}
       <div className="flex-1" />
 
@@ -140,5 +212,13 @@ const GridIcon = () => (
     <line x1="10.5" y1="1" x2="10.5" y2="15" />
     <line x1="1" y1="5.5" x2="15" y2="5.5" />
     <line x1="1" y1="10.5" x2="15" y2="10.5" />
+  </svg>
+);
+
+const MonitorIcon = () => (
+  <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-ide-text-dim mr-0.5">
+    <rect x="1" y="2" width="14" height="10" rx="1" />
+    <line x1="5" y1="14" x2="11" y2="14" />
+    <line x1="8" y1="12" x2="8" y2="14" />
   </svg>
 );

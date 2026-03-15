@@ -158,6 +158,27 @@ function generateVarsFile(project: CCProject): string {
       lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
       lines.push(`  visible = ${el.visible},`);
       lines.push(`  fgColor = ${luaColorStr(el.fgColor)}, bgColor = ${luaColorStr(el.bgColor)},`);
+      // Parent relationship for layout tree
+      if (el.parentId) {
+        const parent = screen.uiElements.find(p => p.id === el.parentId);
+        if (parent) lines.push(`  parentName = "${escapeLuaString(parent.name)}",`);
+      }
+      // Store size unit metadata for responsive layout
+      if (el.widthUnit !== 'px') {
+        lines.push(`  widthUnit = "${el.widthUnit}", rawWidth = ${el.width},`);
+      }
+      if (el.heightUnit !== 'px') {
+        lines.push(`  heightUnit = "${el.heightUnit}", rawHeight = ${el.height},`);
+      }
+      // Container layout metadata
+      if (el.type === 'container') {
+        const c = el as ContainerElement;
+        lines.push(`  isContainer = true, padding = ${c.padding}, paddingUnit = "${c.paddingUnit}",`);
+        lines.push(`  display = "${c.display}", flexDirection = "${c.flexDirection}",`);
+        lines.push(`  gap = ${c.gap}, gapUnit = "${c.gapUnit}",`);
+        lines.push(`  alignItems = "${c.alignItems}", justifyContent = "${c.justifyContent}",`);
+        lines.push(`  gridTemplateCols = ${c.gridTemplateCols}, gridTemplateRows = ${c.gridTemplateRows},`);
+      }
       if ((el as any).text !== undefined) {
         lines.push(`  text = "${escapeLuaString((el as any).text)}",`);
         lines.push(`  textAlign = "${(el as any).textAlign || 'left'}",`);
@@ -165,6 +186,7 @@ function generateVarsFile(project: CCProject): string {
       if (el.type === 'button') {
         lines.push(`  focusTextColor = ${luaColorStr(el.focusTextColor ?? el.fgColor)}, focusBgColor = ${luaColorStr(el.focusBgColor ?? el.bgColor)},`);
       }
+      lines.push(`  zIndex = ${el.zIndex},`);
       lines.push('}');
     }
   }
@@ -287,6 +309,10 @@ function generateStartupFile(project: CCProject): string {
   }
 
   lines.push('');
+  lines.push('-- Resolve responsive layout for actual screen size');
+  lines.push('local screenW, screenH = term.getSize()');
+  lines.push('resolveLayout(screenW, screenH)');
+  lines.push('');
   lines.push(`navigate("${safeName}")`);
   lines.push('');
   lines.push('-- Event loop');
@@ -361,6 +387,9 @@ function generateUIOnlyStartup(project: CCProject): string {
     '',
   ];
   for (const s of project.screens) lines.push(`dofile(script_dir .. "screens/${sanitize(s.name)}.lua")`);
+  lines.push('');
+  lines.push('local screenW, screenH = term.getSize()');
+  lines.push('resolveLayout(screenW, screenH)');
   lines.push('');
   lines.push(`drawScreen_${safeName}()`);
   return lines.join('\n');
