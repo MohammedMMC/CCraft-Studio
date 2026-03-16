@@ -1,5 +1,5 @@
 -- =============================================
--- Panel - Layout container with title text
+-- Panel
 -- =============================================
 
 Panel = setmetatable({}, { __index = BaseObject })

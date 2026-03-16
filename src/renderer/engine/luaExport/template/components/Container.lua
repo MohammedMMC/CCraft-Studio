@@ -1,5 +1,5 @@
 -- =============================================
--- Container - Layout container component
+-- Container
 -- =============================================
 
 Container = setmetatable({}, { __index = BaseObject })

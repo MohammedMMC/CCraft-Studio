@@ -1,17 +1,8 @@
 import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContainerLayout, isContainerLike } from '../../models/UIElement';
-import { CCColor, CC_COLORS } from '../../models/CCColors';
-import { escapeLuaString, indent } from '../../utils/luaHelpers';
+import { escapeLuaString, indent, luaColor, sanitize } from '../../utils/luaHelpers';
+import { CC_COLORS } from '../../models/CCColors';
 
-function luaColor(color: CCColor): string | null {
-  return CC_COLORS[color].luaName;
-}
-
-function sanitize(name: string): string {
-  return name.replace(/[^a-zA-Z0-9_]/g, '_');
-}
-
-/** Resolve absolute positions for all elements, including children inside containers. */
-function buildPositionMap(
+export function buildPositionMap(
   elements: UIElement[],
   displayWidth: number,
   displayHeight: number,
@@ -64,14 +55,11 @@ export function generateUICode(
   const lines: string[] = [];
   const i = indent(1);
 
-  // Screen namespace table
   lines.push(`local screen_${safeName} = {}`);
   lines.push('');
 
-  // Collect all visible elements with resolved positions
   const allVisible = elements.filter(e => e.visible && posMap.has(e.id));
 
-  // Generate component instances for all elements
   for (const el of allVisible) {
     const pos = posMap.get(el.id)!;
     const varName = `screen_${safeName}.${sanitize(el.name)}`;
@@ -79,7 +67,6 @@ export function generateUICode(
     lines.push('');
   }
 
-  // Wire container/panel children
   for (const el of allVisible) {
     if (el.type !== 'container' && el.type !== 'panel') continue;
     const children = elements
@@ -91,7 +78,6 @@ export function generateUICode(
     if (children.length > 0) lines.push('');
   }
 
-  // Draw order: top-level elements sorted by zIndex
   const topLevel = allVisible
     .filter(e => e.parentId === null)
     .sort((a, b) => a.zIndex - b.zIndex);
@@ -103,7 +89,6 @@ export function generateUICode(
   lines.push('}');
   lines.push('');
 
-  // Draw function
   lines.push(`function drawScreen_${safeName}()`);
   lines.push(`${i}term.setBackgroundColor(${CC_COLORS.black.luaName})`);
   lines.push(`${i}term.clear()`);
@@ -113,7 +98,6 @@ export function generateUICode(
   lines.push('end');
   lines.push('');
 
-  // Register screen components for event loop access
   lines.push(`screenComponents["${safeName}"] = screen_${safeName}`);
 
   return lines.join('\n');
@@ -128,7 +112,6 @@ function generateComponentInstance(
   const lines: string[] = [];
   const escapedName = escapeLuaString(el.name);
 
-  // Build unit metadata lines for responsive layout
   const unitLines: string[] = [];
   if (el.widthUnit !== 'px') {
     unitLines.push(`  widthUnit = "${el.widthUnit}", rawWidth = ${el.width},`);
@@ -137,7 +120,6 @@ function generateComponentInstance(
     unitLines.push(`  heightUnit = "${el.heightUnit}", rawHeight = ${el.height},`);
   }
 
-  // Parent name for layout resolution
   const parentLine: string[] = [];
   if (el.parentId) {
     const parent = allElements.find(p => p.id === el.parentId);
@@ -226,4 +208,51 @@ function generateComponentInstance(
   }
 
   return lines;
+}
+
+export function parseEventCode(code: string, screenName: string): string {
+  const lines = code.split('\n');
+  const output: string[] = [];
+  let insideEvent: string | null = null;
+  let eventBody: string[] = [];
+  let eventMeta = '';
+
+  for (const line of lines) {
+    const startMatch = line.match(/-- \[EVENT:(\w+)(?::(.*?))?\]/);
+    const endMatch = line.match(/-- \[\/EVENT:/);
+    if (startMatch && !insideEvent) {
+      insideEvent = startMatch[1];
+      eventMeta = startMatch[2] || '';
+      eventBody = [];
+    } else if (endMatch && insideEvent) {
+      const body = eventBody.filter(l => l.trim()).join('\n');
+      output.push(wrapEvent(screenName, insideEvent, eventMeta, body));
+      output.push('');
+      insideEvent = null;
+    } else if (insideEvent) {
+      eventBody.push(line);
+    } else if (line.trim()) {
+      output.push(line);
+    }
+  }
+  return output.join('\n');
+}
+
+export function wrapEvent(screen: string, event: string, meta: string, body: string): string {
+  const ib = body.split('\n').map(l => '  ' + l).join('\n');
+  const eMeta = escapeLuaString(meta);
+  switch (event) {
+    case 'screen_load': {
+      const targetScreen = meta ? sanitize(meta) : screen;
+      return `handlers["${targetScreen}"].onLoad = function()\n${ib}\nend`;
+    }
+    case 'button_click': return `handlers["${screen}"].onButtonClick["${eMeta}"] = function(mx, my, button)\n${ib}\nend`;
+    case 'button_focus': return `handlers["${screen}"].onButtonFocus["${eMeta}"] = function(mx, my, button)\n${ib}\nend`;
+    case 'button_release': return `handlers["${screen}"].onButtonRelease["${eMeta}"] = function(mx, my, button)\n${ib}\nend`;
+    case 'key_press': return `handlers["${screen}"].onKeyPress["${eMeta}"] = function(key)\n${ib}\nend`;
+    case 'timer': return `handlers["${screen}"].onTimer["t_${eMeta}"] = function(timerId)\n${ib}\nend`;
+    case 'redstone': return `handlers["${screen}"].onRedstone = function()\n${ib}\nend`;
+    case 'modem_message': return `handlers["${screen}"].onModemMessage["ch_${eMeta}"] = function(side, ch, replyChannel, msg, dist)\n${ib}\nend`;
+    default: return body;
+  }
 }

@@ -1,5 +1,5 @@
 -- =============================================
--- Button - Clickable button component
+-- Button
 -- =============================================
 
 Button = setmetatable({}, { __index = BaseObject })

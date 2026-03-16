@@ -1,13 +1,13 @@
+import { escapeLuaString, sanitize } from '@/utils/luaHelpers';
 import { CCProject } from '@/models/Project';
-import { buildPositionMap, escapeLuaString, sanitize } from '@/utils/luaHelpers';
-import { generateUICode } from './uiCodeGen';
+import { buildPositionMap, generateUICode, parseEventCode } from './uiCodeGen';
 
 const TEMPLATE_DATA = import.meta.glob("./template/**/*.lua", {
-  eager: true,
-  query: "raw"
+  eager: true, import: "default",
+  query: "?raw"
 });
 
-export const COMPONENTS_LIST = Object.keys(TEMPLATE_DATA).filter(t => t.includes('/components/')).map(t=>t.replace(/\.lua/g, "").replace("./template/", "").split("/").pop()!);
+export const COMPONENTS_LIST = Object.keys(TEMPLATE_DATA).filter(t => t.includes('/components/')).map(t => t.replace(/\.lua/g, "").replace("./template/", "").split("/").pop()!);
 
 export function generateHeader(projectName: string, author: string): string {
   const lines = [
@@ -34,7 +34,6 @@ export function generateFunctionsFile(projectName: string, author: string): stri
 export function generateVarsFile(project: CCProject): string {
   const startScreen = project.screens.find(s => s.isStartScreen) ?? project.screens[0];
   const lines: string[] = [
-    generateHeader(project.name, project.author),
     '-- =============================================',
     '-- Global Variables',
     '-- =============================================',
@@ -50,7 +49,6 @@ export function generateVarsFile(project: CCProject): string {
       case 'table': lines.push(`${safeName} = {}`); break;
     }
   }
-  if (project.variables.length === 0) lines.push('-- (no variables defined)');
 
   lines.push('');
   lines.push('-- Runtime state');
@@ -60,12 +58,11 @@ export function generateVarsFile(project: CCProject): string {
   lines.push('-- Screen components');
   lines.push('screenComponents = {}');
 
-  return lines.join('\n');
+  return generateHeader(project.name, project.author) + lines.join('\n');
 }
 
 export function generateHandlersFile(project: CCProject): string {
   const lines: string[] = [
-    generateHeader(project.name, project.author),
     '-- =============================================',
     '-- Event Handlers & Button Regions',
     '-- =============================================',
@@ -101,19 +98,29 @@ export function generateHandlersFile(project: CCProject): string {
     }
     lines.push('}');
   }
-  return lines.join('\n');
+  return generateHeader(project.name, project.author) + lines.join('\n');
 }
 
-export function generateScreenFile(_project: CCProject, screenName: string, uiElements: any[]): string {
+export function generateScreenFile(project: CCProject, screenName: string, uiElements: any[]): string {
   const lines: string[] = [
-    generateHeader(_project.name, _project.author),
     '-- =============================================',
-    `-- Screen: ${screenName}`,
+    `-- Screen UI: ${screenName}`,
     '-- =============================================',
   ];
   lines.push('');
-  lines.push(generateUICode(uiElements, screenName, _project.displayWidth, _project.displayHeight));
-  return lines.join('\n');
+  lines.push(generateUICode(uiElements, screenName, project.displayWidth, project.displayHeight));
+  return generateHeader(project.name, project.author) + lines.join('\n');
+}
+
+export function generateLogicFile(project: CCProject, screenName: string, blockCode: string): string {
+  const lines: string[] = [
+    '-- =============================================',
+    `-- Screen Logic: ${screenName}`,
+    '-- =============================================',
+  ];
+  lines.push('');
+  lines.push(parseEventCode(blockCode, sanitize(screenName)));
+  return generateHeader(project.name, project.author) + lines.join('\n');
 }
 
 export function generateStartupFile(project: CCProject, onlyUI: boolean = false): string {

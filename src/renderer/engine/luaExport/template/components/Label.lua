@@ -1,5 +1,5 @@
 -- =============================================
--- Label - Static text display component
+-- Label
 -- =============================================
 
 Label = setmetatable({}, { __index = BaseObject })
