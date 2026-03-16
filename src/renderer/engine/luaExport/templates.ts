@@ -4,8 +4,9 @@ import { generateUICode } from './uiCodeGen';
 
 const TEMPLATE_DATA = import.meta.glob("./template/**/*.lua", {
   eager: true,
-  as: "raw"
-})
+  query: "raw"
+});
+
 export const COMPONENTS_LIST = Object.keys(TEMPLATE_DATA).filter(t => t.includes('/components/')).map(t=>t.replace(/\.lua/g, "").replace("./template/", "").split("/").pop()!);
 
 export function generateHeader(projectName: string, author: string): string {
@@ -18,15 +19,16 @@ export function generateHeader(projectName: string, author: string): string {
   lines.push(`-- Date: ${new Date().toISOString().split('T')[0]}`);
   lines.push('-- ============================================================');
   lines.push('');
+  lines.push('');
   return lines.join('\n');
 }
 
 export function getComponentLua(projectName: string, author: string, componentName: string): string {
-  return `${generateHeader(projectName, author)} ${TEMPLATE_DATA['./template/components/' + componentName + '.lua']}`;
+  return `${generateHeader(projectName, author)}${TEMPLATE_DATA['./template/components/' + componentName + '.lua']}`;
 }
 
 export function generateFunctionsFile(projectName: string, author: string): string {
-  return `${generateHeader(projectName, author)}\n${TEMPLATE_DATA["./template/utils/functions.lua"]}`;
+  return `${generateHeader(projectName, author)}${TEMPLATE_DATA["./template/utils/functions.lua"]}`;
 }
 
 export function generateVarsFile(project: CCProject): string {
@@ -63,6 +65,7 @@ export function generateVarsFile(project: CCProject): string {
 
 export function generateHandlersFile(project: CCProject): string {
   const lines: string[] = [
+    generateHeader(project.name, project.author),
     '-- =============================================',
     '-- Event Handlers & Button Regions',
     '-- =============================================',
@@ -102,14 +105,22 @@ export function generateHandlersFile(project: CCProject): string {
 }
 
 export function generateScreenFile(_project: CCProject, screenName: string, uiElements: any[]): string {
-  return `-- Screen: ${screenName}\n\n${generateUICode(uiElements, screenName, _project.displayWidth, _project.displayHeight)}`;
+  const lines: string[] = [
+    generateHeader(_project.name, _project.author),
+    '-- =============================================',
+    `-- Screen: ${screenName}`,
+    '-- =============================================',
+  ];
+  lines.push('');
+  lines.push(generateUICode(uiElements, screenName, _project.displayWidth, _project.displayHeight));
+  return lines.join('\n');
 }
 
 export function generateStartupFile(project: CCProject, onlyUI: boolean = false): string {
   const startScreen = project.screens.find(s => s.isStartScreen) ?? project.screens[0];
   const safeName = sanitize(startScreen?.name ?? 'Screen 1');
 
-  let lines = `${generateHeader(project.name, project.author)} ${TEMPLATE_DATA["./template/startup.lua"]}`;
+  let lines = `${generateHeader(project.name, project.author)}${TEMPLATE_DATA["./template/startup.lua"]}`;
   lines = lines.replace("-- {PROJECT_START}",
     onlyUI
       ? `resolveLayout(term.getSize())\ndrawScreen_${safeName}()`
