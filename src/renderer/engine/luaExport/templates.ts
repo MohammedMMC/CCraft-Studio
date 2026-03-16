@@ -1,7 +1,12 @@
 import { CCProject } from '@/models/Project';
 import { buildPositionMap, escapeLuaString, sanitize } from '@/utils/luaHelpers';
-import { readFileSync, readdirSync } from 'fs';
 import { generateUICode } from './uiCodeGen';
+
+const TEMPLATE_DATA = import.meta.glob("./template/**/*.lua", {
+  eager: true,
+  as: "raw"
+})
+export const COMPONENTS_LIST = Object.keys(TEMPLATE_DATA).filter(t => t.includes('/components/')).map(t=>t.replace(/\.lua/g, "").replace("./template/", "").split("/").pop()!);
 
 export function generateHeader(projectName: string, author: string): string {
   const lines = [
@@ -16,16 +21,12 @@ export function generateHeader(projectName: string, author: string): string {
   return lines.join('\n');
 }
 
-export function getComponentsList(): string[] {
-  return readdirSync('./template/components').map(f => f.replace('.lua', ''));
-}
-
 export function getComponentLua(projectName: string, author: string, componentName: string): string {
-  return `${generateHeader(projectName, author)} ${readFileSync(`./template/components/${componentName}.lua`, "utf-8")}`;
+  return `${generateHeader(projectName, author)} ${TEMPLATE_DATA['./template/components/' + componentName + '.lua']}`;
 }
 
 export function generateFunctionsFile(projectName: string, author: string): string {
-  return `${generateHeader(projectName, author)}\n${readFileSync('./template/utils/functions.lua', "utf-8")}`;
+  return `${generateHeader(projectName, author)}\n${TEMPLATE_DATA["./template/utils/functions.lua"]}`;
 }
 
 export function generateVarsFile(project: CCProject): string {
@@ -108,11 +109,11 @@ export function generateStartupFile(project: CCProject, onlyUI: boolean = false)
   const startScreen = project.screens.find(s => s.isStartScreen) ?? project.screens[0];
   const safeName = sanitize(startScreen?.name ?? 'Screen 1');
 
-  let lines = `${generateHeader(project.name, project.author)} ${readFileSync(`./template/startup.lua`, "utf-8")}`;
+  let lines = `${generateHeader(project.name, project.author)} ${TEMPLATE_DATA["./template/startup.lua"]}`;
   lines = lines.replace("-- {PROJECT_START}",
     onlyUI
       ? `resolveLayout(term.getSize())\ndrawScreen_${safeName}()`
-      : `navigate("${safeName}")\n` + readFileSync('./template/loop.lua', "utf-8")
+      : `navigate("${safeName}")\n` + TEMPLATE_DATA["./template/loop.lua"]
   );
 
   return lines;

@@ -1,6 +1,6 @@
 import { CCProject } from '../../models/Project';
 import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContainerLayout, isContainerLike } from '../../models/UIElement';
-import { generateFunctionsFile, generateHandlersFile, generateHeader, generateScreenFile, generateStartupFile, generateVarsFile, getComponentLua, getComponentsList } from './templates';
+import { COMPONENTS_LIST, generateFunctionsFile, generateHandlersFile, generateHeader, generateScreenFile, generateStartupFile, generateVarsFile, getComponentLua } from './templates';
 import { useBlocklyStore } from '../../stores/blocklyStore';
 import { escapeLuaString, sanitize } from '../../utils/luaHelpers';
 
@@ -23,7 +23,7 @@ export function exportProject(project: CCProject, options: ExportOptions): Expor
   const blocklyStore = useBlocklyStore.getState();
 
   // 1. Component classes
-  for (const component of getComponentsList()) {
+  for (const component of COMPONENTS_LIST) {
     files.push({ path: `components/${component}.lua`, content: getComponentLua(project.name, project.author, component) });
   }
 

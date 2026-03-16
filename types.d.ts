@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 declare module '@mit-app-inventor/blockly-block-lexical-variables' {
   import type * as Blockly from 'blockly';
 
@@ -9,4 +10,9 @@ declare module '@mit-app-inventor/blockly-block-lexical-variables' {
   }
 
   export const LexicalVariablesPlugin: LexicalVariablesPluginApi;
+}
+
+declare module "*?raw" {
+  const content: string
+  export default content
 }
