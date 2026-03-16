@@ -27,7 +27,8 @@ export type UIElementType =
   | 'label'
   | 'button'
   | 'container'
-  | 'panel';
+  | 'panel'
+  | 'progressbar';
 
 export interface LabelElement extends BaseElement {
   type: 'label';
@@ -75,11 +76,20 @@ export interface PanelElement extends BaseElement {
   paddingUnit: 'px' | '%';
 }
 
+export interface ProgressBarElement extends BaseElement {
+  type: 'progressbar';
+  text: string;
+  textAlign: 'left' | 'center' | 'right';
+  progressColor: CCColor;
+  progress: number;
+}
+
 export type UIElement =
   | LabelElement
   | ButtonElement
   | ContainerElement
-  | PanelElement;
+  | PanelElement
+  | ProgressBarElement;
 
 type OmitBase<T> = T extends UIElement ? Omit<T, 'id' | 'name' | 'zIndex'> : never;
 type UIElementDefaults = { [K in UIElementType]: OmitBase<Extract<UIElement, { type: K }>> };
@@ -136,6 +146,18 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     gridTemplateCols: 2, gridTemplateRows: 2,
     padding: 0, paddingUnit: 'px',
   },
+  progressbar: {
+    type: 'progressbar',
+    x: 1, y: 1, width: 20, height: 3,
+    widthUnit: 'px', heightUnit: 'px',
+    fgColor: 'white', bgColor: 'gray',
+    visible: true,
+    text: 'Progress Bar',
+    textAlign: 'center',
+    progressColor: 'lightGray',
+    progress: 50,
+    parentId: null,
+  },
 };
 
 export const UI_ELEMENT_LABELS: Record<UIElementType, { label: string; icon: string; description: string }> = {
@@ -143,6 +165,7 @@ export const UI_ELEMENT_LABELS: Record<UIElementType, { label: string; icon: str
   button: { label: 'Button', icon: 'B', description: 'Clickable button with text' },
   container: { label: 'Container', icon: 'C', description: 'Layout container for elements' },
   panel: { label: 'Panel', icon: 'P', description: 'Layout container for elements but with a title and border' },
+  progressbar: { label: 'Progress Bar', icon: 'G', description: 'An element to display progress' },
 };
 
 /**

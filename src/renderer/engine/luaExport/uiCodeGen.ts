@@ -205,6 +205,21 @@ function generateComponentInstance(
       lines.push('})');
       break;
     }
+
+    case 'progressbar': {
+      lines.push(`${varName} = ProgressBar:new("${escapedName}", {`);
+      lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
+      lines.push(...unitLines);
+      lines.push(...parentLine);
+      lines.push(`  text = "${escapeLuaString(el.text)}", textAlign = "${el.textAlign}",`);
+      lines.push(`  fgColor = ${luaColor(el.fgColor)}, bgColor = ${luaColor(el.bgColor)},`);
+      lines.push(`  visible = ${el.visible},`);
+      lines.push(`  zIndex = ${el.zIndex},`);
+      lines.push(`  progressColor = ${luaColor(el.progressColor)}, progress = ${el.progress},`);
+      lines.push(`  type = "${el.type}",`);
+      lines.push('})');
+      break;
+    }
   }
 
   return lines;

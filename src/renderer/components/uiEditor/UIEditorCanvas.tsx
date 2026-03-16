@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
-import { useUIElementStore } from '../../stores/uiElementStore';
 import { TerminalBuffer } from '../../engine/terminal/TerminalBuffer';
 import { TerminalRenderer } from '../../engine/terminal/TerminalRenderer';
 import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContainerLayout, isContainerLike } from '../../models/UIElement';
@@ -80,6 +79,17 @@ function renderElementToBuffer(
       }
       break;
     }
+    case 'progressbar': {
+      buffer.fillRect(x, y, width, height, ' ', el.fgColor, el.bgColor);
+      const progressWidth = Math.round(width / 100 * el.progress);
+
+      buffer.fillRect(x, y, progressWidth, height, ' ', el.progressColor, el.progressColor);
+      const text = alignText(el.text, width, el.textAlign);
+      text.slice(0, width).split('').forEach((char, i) => {
+        buffer.writeText(x + i, y + Math.floor(height / 2), char, el.fgColor, i < progressWidth ? el.progressColor : el.bgColor);
+      });
+      break;
+    }
   }
 }
 
@@ -144,6 +154,17 @@ function renderChildAtPosition(
         if (!gc) continue;
         renderChildAtPosition(buffer, gc, allElements, pos.x, pos.y, pos.width, pos.height);
       }
+      break;
+    }
+    case 'progressbar': {
+      buffer.fillRect(x, y, width, height, ' ', child.fgColor, child.bgColor);
+      const progressWidth = Math.round(width / 100 * child.progress);
+
+      buffer.fillRect(x, y, progressWidth, height, ' ', child.progressColor, child.progressColor);
+      const text = alignText(child.text, width, child.textAlign);
+      text.slice(0, width).split('').forEach((char, i) => {
+        buffer.writeText(x + i, y + Math.floor(height / 2), char, child.fgColor, i < progressWidth ? child.progressColor : child.bgColor);
+      });
       break;
     }
   }

@@ -131,7 +131,7 @@ export function generateStartupFile(project: CCProject, onlyUI: boolean = false)
   lines = lines.replace("-- {PROJECT_START}",
     onlyUI
       ? `resolveLayout(term.getSize())\ndrawScreen_${safeName}()`
-      : `navigate("${safeName}")\n` + TEMPLATE_DATA["./template/loop.lua"]
+      : (`navigate("${safeName}")\n\n` + TEMPLATE_DATA["./template/loop.lua"])
   );
 
   return lines;

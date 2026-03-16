@@ -457,7 +457,26 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
           </PropField>
         </>
       );
-
+    case 'progressbar':
+      return (
+        <>
+          <PropField label="Text">
+            <input className="input-field text-xs" value={element.text} maxLength={200} onChange={(e) => update({ text: e.target.value.slice(0, 200) } as any)} />
+          </PropField>
+          <PropField label="Text Align">
+            <select className="select-field text-xs" value={element.textAlign} onChange={(e) => update({ textAlign: e.target.value as any } as any)}>
+              <option value="left">Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select>
+          </PropField>
+          <ColorPicker label="Progress Color" value={element.progressColor} onChange={(c) => update({ progressColor: c } as any)} />
+          <PropField label="Progress">
+            <input type="number" className="input-field text-xs" value={element.progress} min={0} max={100}
+              onChange={(e) => update({ progress: parseNum(e.target.value, 0, 100, 0) } as any)} />
+          </PropField>
+        </>
+      );
     default:
       return null;
   }

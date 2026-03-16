@@ -57,7 +57,6 @@ function Panel:draw()
     local align = self:prop("textAlign") or "left"
     local aligned = self:alignText(text, width, align)
 
-    -- count leading/trailing spaces
     local lead = #(aligned:match("^%s*") or "")
     local trail = #(aligned:match("%s*$") or "")
     local textsp = { lead, trail }
@@ -78,7 +77,6 @@ function Panel:draw()
         end
     end
 
-    -- title
     term.setBackgroundColor(titleBg)
     term.setTextColor(fg)
 

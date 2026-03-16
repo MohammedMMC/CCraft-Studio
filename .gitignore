@@ -4,3 +4,4 @@ build
 README.md
 .gitignore
 package-lock.json
+.vscode
