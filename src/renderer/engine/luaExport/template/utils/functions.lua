@@ -1,5 +1,5 @@
 -- =============================================
--- Global Functions',
+-- Global Functions
 -- =============================================
 
 function drawCurrentScreen()

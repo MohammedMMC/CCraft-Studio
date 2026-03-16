@@ -11,9 +11,6 @@ dofile(script_dir .. "utils/vars.lua")
 if fs.exists(script_dir .. "utils/functions.lua") then
     dofile(script_dir .. "utils/functions.lua")
 end
-if fs.exists(script_dir .. "utils/handlers.lua") then
-    dofile(script_dir .. "utils/handlers.lua")
-end
 
 -- Load Components
 for _, file in ipairs(fs.list(script_dir .. "components")) do
@@ -23,6 +20,11 @@ end
 -- Load Screens
 for _, file in ipairs(fs.list(script_dir .. "screens")) do
     dofile(script_dir .. "screens/" .. file)
+end
+
+-- Load Handlers
+if fs.exists(script_dir .. "utils/handlers.lua") then
+    dofile(script_dir .. "utils/handlers.lua")
 end
 
 -- Load Logic
