@@ -7,7 +7,7 @@ import { useHistoryStore } from '../../stores/historyStore';
 import { generateId } from '../../utils/idGenerator';
 
 const ELEMENT_TYPES: UIElementType[] = [
-  'label', 'button', 'container',
+  'label', 'button', 'container', 'panel'
 ];
 
 export const ElementToolkit: React.FC = () => {
@@ -51,7 +51,7 @@ export const ElementToolkit: React.FC = () => {
                          hover:bg-app-hover hover:border-app-accent/30
                          active:bg-app-active transition-all text-left group"
             >
-              <span className="w-7 h-7 rounded bg-app-bg border border-app-border
+              <span className="min-w-7 min-h-7 rounded bg-app-bg border border-app-border
                                flex items-center justify-center text-xs font-mono
                                text-app-accent group-hover:border-app-accent/50">
                 {meta.icon}

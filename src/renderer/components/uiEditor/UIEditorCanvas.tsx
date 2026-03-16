@@ -4,7 +4,7 @@ import { useEditorStore } from '../../stores/editorStore';
 import { useUIElementStore } from '../../stores/uiElementStore';
 import { TerminalBuffer } from '../../engine/terminal/TerminalBuffer';
 import { TerminalRenderer } from '../../engine/terminal/TerminalRenderer';
-import { UIElement, ContainerElement, resolveSize, resolveContainerLayout } from '../../models/UIElement';
+import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContainerLayout, isContainerLike } from '../../models/UIElement';
 import { CanvasElement } from './CanvasElement';
 import { GridOverlay } from './GridOverlay';
 
@@ -40,9 +40,33 @@ function renderElementToBuffer(
       buffer.writeText(x, midY, text.slice(0, width), el.fgColor, el.bgColor);
       break;
     }
-    case 'container': {
-      // Fill container background
-      buffer.fillRect(x, y, width, height, ' ', el.fgColor, el.bgColor);
+    case 'container':
+    case 'panel': {
+      if (el.type === 'panel') {
+        const panel = el as PanelElement;
+
+        const text = alignText(panel.text, width, panel.textAlign);
+        const textsp = [(text.length - text.trimStart().length), (text.length - text.trimEnd().length)];
+        const plus2 = width < panel.text.length + 4 ? 0 : 2;
+        const textpos = (textsp[1] == 0 ? textsp[0] - 4 + Number(textsp[0] == 4) + (plus2 == 0 ? 3 : 0) + Number(textsp[0] == 5) : (textsp[0] == 0 ? (Number(width == (plus2 + Number(textsp[1] == 5) + panel.text.length + 2)) || plus2 || 1) : (textsp[0] - (plus2 == 2 ? 1 : 0))));
+        
+        buffer.fillRect(x, y, textpos, 1, ' ', panel.fgColor, panel.borderColor);
+        buffer.fillRect(x + (textpos + panel.text.length + 2) + (textsp[0] != 2 && plus2 == 0 ? -2 : 0), y, width - (textpos + panel.text.length + 2) + (textsp[0] != 2 && plus2 == 0 ? 1 : 0), 1, ' ', panel.fgColor, panel.borderColor);
+
+        buffer.fillRect(x, y + height - 1, width, 1, ' ', panel.fgColor, panel.borderColor);
+        buffer.fillRect(x, y, 1, height, ' ', panel.fgColor, panel.borderColor);
+        buffer.fillRect(x + width - 1, y, 1, height, ' ', panel.fgColor, panel.borderColor);
+
+        // 2. Fill inner area with background color (inside the 1-char border)
+        if (width > 2 && height > 2) {
+          buffer.fillRect(x + 1, y + 1, width - 2, height - 2, ' ', panel.fgColor, panel.bgColor);
+        }
+
+        buffer.writeText(x + textpos, y, (plus2 == 2 ? " " : "") + text.trimStart().trimEnd() + (plus2 == 2 ? " " : ""), panel.fgColor, panel.titleBgColor);
+      } else {
+        // Container: simple fill
+        buffer.fillRect(x, y, width, height, ' ', el.fgColor, el.bgColor);
+      }
 
       // Find and render children
       const children = allElements
@@ -50,7 +74,7 @@ function renderElementToBuffer(
         .sort((a, b) => a.zIndex - b.zIndex);
 
       const positions = resolveContainerLayout(
-        el, children, el.x, el.y, width, height, displayWidth, displayHeight,
+        el as ContainerElement | PanelElement, children, el.x, el.y, width, height, displayWidth, displayHeight,
       );
 
       for (const pos of positions) {
@@ -87,13 +111,37 @@ function renderChildAtPosition(
       buffer.writeText(x, midY, text.slice(0, width), child.fgColor, child.bgColor);
       break;
     }
-    case 'container': {
-      buffer.fillRect(x, y, width, height, ' ', child.fgColor, child.bgColor);
+    case 'container':
+    case 'panel': {
+      if (child.type === 'panel') {
+        const panel = child as PanelElement;
+
+        const text = alignText(panel.text, width, panel.textAlign);
+        const textsp = [(text.length - text.trimStart().length), (text.length - text.trimEnd().length)];
+        const plus2 = width < panel.text.length + 4 ? 0 : 2;
+        const textpos = (textsp[1] == 0 ? textsp[0] - 4 + Number(textsp[0] == 4) + (plus2 == 0 ? 3 : 0) + Number(textsp[0] == 5) : (textsp[0] == 0 ? (Number(width == (plus2 + Number(textsp[1] == 5) + panel.text.length + 2)) || plus2 || 1) : (textsp[0] - (plus2 == 2 ? 1 : 0))));
+        
+        buffer.fillRect(x, y, textpos, 1, ' ', panel.fgColor, panel.borderColor);
+        buffer.fillRect(x + (textpos + panel.text.length + 2) + (textsp[0] != 2 && plus2 == 0 ? -2 : 0), y, width - (textpos + panel.text.length + 2) + (textsp[0] != 2 && plus2 == 0 ? 1 : 0), 1, ' ', panel.fgColor, panel.borderColor);
+
+        buffer.fillRect(x, y + height - 1, width, 1, ' ', panel.fgColor, panel.borderColor);
+        buffer.fillRect(x, y, 1, height, ' ', panel.fgColor, panel.borderColor);
+        buffer.fillRect(x + width - 1, y, 1, height, ' ', panel.fgColor, panel.borderColor);
+
+        // 2. Fill inner area with background color (inside the 1-char border)
+        if (width > 2 && height > 2) {
+          buffer.fillRect(x + 1, y + 1, width - 2, height - 2, ' ', panel.fgColor, panel.bgColor);
+        }
+
+        buffer.writeText(x + textpos, y, (plus2 == 2 ? " " : "") + text.trimStart().trimEnd() + (plus2 == 2 ? " " : ""), panel.fgColor, panel.titleBgColor);
+      } else {
+        buffer.fillRect(x, y, width, height, ' ', child.fgColor, child.bgColor);
+      }
       const grandchildren = allElements
         .filter(c => c.parentId === child.id && c.visible)
         .sort((a, b) => a.zIndex - b.zIndex);
       const positions = resolveContainerLayout(
-        child as ContainerElement, grandchildren,
+        child as ContainerElement | PanelElement, grandchildren,
         absX, absY, width, height, width, height,
       );
       for (const pos of positions) {
@@ -130,7 +178,7 @@ function buildResolvedPositionMap(
   const map = new Map<string, { x: number; y: number; width: number; height: number }>();
 
   function resolveContainer(
-    container: ContainerElement,
+    container: ContainerElement | PanelElement,
     cx: number, cy: number,
     cw: number, ch: number,
   ) {
@@ -143,8 +191,8 @@ function buildResolvedPositionMap(
     for (const pos of positions) {
       map.set(pos.id, { x: pos.x, y: pos.y, width: pos.width, height: pos.height });
       const child = children.find(c => c.id === pos.id);
-      if (child?.type === 'container') {
-        resolveContainer(child as ContainerElement, pos.x, pos.y, pos.width, pos.height);
+      if (child && isContainerLike(child)) {
+        resolveContainer(child as ContainerElement | PanelElement, pos.x, pos.y, pos.width, pos.height);
       }
     }
   }
@@ -154,8 +202,8 @@ function buildResolvedPositionMap(
     const resolved = resolveSize(el, displayWidth, displayHeight);
     map.set(el.id, { x: el.x, y: el.y, width: resolved.width, height: resolved.height });
 
-    if (el.type === 'container') {
-      resolveContainer(el as ContainerElement, el.x, el.y, resolved.width, resolved.height);
+    if (isContainerLike(el)) {
+      resolveContainer(el as ContainerElement | PanelElement, el.x, el.y, resolved.width, resolved.height);
     }
   }
   return map;

@@ -13,7 +13,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({ value, onChange, label
   return (
     <div>
       {label && <label className="block text-[10px] text-app-text-dim mb-1">{label}</label>}
-      <div className="grid grid-cols-9 gap-0.5">
+      <div className="grid grid-cols-8 gap-0.5">
         {colors.map((color) => (
           <button
             key={color}

@@ -16,10 +16,6 @@ function BaseObject:new(name)
 end
 
 function BaseObject:prop(key)
-  local el = elements[self.name]
-  if el and el[key] ~= nil then
-    return el[key]
-  end
   return self[key]
 end
 
@@ -45,32 +41,34 @@ end
 
 -- Resolve responsive layout based on actual screen size
 function resolveLayout(screenW, screenH)
-  -- Helper: resolve a single element's size against a reference area
-  local function resolveSize(el, refW, refH)
-    local w = el.width
-    local h = el.height
-    if el.widthUnit == "fill" then
+  -- Helper: resolve a single component's size against a reference area
+  local function resolveSize(comp, refW, refH)
+    local w = comp.width
+    local h = comp.height
+    if comp.widthUnit == "fill" then
       w = refW
-    elseif el.widthUnit == "%" and el.rawWidth then
-      w = math.max(1, math.floor(el.rawWidth / 100 * refW))
+    elseif comp.widthUnit == "%" and comp.rawWidth then
+      w = math.max(1, math.floor(comp.rawWidth / 100 * refW))
     end
-    if el.heightUnit == "fill" then
+    if comp.heightUnit == "fill" then
       h = refH
-    elseif el.heightUnit == "%" and el.rawHeight then
-      h = math.max(1, math.floor(el.rawHeight / 100 * refH))
+    elseif comp.heightUnit == "%" and comp.rawHeight then
+      h = math.max(1, math.floor(comp.rawHeight / 100 * refH))
     end
     return w, h
   end
 
-  -- Helper: get sorted children of a container
-  local function getChildren(parentName)
+  -- Helper: get visible children sorted by zIndex
+  local function getVisibleChildren(container)
     local children = {}
-    for name, el in pairs(elements) do
-      if el.parentName == parentName and el.visible ~= false then
-        table.insert(children, { name = name, el = el })
+    if container.children then
+      for _, child in ipairs(container.children) do
+        if child.visible ~= false then
+          table.insert(children, child)
+        end
       end
     end
-    table.sort(children, function(a, b) return (a.el.zIndex or 0) < (b.el.zIndex or 0) end)
+    table.sort(children, function(a, b) return (a.zIndex or 0) < (b.zIndex or 0) end)
     return children
   end
 
@@ -80,7 +78,7 @@ function resolveLayout(screenW, screenH)
     local sizes = {}
     local totalChildMain = 0
     for i, child in ipairs(children) do
-      local cw, ch = resolveSize(child.el, innerW, innerH)
+      local cw, ch = resolveSize(child, innerW, innerH)
       sizes[i] = { w = cw, h = ch }
       totalChildMain = totalChildMain + (isRow and cw or ch)
     end
@@ -133,10 +131,10 @@ function resolveLayout(screenW, screenH)
       elseif ai == "end" then
         crossOffset = crossSpace - childCross
       end
-      child.el.x = isRow and (innerX + cursor) or (innerX + crossOffset)
-      child.el.y = isRow and (innerY + crossOffset) or (innerY + cursor)
-      child.el.width = s.w
-      child.el.height = s.h
+      child.x = isRow and (innerX + cursor) or (innerX + crossOffset)
+      child.y = isRow and (innerY + crossOffset) or (innerY + cursor)
+      child.width = s.w
+      child.height = s.h
       cursor = cursor + childMain + (jc == "space-between" and spaceBetween or gap)
     end
   end
@@ -151,7 +149,7 @@ function resolveLayout(screenW, screenH)
     local cellH = math.max(1, math.floor((innerH - totalGapY) / rows))
 
     for i, child in ipairs(children) do
-      local cw, ch = resolveSize(child.el, innerW, innerH)
+      local cw, ch = resolveSize(child, innerW, innerH)
       local col = (i - 1) % cols
       local row = math.floor((i - 1) / cols)
       if row >= rows then break end
@@ -159,91 +157,87 @@ function resolveLayout(screenW, screenH)
       local h = math.min(ch, cellH)
       local cellX = innerX + col * (cellW + gap)
       local cellY = innerY + row * (cellH + gap)
-      child.el.x = cellX + math.floor((cellW - w) / 2)
-      child.el.y = cellY + math.floor((cellH - h) / 2)
-      child.el.width = w
-      child.el.height = h
+      child.x = cellX + math.floor((cellW - w) / 2)
+      child.y = cellY + math.floor((cellH - h) / 2)
+      child.width = w
+      child.height = h
     end
   end
 
   -- Recursive: resolve a container and its children
-  local function resolveContainer(containerEl, cx, cy, cw, ch)
-    local pad = containerEl.padding or 0
-    if containerEl.paddingUnit == "%" then
-      local ref = math.min(cw, ch)
+  local function resolveContainer(container, cx, cy, cw, ch)
+    -- Panel border acts as 1-char inset on all sides
+    local borderInset = (container.type == "panel") and 1 or 0
+    local bx = cx + borderInset
+    local by = cy + borderInset
+    local bw = math.max(1, cw - borderInset * 2)
+    local bh = math.max(1, ch - borderInset * 2)
+
+    local pad = container.padding or 0
+    if container.paddingUnit == "%" then
+      local ref = math.min(bw, bh)
       pad = math.max(0, math.floor(pad / 100 * ref))
     end
-    local innerX = cx + pad
-    local innerY = cy + pad
-    local innerW = math.max(1, cw - pad * 2)
-    local innerH = math.max(1, ch - pad * 2)
+    local innerX = bx + pad
+    local innerY = by + pad
+    local innerW = math.max(1, bw - pad * 2)
+    local innerH = math.max(1, bh - pad * 2)
 
-    local gap = containerEl.gap or 0
-    if containerEl.gapUnit == "%" then
-      local ref = (containerEl.display == "flex" and containerEl.flexDirection == "row") and innerW or innerH
+    local gap = container.gap or 0
+    if container.gapUnit == "%" then
+      local ref = (container.display == "flex" and container.flexDirection == "row") and innerW or innerH
       gap = math.max(0, math.floor(gap / 100 * ref))
     end
 
-    local children = getChildren(containerEl._name)
-    for i, child in ipairs(children) do
-      child.el.width, child.el.height = resolveSize(child.el, innerW, innerH)
+    local children = getVisibleChildren(container)
+    for _, child in ipairs(children) do
+      child.width, child.height = resolveSize(child, innerW, innerH)
     end
 
-    if containerEl.display == "grid" then
-      resolveGridLayout(containerEl, children, innerX, innerY, innerW, innerH, gap)
+    if container.display == "grid" then
+      resolveGridLayout(container, children, innerX, innerY, innerW, innerH, gap)
     else
-      resolveFlexLayout(containerEl, children, innerX, innerY, innerW, innerH, gap)
+      resolveFlexLayout(container, children, innerX, innerY, innerW, innerH, gap)
     end
 
     -- Recurse into child containers
     for _, child in ipairs(children) do
-      if child.el.isContainer then
-        child.el._name = child.name
-        resolveContainer(child.el, child.el.x, child.el.y, child.el.width, child.el.height)
+      if child.children then
+        resolveContainer(child, child.x, child.y, child.width, child.height)
       end
     end
   end
 
-  -- Step 1: Resolve top-level elements against screen size
-  for name, el in pairs(elements) do
-    if not el.parentName then
-      el.width, el.height = resolveSize(el, screenW, screenH)
-    end
-  end
-
-  -- Step 2: Resolve container children recursively
-  for name, el in pairs(elements) do
-    if el.isContainer and not el.parentName then
-      el._name = name
-      resolveContainer(el, el.x, el.y, el.width, el.height)
-    end
-  end
-
-  -- Step 3: Sync component instances from elements
+  -- Step 1: For each screen, resolve all components
   for _, screen in pairs(screenComponents) do
+    -- Resolve top-level component sizes
     for key, comp in pairs(screen) do
-      if type(comp) == "table" and comp.name then
-        local el = elements[comp.name]
-        if el then
-          comp.x = el.x
-          comp.y = el.y
-          comp.width = el.width
-          comp.height = el.height
-        end
+      if type(comp) == "table" and comp.name and not comp.parentName then
+        comp.width, comp.height = resolveSize(comp, screenW, screenH)
+      end
+    end
+
+    -- Resolve container children recursively
+    for key, comp in pairs(screen) do
+      if type(comp) == "table" and comp.children and not comp.parentName then
+        resolveContainer(comp, comp.x, comp.y, comp.width, comp.height)
       end
     end
   end
 
-  -- Step 4: Rebuild button hit regions
+  -- Step 2: Rebuild button hit regions
   if buttonRegions then
     for screenName, regions in pairs(buttonRegions) do
-      for _, btn in ipairs(regions) do
-        local el = elements[btn.name]
-        if el then
-          btn.x = el.x
-          btn.y = el.y
-          btn.w = el.width
-          btn.h = el.height
+      local sc = screenComponents[screenName]
+      if sc then
+        for _, btn in ipairs(regions) do
+          local comp = sc[btn.name:gsub("[^%w_]", "_")]
+          if comp then
+            btn.x = comp.x
+            btn.y = comp.y
+            btn.w = comp.width
+            btn.h = comp.height
+          end
         end
       end
     end
@@ -276,6 +270,9 @@ function Label:new(name, props)
   obj.fgColor = props.fgColor
   obj.bgColor = props.bgColor
   obj.visible = props.visible
+  obj.zIndex = props.zIndex
+  obj.type = props.type
+  obj.parentName = props.parentName
   return obj
 end
 
@@ -323,6 +320,9 @@ function Button:new(name, props)
   obj.focusTextColor = props.focusTextColor
   obj.focusBgColor = props.focusBgColor
   obj.visible = props.visible
+  obj.zIndex = props.zIndex
+  obj.type = props.type
+  obj.parentName = props.parentName
   return obj
 end
 
@@ -394,6 +394,19 @@ function Container:new(name, props)
   obj.bgColor = props.bgColor
   obj.fgColor = props.fgColor
   obj.visible = props.visible
+  obj.zIndex = props.zIndex
+  obj.type = props.type
+  obj.parentName = props.parentName
+  obj.display = props.display or "flex"
+  obj.flexDirection = props.flexDirection or "column"
+  obj.gap = props.gap or 0
+  obj.gapUnit = props.gapUnit or "px"
+  obj.alignItems = props.alignItems or "start"
+  obj.justifyContent = props.justifyContent or "start"
+  obj.gridTemplateCols = props.gridTemplateCols or 2
+  obj.gridTemplateRows = props.gridTemplateRows or 2
+  obj.padding = props.padding or 0
+  obj.paddingUnit = props.paddingUnit or "px"
   obj.children = {}
   return obj
 end
@@ -410,16 +423,165 @@ function Container:draw()
   local w = self:prop("width")
   local h = self:prop("height")
 
+  if bg == nil then 
+    for _, child in ipairs(self.children) do
+      child:draw()
+    end
+  end
+
   if bg then
     term.setBackgroundColor(bg)
     for row = 0, h - 1 do
       term.setCursorPos(x, y + row)
       term.write(string.rep(" ", w))
     end
+
+    for _, child in ipairs(self.children) do
+      child:draw()
+    end
+  end
+end
+`;
+}
+
+export function generatePanelLua(projectName: string, author: string): string {
+  return `${generateHeader(projectName, author)}
+-- =============================================
+-- Panel - Layout container with title text
+-- =============================================
+
+Panel = setmetatable({}, { __index = BaseObject })
+Panel.__index = Panel
+
+function Panel:new(name, props)
+  local obj = BaseObject.new(self, name)
+  obj.x = props.x
+  obj.y = props.y
+  obj.width = props.width
+  obj.height = props.height
+  obj.widthUnit = props.widthUnit
+  obj.heightUnit = props.heightUnit
+  obj.rawWidth = props.rawWidth
+  obj.rawHeight = props.rawHeight
+  obj.text = props.text or ""
+  obj.textAlign = props.textAlign or "left"
+  obj.bgColor = props.bgColor
+  obj.fgColor = props.fgColor
+  obj.borderColor = props.borderColor
+  obj.titleBgColor = props.titleBgColor
+  obj.visible = props.visible
+  obj.zIndex = props.zIndex
+  obj.type = props.type
+  obj.parentName = props.parentName
+  obj.display = props.display or "flex"
+  obj.flexDirection = props.flexDirection or "column"
+  obj.gap = props.gap or 0
+  obj.gapUnit = props.gapUnit or "px"
+  obj.alignItems = props.alignItems or "start"
+  obj.justifyContent = props.justifyContent or "start"
+  obj.gridTemplateCols = props.gridTemplateCols or 2
+  obj.gridTemplateRows = props.gridTemplateRows or 2
+  obj.padding = props.padding or 0
+  obj.paddingUnit = props.paddingUnit or "px"
+  obj.children = {}
+  return obj
+end
+
+function Panel:addChild(child)
+  table.insert(self.children, child)
+end
+
+function Panel:draw()
+  if not self:isVisible() then return end
+  local x = self:prop("x")
+  local y = self:prop("y")
+  local width = self:prop("width")
+  local height = self:prop("height")
+  local fg = self:prop("fgColor")
+  local bg = self:prop("bgColor")
+  local borderColor = self:prop("borderColor")
+  local titleBg = self:prop("titleBgColor")
+  local text = self:prop("text") or ""
+  local align = self:prop("textAlign") or "left"
+  local aligned = self:alignText(text, width, align)
+
+  if bg == nil then 
+    for _, child in ipairs(self.children) do
+      child:draw()
+    end
   end
 
-  for _, child in ipairs(self.children) do
-    child:draw()
+  -- count leading/trailing spaces
+  local lead = #(aligned:match("^%s*") or "")
+  local trail = #(aligned:match("%s*$") or "")
+  local textsp = {lead, trail}
+  
+  local plus2 = width < (#text + 4) and 0 or 2
+  
+  local textpos
+  if textsp[2] == 0 then
+    textpos = lead - 4 + (lead == 4 and 1 or 0) + (plus2 == 0 and 3 or 0) + (lead == 5 and 1 or 0)
+  else
+    if lead == 0 then
+      textpos = ((width == (plus2 + (trail == 5 and 1 or 0) + #text + 2)) and 1 or 0)
+      if textpos == 0 then
+        textpos = plus2 ~= 0 and plus2 or 1
+      end
+    else
+      textpos = lead - (plus2 == 2 and 1 or 0)
+    end
+  end
+  
+  -- title
+  if titleBg then term.setBackgroundColor(titleBg) end
+  if fg then term.setTextColor(fg) end
+  
+  local title = text:match("^%s*(.-)%s*$")
+  if plus2 == 2 then
+    title = " " .. title .. " "
+  end
+  
+  term.setCursorPos(x + textpos, y)
+  term.write(title)
+  
+  if borderColor then
+    term.setBackgroundColor(borderColor)
+    if fg then term.setTextColor(fg) end
+    term.setCursorPos(x, y)
+    term.write(string.rep(" ", textpos))
+    
+    local rightStart = x + (textpos + #text + 2) + ((textsp[1] ~= 2 and plus2 == 0) and -2 or 0)
+    local rightWidth = width - (textpos + #text + 2) + ((textsp[1] ~= 2 and plus2 == 0) and 1 or 0)
+    
+    term.setCursorPos(rightStart, y)
+    term.write(string.rep(" ", rightWidth))
+    
+    term.setCursorPos(x, y + height - 1)
+    term.write(string.rep(" ", width))
+    
+    for i = 0, height - 1 do
+      term.setCursorPos(x, y + i)
+      term.write(" ")
+    end
+    
+    for i = 0, height - 1 do
+      term.setCursorPos(x + width - 1, y + i)
+      term.write(" ")
+    end
+  end
+
+  if bg and width > 2 and height > 2 then
+    term.setBackgroundColor(bg)
+    for row = 1, height - 2 do
+      term.setCursorPos(x + 1, y + row)
+      term.write(string.rep(" ", width - 2))
+    end
+  end
+  
+  if bg then 
+    for _, child in ipairs(self.children) do
+      child:draw()
+    end
   end
 end
 `;

@@ -1,16 +1,10 @@
 import { CCProject } from '../../models/Project';
-import { UIElement, ContainerElement, resolveSize, resolveContainerLayout } from '../../models/UIElement';
-import { CCColor, CC_COLORS } from '../../models/CCColors';
+import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContainerLayout, isContainerLike } from '../../models/UIElement';
 import { generateUICode } from './uiCodeGen';
 import { generateHeader } from './templates';
-import { generateBaseObjectLua, generateLabelLua, generateButtonLua, generateContainerLua } from './componentTemplates';
+import { generateBaseObjectLua, generateLabelLua, generateButtonLua, generateContainerLua, generatePanelLua } from './componentTemplates';
 import { useBlocklyStore } from '../../stores/blocklyStore';
 import { escapeLuaString } from '../../utils/luaHelpers';
-
-function luaColorStr(color: CCColor | undefined): string {
-  if (!color || color === 'transparent') return 'nil';
-  return CC_COLORS[color].luaName;
-}
 
 /** Resolve absolute positions for all elements, including children inside containers. */
 function buildPositionMap(
@@ -21,7 +15,7 @@ function buildPositionMap(
   const map = new Map<string, { x: number; y: number; width: number; height: number }>();
 
   function resolveContainer(
-    container: ContainerElement,
+    container: ContainerElement | PanelElement,
     cx: number, cy: number,
     cw: number, ch: number,
   ) {
@@ -34,8 +28,8 @@ function buildPositionMap(
     for (const pos of positions) {
       map.set(pos.id, { x: pos.x, y: pos.y, width: pos.width, height: pos.height });
       const child = children.find(c => c.id === pos.id);
-      if (child?.type === 'container') {
-        resolveContainer(child as ContainerElement, pos.x, pos.y, pos.width, pos.height);
+      if (child && isContainerLike(child)) {
+        resolveContainer(child as ContainerElement | PanelElement, pos.x, pos.y, pos.width, pos.height);
       }
     }
   }
@@ -47,8 +41,8 @@ function buildPositionMap(
       map.set(el.id, { x: el.x, y: el.y, width, height });
     }
 
-    if (el.type === 'container' && el.parentId === null) {
-      resolveContainer(el as ContainerElement, el.x, el.y, width, height);
+    if (isContainerLike(el) && el.parentId === null) {
+      resolveContainer(el as ContainerElement | PanelElement, el.x, el.y, width, height);
     }
   }
 
@@ -77,6 +71,7 @@ export function exportProject(project: CCProject, options: ExportOptions): Expor
   files.push({ path: 'components/Label.lua', content: generateLabelLua(project.name, project.author) });
   files.push({ path: 'components/Button.lua', content: generateButtonLua(project.name, project.author) });
   files.push({ path: 'components/Container.lua', content: generateContainerLua(project.name, project.author) });
+  files.push({ path: 'components/Panel.lua', content: generatePanelLua(project.name, project.author) });
 
   // 2. vars.lua - functions.lua
   files.push({ path: 'utils/vars.lua', content: generateVarsFile(project) });
@@ -142,54 +137,9 @@ function generateVarsFile(project: CCProject): string {
   lines.push(`currentScreen = "${sanitize(startScreen?.name ?? 'Screen 1')}"`);
   lines.push('running = true');
   lines.push('');
-  lines.push('-- Element state');
-  lines.push('elements = {}');
+  lines.push('-- Screen components');
   lines.push('screenComponents = {}');
 
-  for (const screen of project.screens) {
-    if (screen.uiElements.length === 0) continue;
-    const posMap = buildPositionMap(screen.uiElements, project.displayWidth, project.displayHeight);
-    lines.push('');
-    lines.push(`-- ${screen.name} elements`);
-    for (const el of screen.uiElements) {
-      const pos = posMap.get(el.id);
-      if (!pos) continue;
-      lines.push(`elements["${escapeLuaString(el.name)}"] = {`);
-      lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
-      lines.push(`  visible = ${el.visible},`);
-      lines.push(`  fgColor = ${luaColorStr(el.fgColor)}, bgColor = ${luaColorStr(el.bgColor)},`);
-      // Parent relationship for layout tree
-      if (el.parentId) {
-        const parent = screen.uiElements.find(p => p.id === el.parentId);
-        if (parent) lines.push(`  parentName = "${escapeLuaString(parent.name)}",`);
-      }
-      // Store size unit metadata for responsive layout
-      if (el.widthUnit !== 'px') {
-        lines.push(`  widthUnit = "${el.widthUnit}", rawWidth = ${el.width},`);
-      }
-      if (el.heightUnit !== 'px') {
-        lines.push(`  heightUnit = "${el.heightUnit}", rawHeight = ${el.height},`);
-      }
-      // Container layout metadata
-      if (el.type === 'container') {
-        const c = el as ContainerElement;
-        lines.push(`  isContainer = true, padding = ${c.padding}, paddingUnit = "${c.paddingUnit}",`);
-        lines.push(`  display = "${c.display}", flexDirection = "${c.flexDirection}",`);
-        lines.push(`  gap = ${c.gap}, gapUnit = "${c.gapUnit}",`);
-        lines.push(`  alignItems = "${c.alignItems}", justifyContent = "${c.justifyContent}",`);
-        lines.push(`  gridTemplateCols = ${c.gridTemplateCols}, gridTemplateRows = ${c.gridTemplateRows},`);
-      }
-      if ((el as any).text !== undefined) {
-        lines.push(`  text = "${escapeLuaString((el as any).text)}",`);
-        lines.push(`  textAlign = "${(el as any).textAlign || 'left'}",`);
-      }
-      if (el.type === 'button') {
-        lines.push(`  focusTextColor = ${luaColorStr(el.focusTextColor ?? el.fgColor)}, focusBgColor = ${luaColorStr(el.focusBgColor ?? el.bgColor)},`);
-      }
-      lines.push(`  zIndex = ${el.zIndex},`);
-      lines.push('}');
-    }
-  }
   return lines.join('\n');
 }
 
@@ -203,6 +153,7 @@ function generateFunctionsFile(project: CCProject): string {
   ];
 
   lines.push('function drawCurrentScreen()');
+  lines.push('  resolveLayout(term.getSize())');
   lines.push('  local fn = screenDrawFunctions[currentScreen]');
   lines.push('  if fn then fn() end');
   lines.push('end');
@@ -215,6 +166,11 @@ function generateFunctionsFile(project: CCProject): string {
   lines.push('end');
   lines.push('');
   lines.push('function refreshScreen() drawCurrentScreen() end');
+  lines.push('');
+  lines.push('function getElement(name)');
+  lines.push('  local sc = screenComponents[currentScreen]');
+  lines.push('  if sc then return sc[name:gsub("[^%w_]", "_")] end');
+  lines.push('end');
   lines.push('');
 
   return lines.join('\n');
@@ -294,6 +250,7 @@ function generateStartupFile(project: CCProject): string {
     'dofile(script_dir .. "components/Label.lua")',
     'dofile(script_dir .. "components/Button.lua")',
     'dofile(script_dir .. "components/Container.lua")',
+    'dofile(script_dir .. "components/Panel.lua")',
     '',
     '-- Load screens',
   ];
@@ -309,10 +266,6 @@ function generateStartupFile(project: CCProject): string {
   }
 
   lines.push('');
-  lines.push('-- Resolve responsive layout for actual screen size');
-  lines.push('local screenW, screenH = term.getSize()');
-  lines.push('resolveLayout(screenW, screenH)');
-  lines.push('');
   lines.push(`navigate("${safeName}")`);
   lines.push('');
   lines.push('-- Event loop');
@@ -322,18 +275,15 @@ function generateStartupFile(project: CCProject): string {
   lines.push('  if event == "mouse_click" or event == "monitor_touch" then');
   lines.push('    local button, mx, my = p1, p2, p3');
   lines.push('    if event == "monitor_touch" then mx, my = p2, p3 end');
+  lines.push('    local sc = screenComponents[currentScreen]');
   lines.push('    for _, btn in ipairs(buttonRegions[currentScreen] or {}) do');
-  lines.push('      local el = elements[btn.name]');
-  lines.push('      if el and el.visible ~= false and mx >= btn.x and mx < btn.x + btn.w and my >= btn.y and my < btn.y + btn.h then');
+  lines.push('      local comp = sc and sc[btn.name:gsub("[^%w_]", "_")]');
+  lines.push('      if comp and comp.visible ~= false and mx >= btn.x and mx < btn.x + btn.w and my >= btn.y and my < btn.y + btn.h then');
   lines.push('        local h = handlers[currentScreen]');
   lines.push('        if h and h.onButtonClick[btn.name] then h.onButtonClick[btn.name](mx, my, button) end');
   lines.push('        focusedButton = btn.name');
-  lines.push('        local sc = screenComponents[currentScreen]');
   lines.push('        if h and h.onButtonFocus[btn.name] then h.onButtonFocus[btn.name](mx, my, button) end');
-  lines.push('        if sc then');
-  lines.push('          local comp = sc[btn.name:gsub("[^%w_]", "_")]');
-  lines.push('          if comp and comp.drawFocused then comp:drawFocused() end');
-  lines.push('        end');
+  lines.push('        if comp.drawFocused then comp:drawFocused() end');
   lines.push('        break');
   lines.push('      end');
   lines.push('    end');
@@ -384,12 +334,12 @@ function generateUIOnlyStartup(project: CCProject): string {
     'dofile(script_dir .. "components/Label.lua")',
     'dofile(script_dir .. "components/Button.lua")',
     'dofile(script_dir .. "components/Container.lua")',
+    'dofile(script_dir .. "components/Panel.lua")',
     '',
   ];
   for (const s of project.screens) lines.push(`dofile(script_dir .. "screens/${sanitize(s.name)}.lua")`);
   lines.push('');
-  lines.push('local screenW, screenH = term.getSize()');
-  lines.push('resolveLayout(screenW, screenH)');
+  lines.push('resolveLayout(term.getSize())');
   lines.push('');
   lines.push(`drawScreen_${safeName}()`);
   return lines.join('\n');

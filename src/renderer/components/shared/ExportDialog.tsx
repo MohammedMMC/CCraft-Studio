@@ -142,9 +142,9 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
               <div key={s.id} className="pl-4">{s.name.replace(/[^a-zA-Z0-9_]/g, '_')}.lua</div>
             ))}
             <div>utils/</div>
-            <div key="0" className="pl-4">vars.lua</div>
-            <div key="1" className="pl-4">functions.lua</div>
-            <div key="2" className="pl-4">handlers.lua</div>
+            <div key="1" className="pl-4">vars.lua</div>
+            <div key="2" className="pl-4">functions.lua</div>
+            <div key="3" className="pl-4">handlers.lua</div>
             <div>startup.lua</div>
           </div>
         </div>

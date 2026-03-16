@@ -14,7 +14,7 @@ export const uiActionBlocks: BlockDefinition[] = [
     luaGenerator: (block, ctx) => {
       const el = ctx.generateInput(block.inputValues.element, ctx);
       const text = ctx.generateInput(block.inputValues.text, ctx);
-      return `${ctx.getIndent()}elements[${el}].text = ${text}\n${ctx.getIndent()}refreshScreen()`;
+      return `${ctx.getIndent()}getElement(${el}).text = ${text}\n${ctx.getIndent()}refreshScreen()`;
     },
   },
   {
@@ -35,7 +35,7 @@ export const uiActionBlocks: BlockDefinition[] = [
       const el = ctx.generateInput(block.inputValues.element, ctx);
       const prop = ctx.generateInput(block.inputValues.prop, ctx);
       const color = ctx.generateInput(block.inputValues.color, ctx);
-      return `${ctx.getIndent()}elements[${el}].${prop} = ${color}\n${ctx.getIndent()}refreshScreen()`;
+      return `${ctx.getIndent()}getElement(${el}).${prop} = ${color}\n${ctx.getIndent()}refreshScreen()`;
     },
   },
   {
@@ -49,7 +49,7 @@ export const uiActionBlocks: BlockDefinition[] = [
     canHaveNext: true, hasBranch: false, branchCount: 0,
     luaGenerator: (block, ctx) => {
       const el = ctx.generateInput(block.inputValues.element, ctx);
-      return `${ctx.getIndent()}elements[${el}].visible = true\n${ctx.getIndent()}refreshScreen()`;
+      return `${ctx.getIndent()}getElement(${el}).visible = true\n${ctx.getIndent()}refreshScreen()`;
     },
   },
   {
@@ -63,7 +63,7 @@ export const uiActionBlocks: BlockDefinition[] = [
     canHaveNext: true, hasBranch: false, branchCount: 0,
     luaGenerator: (block, ctx) => {
       const el = ctx.generateInput(block.inputValues.element, ctx);
-      return `${ctx.getIndent()}elements[${el}].visible = false\n${ctx.getIndent()}refreshScreen()`;
+      return `${ctx.getIndent()}getElement(${el}).visible = false\n${ctx.getIndent()}refreshScreen()`;
     },
   },
   {
@@ -93,7 +93,7 @@ export const uiActionBlocks: BlockDefinition[] = [
     luaGenerator: (block, ctx) => {
       const el = ctx.generateInput(block.inputValues.element, ctx);
       const val = ctx.generateInput(block.inputValues.value, ctx);
-      return `${ctx.getIndent()}elements[${el}].value = ${val}\n${ctx.getIndent()}refreshScreen()`;
+      return `${ctx.getIndent()}getElement(${el}).value = ${val}\n${ctx.getIndent()}refreshScreen()`;
     },
   },
   {

@@ -149,7 +149,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
     document.addEventListener('mouseup', handleUp);
   };
 
-  const isContainer = element.type === 'container';
+  const isContainer = element.type === 'container' || element.type === 'panel';
 
   return (
     <div

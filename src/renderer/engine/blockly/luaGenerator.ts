@@ -156,24 +156,24 @@ export function registerAllGenerators() {
   luaGenerator.addGenerator('ui_set_text', (block, gen) => {
     const el = block.getFieldValue('ELEMENT');
     const text = gen.valueToCode(block, 'TEXT', Order.NONE);
-    return `${gen.getIndent()}elements["${el}"].text = ${text}\n${gen.getIndent()}drawCurrentScreen()`;
+    return `${gen.getIndent()}getElement("${el}").text = ${text}\n${gen.getIndent()}drawCurrentScreen()`;
   });
 
   luaGenerator.addGenerator('ui_set_color', (block, gen) => {
     const el = block.getFieldValue('ELEMENT');
     const prop = block.getFieldValue('PROP');
     const color = block.getFieldValue('COLOR');
-    return `${gen.getIndent()}elements["${el}"].${prop} = ${color}\n${gen.getIndent()}drawCurrentScreen()`;
+    return `${gen.getIndent()}getElement("${el}").${prop} = ${color}\n${gen.getIndent()}drawCurrentScreen()`;
   });
 
   luaGenerator.addGenerator('ui_show', (block, gen) => {
     const el = block.getFieldValue('ELEMENT');
-    return `${gen.getIndent()}elements["${el}"].visible = true\n${gen.getIndent()}drawCurrentScreen()`;
+    return `${gen.getIndent()}getElement("${el}").visible = true\n${gen.getIndent()}drawCurrentScreen()`;
   });
 
   luaGenerator.addGenerator('ui_hide', (block, gen) => {
     const el = block.getFieldValue('ELEMENT');
-    return `${gen.getIndent()}elements["${el}"].visible = false\n${gen.getIndent()}drawCurrentScreen()`;
+    return `${gen.getIndent()}getElement("${el}").visible = false\n${gen.getIndent()}drawCurrentScreen()`;
   });
 
   luaGenerator.addGenerator('ui_navigate', (block, gen) => {
@@ -184,7 +184,7 @@ export function registerAllGenerators() {
   luaGenerator.addGenerator('ui_set_progress', (block, gen) => {
     const el = block.getFieldValue('ELEMENT');
     const val = gen.valueToCode(block, 'VALUE', Order.NONE);
-    return `${gen.getIndent()}elements["${el}"].value = ${val}\n${gen.getIndent()}drawCurrentScreen()`;
+    return `${gen.getIndent()}getElement("${el}").value = ${val}\n${gen.getIndent()}drawCurrentScreen()`;
   });
 
   luaGenerator.addGenerator('ui_write_at', (block, gen) => {
@@ -201,17 +201,17 @@ export function registerAllGenerators() {
   luaGenerator.addGenerator('ui_set_visible', (block, gen) => {
     const el = block.getFieldValue('ELEMENT');
     const bool = gen.valueToCode(block, 'BOOL', Order.NONE);
-    return `${gen.getIndent()}elements["${el}"].visible = ${bool}\n${gen.getIndent()}drawCurrentScreen()`;
+    return `${gen.getIndent()}getElement("${el}").visible = ${bool}\n${gen.getIndent()}drawCurrentScreen()`;
   });
 
   luaGenerator.addGenerator('ui_get_text', (block) => {
     const el = block.getFieldValue('ELEMENT');
-    return [`elements["${el}"].text`, Order.ATOMIC];
+    return [`getElement("${el}").text`, Order.ATOMIC];
   });
 
   luaGenerator.addGenerator('ui_get_value', (block) => {
     const el = block.getFieldValue('ELEMENT');
-    return [`elements["${el}"].value`, Order.ATOMIC];
+    return [`getElement("${el}").value`, Order.ATOMIC];
   });
 
   // =================================================================

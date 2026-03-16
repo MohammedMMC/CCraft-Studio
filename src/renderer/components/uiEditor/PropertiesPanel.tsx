@@ -228,19 +228,47 @@ export const PropertiesPanel: React.FC = () => {
           <div className="h-px bg-app-border" />
 
           {/* Colors */}
-          {element.type !== 'container' && (
-            <ColorPicker
-              label="Text Color"
-              value={element.fgColor}
-              onChange={(fgColor) => update({ fgColor })}
-              exclude={['transparent']}
-            />
+          {element.type === 'panel' ? (
+            <>
+              <ColorPicker
+                label="Title Color"
+                value={element.fgColor}
+                onChange={(fgColor) => update({ fgColor })}
+                exclude={['transparent']}
+              />
+              <ColorPicker
+                label="Title Background"
+                value={element.titleBgColor}
+                onChange={(titleBgColor) => update({ titleBgColor } as any)}
+              />
+              <ColorPicker
+                label="Border Color"
+                value={element.borderColor}
+                onChange={(borderColor) => update({ borderColor } as any)}
+              />
+              <ColorPicker
+                label="Background Color"
+                value={element.bgColor}
+                onChange={(bgColor) => update({ bgColor })}
+              />
+            </>
+          ) : (
+            <>
+              {element.type !== 'container' && (
+                <ColorPicker
+                  label="Text Color"
+                  value={element.fgColor}
+                  onChange={(fgColor) => update({ fgColor })}
+                  exclude={['transparent']}
+                />
+              )}
+              <ColorPicker
+                label="Background Color"
+                value={element.bgColor}
+                onChange={(bgColor) => update({ bgColor })}
+              />
+            </>
           )}
-          <ColorPicker
-            label="Background"
-            value={element.bgColor}
-            onChange={(bgColor) => update({ bgColor })}
-          />
 
           <div className="h-px bg-app-border" />
 
@@ -337,14 +365,31 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
               <option value="right">Right</option>
             </select>
           </PropField>
-          <ColorPicker label="Focus Text Color" value={element.focusTextColor} onChange={(c) => update({ focusTextColor: c } as any)} exclude={['transparent']} />
-          <ColorPicker label="Focus Background" value={element.focusBgColor} onChange={(c) => update({ focusBgColor: c } as any)} />
+          <ColorPicker label="Focused Text Color" value={element.focusTextColor} onChange={(c) => update({ focusTextColor: c } as any)} exclude={['transparent']} />
+          <ColorPicker label="Focused Background Color" value={element.focusBgColor} onChange={(c) => update({ focusBgColor: c } as any)} />
         </>
       );
 
     case 'container':
+    case 'panel':
       return (
         <>
+          {/* Panel gets text properties */}
+          {element.type === 'panel' && (
+            <>
+              <PropField label="Title">
+                <input className="input-field text-xs" value={(element as any).text} maxLength={200} onChange={(e) => update({ text: e.target.value.slice(0, 200) } as any)} />
+              </PropField>
+              <PropField label="Text Align">
+                <select className="select-field text-xs" value={(element as any).textAlign} onChange={(e) => update({ textAlign: e.target.value as any } as any)}>
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </select>
+              </PropField>
+            </>
+          )}
+
           <PropField label="Display">
             <select className="select-field text-xs" value={element.display} onChange={(e) => update({ display: e.target.value } as any)}>
               <option value="flex">Flex</option>

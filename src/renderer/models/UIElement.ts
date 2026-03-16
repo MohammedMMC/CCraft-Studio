@@ -26,7 +26,8 @@ export interface BaseElement {
 export type UIElementType =
   | 'label'
   | 'button'
-  | 'container';
+  | 'container'
+  | 'panel';
 
 export interface LabelElement extends BaseElement {
   type: 'label';
@@ -56,10 +57,29 @@ export interface ContainerElement extends BaseElement {
   paddingUnit: 'px' | '%';
 }
 
+export interface PanelElement extends BaseElement {
+  type: 'panel';
+  text: string;
+  textAlign: 'left' | 'center' | 'right';
+  borderColor: CCColor;
+  titleBgColor: CCColor;
+  display: ContainerDisplay;
+  flexDirection: FlexDirection;
+  gap: number;
+  gapUnit: 'px' | '%';
+  alignItems: AlignItems;
+  justifyContent: JustifyContent;
+  gridTemplateCols: number;
+  gridTemplateRows: number;
+  padding: number;
+  paddingUnit: 'px' | '%';
+}
+
 export type UIElement =
   | LabelElement
   | ButtonElement
-  | ContainerElement;
+  | ContainerElement
+  | PanelElement;
 
 type OmitBase<T> = T extends UIElement ? Omit<T, 'id' | 'name' | 'zIndex'> : never;
 type UIElementDefaults = { [K in UIElementType]: OmitBase<Extract<UIElement, { type: K }>> };
@@ -97,12 +117,32 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     gridTemplateCols: 2, gridTemplateRows: 2,
     padding: 0, paddingUnit: 'px',
   },
+  panel: {
+    type: 'panel',
+    parentId: null,
+    x: 1, y: 1, width: 20, height: 10,
+    widthUnit: 'px', heightUnit: 'px',
+    fgColor: 'white', bgColor: 'transparent',
+    visible: true,
+    text: 'Panel',
+    textAlign: 'left',
+    borderColor: 'gray',
+    titleBgColor: 'transparent',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 0, gapUnit: 'px',
+    alignItems: 'start',
+    justifyContent: 'start',
+    gridTemplateCols: 2, gridTemplateRows: 2,
+    padding: 0, paddingUnit: 'px',
+  },
 };
 
 export const UI_ELEMENT_LABELS: Record<UIElementType, { label: string; icon: string; description: string }> = {
-  label:     { label: 'Label',     icon: 'T', description: 'Static text display' },
-  button:    { label: 'Button',    icon: 'B', description: 'Clickable button with text' },
+  label: { label: 'Label', icon: 'T', description: 'Static text display' },
+  button: { label: 'Button', icon: 'B', description: 'Clickable button with text' },
   container: { label: 'Container', icon: 'C', description: 'Layout container for elements' },
+  panel: { label: 'Panel', icon: 'P', description: 'Layout container for elements but with a title and border' },
 };
 
 /**
@@ -144,8 +184,13 @@ export interface ResolvedChildPosition {
 /**
  * Resolve absolute screen positions for all children inside a container.
  */
+/** Type guard: is this element a container-like type (container or panel)? */
+export function isContainerLike(el: UIElement): el is ContainerElement | PanelElement {
+  return el.type === 'container' || el.type === 'panel';
+}
+
 export function resolveContainerLayout(
-  container: ContainerElement,
+  container: ContainerElement | PanelElement,
   children: UIElement[],
   containerX: number,
   containerY: number,
@@ -154,16 +199,23 @@ export function resolveContainerLayout(
   displayWidth: number,
   displayHeight: number,
 ): ResolvedChildPosition[] {
-  // Resolve padding
+  // Panel border acts as 1-char inset on all sides
+  const borderInset = container.type === 'panel' ? 1 : 0;
+  const bx = containerX + borderInset;
+  const by = containerY + borderInset;
+  const bw = Math.max(1, containerWidth - borderInset * 2);
+  const bh = Math.max(1, containerHeight - borderInset * 2);
+
+  // Resolve padding (applied inside the border)
   let pad = container.padding;
   if (container.paddingUnit === '%') {
-    const ref = Math.min(containerWidth, containerHeight);
+    const ref = Math.min(bw, bh);
     pad = Math.max(0, Math.round((container.padding / 100) * ref));
   }
-  const innerX = containerX + pad;
-  const innerY = containerY + pad;
-  const innerW = Math.max(1, containerWidth - pad * 2);
-  const innerH = Math.max(1, containerHeight - pad * 2);
+  const innerX = bx + pad;
+  const innerY = by + pad;
+  const innerW = Math.max(1, bw - pad * 2);
+  const innerH = Math.max(1, bh - pad * 2);
 
   // Resolve gap
   let gap = container.gap;
@@ -182,7 +234,7 @@ export function resolveContainerLayout(
 }
 
 function resolveFlexLayout(
-  container: ContainerElement,
+  container: ContainerElement | PanelElement,
   children: UIElement[],
   childSizes: { width: number; height: number }[],
   innerX: number, innerY: number,
@@ -275,7 +327,7 @@ function resolveFlexLayout(
 }
 
 function resolveGridLayout(
-  container: ContainerElement,
+  container: ContainerElement | PanelElement,
   children: UIElement[],
   childSizes: { width: number; height: number }[],
   innerX: number, innerY: number,

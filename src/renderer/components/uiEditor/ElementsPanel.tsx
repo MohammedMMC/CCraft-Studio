@@ -86,7 +86,7 @@ export const ElementsPanel: React.FC = () => {
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const y = e.clientY - rect.top;
     const h = rect.height;
-    const isContainer = el.type === 'container';
+    const isContainer = el.type === 'container' || el.type === 'panel';
     const idx = siblings.indexOf(el);
 
     if (isContainer) {
@@ -230,7 +230,7 @@ export const ElementsPanel: React.FC = () => {
   const renderRow = (el: UIElement, depth: number, siblings: UIElement[]) => {
     const isSelected = el.id === selectedElementId;
     const meta = UI_ELEMENT_LABELS[el.type];
-    const isContainer = el.type === 'container';
+    const isContainer = el.type === 'container' || el.type === 'panel';
     const children = childrenMap.get(el.id) || [];
     const isNestTarget = nestTargetId === el.id;
     const isDragged = draggedId === el.id;

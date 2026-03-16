@@ -1,4 +1,4 @@
-import { UIElement, ContainerElement, resolveSize, resolveContainerLayout } from '../../models/UIElement';
+import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContainerLayout, isContainerLike } from '../../models/UIElement';
 import { CCColor, CC_COLORS } from '../../models/CCColors';
 import { escapeLuaString, indent } from '../../utils/luaHelpers';
 
@@ -20,7 +20,7 @@ function buildPositionMap(
   const map = new Map<string, { x: number; y: number; width: number; height: number }>();
 
   function resolveContainer(
-    container: ContainerElement,
+    container: ContainerElement | PanelElement,
     cx: number, cy: number,
     cw: number, ch: number,
   ) {
@@ -33,8 +33,8 @@ function buildPositionMap(
     for (const pos of positions) {
       map.set(pos.id, { x: pos.x, y: pos.y, width: pos.width, height: pos.height });
       const child = children.find(c => c.id === pos.id);
-      if (child?.type === 'container') {
-        resolveContainer(child as ContainerElement, pos.x, pos.y, pos.width, pos.height);
+      if (child && isContainerLike(child)) {
+        resolveContainer(child as ContainerElement | PanelElement, pos.x, pos.y, pos.width, pos.height);
       }
     }
   }
@@ -46,8 +46,8 @@ function buildPositionMap(
       map.set(el.id, { x: el.x, y: el.y, width, height });
     }
 
-    if (el.type === 'container' && el.parentId === null) {
-      resolveContainer(el as ContainerElement, el.x, el.y, width, height);
+    if (isContainerLike(el) && el.parentId === null) {
+      resolveContainer(el as ContainerElement | PanelElement, el.x, el.y, width, height);
     }
   }
 
@@ -76,13 +76,13 @@ export function generateUICode(
   for (const el of allVisible) {
     const pos = posMap.get(el.id)!;
     const varName = `screen_${safeName}.${sanitize(el.name)}`;
-    lines.push(...generateComponentInstance(el, pos, varName));
+    lines.push(...generateComponentInstance(el, pos, varName, elements));
     lines.push('');
   }
 
-  // Wire container children
+  // Wire container/panel children
   for (const el of allVisible) {
-    if (el.type !== 'container') continue;
+    if (el.type !== 'container' && el.type !== 'panel') continue;
     const children = elements
       .filter(c => c.parentId === el.id && c.visible && posMap.has(c.id))
       .sort((a, b) => a.zIndex - b.zIndex);
@@ -124,6 +124,7 @@ function generateComponentInstance(
   el: UIElement,
   pos: { x: number; y: number; width: number; height: number },
   varName: string,
+  allElements: UIElement[],
 ): string[] {
   const lines: string[] = [];
   const escapedName = escapeLuaString(el.name);
@@ -137,16 +138,26 @@ function generateComponentInstance(
     unitLines.push(`  heightUnit = "${el.heightUnit}", rawHeight = ${el.height},`);
   }
 
+  // Parent name for layout resolution
+  const parentLine: string[] = [];
+  if (el.parentId) {
+    const parent = allElements.find(p => p.id === el.parentId);
+    if (parent) parentLine.push(`  parentName = "${escapeLuaString(parent.name)}",`);
+  }
+
   switch (el.type) {
     case 'label': {
       const fg = luaColor(el.fgColor);
       const bg = luaColor(el.bgColor);
-      lines.push(`${varName} = Label:new("${escapedName}", {`);
+      lines.push(`${varName} = Label:new("${varName + "_" + escapedName}", {`);
       lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
       lines.push(...unitLines);
+      lines.push(...parentLine);
       lines.push(`  text = "${escapeLuaString(el.text)}", textAlign = "${el.textAlign}",`);
       lines.push(`  fgColor = ${fg ?? 'nil'}, bgColor = ${bg ?? 'nil'},`);
       lines.push(`  visible = ${el.visible},`);
+      lines.push(`  zIndex = ${el.zIndex},`);
+      lines.push(`  type = "${el.type}",`);
       lines.push('})');
       break;
     }
@@ -159,10 +170,13 @@ function generateComponentInstance(
       lines.push(`${varName} = Button:new("${escapedName}", {`);
       lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
       lines.push(...unitLines);
+      lines.push(...parentLine);
       lines.push(`  text = "${escapeLuaString(el.text)}", textAlign = "${el.textAlign}",`);
       lines.push(`  fgColor = ${fg ?? 'nil'}, bgColor = ${bg ?? 'nil'},`);
       lines.push(`  focusTextColor = ${focusFg ?? 'nil'}, focusBgColor = ${focusBg ?? 'nil'},`);
       lines.push(`  visible = ${el.visible},`);
+      lines.push(`  zIndex = ${el.zIndex},`);
+      lines.push(`  type = "${el.type}",`);
       lines.push('})');
       break;
     }
@@ -173,8 +187,40 @@ function generateComponentInstance(
       lines.push(`${varName} = Container:new("${escapedName}", {`);
       lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
       lines.push(...unitLines);
+      lines.push(...parentLine);
       lines.push(`  fgColor = ${fg ?? 'nil'}, bgColor = ${bg ?? 'nil'},`);
       lines.push(`  visible = ${el.visible},`);
+      lines.push(`  zIndex = ${el.zIndex},`);
+      lines.push(`  type = "${el.type}",`);
+      lines.push(`  display = "${el.display}", flexDirection = "${el.flexDirection}",`);
+      lines.push(`  gap = ${el.gap}, gapUnit = "${el.gapUnit}",`);
+      lines.push(`  alignItems = "${el.alignItems}", justifyContent = "${el.justifyContent}",`);
+      lines.push(`  gridTemplateCols = ${el.gridTemplateCols}, gridTemplateRows = ${el.gridTemplateRows},`);
+      lines.push(`  padding = ${el.padding}, paddingUnit = "${el.paddingUnit}",`);
+      lines.push('})');
+      break;
+    }
+
+    case 'panel': {
+      const fg = luaColor(el.fgColor);
+      const bg = luaColor(el.bgColor);
+      const border = luaColor(el.borderColor);
+      const titleBg = luaColor(el.titleBgColor);
+      lines.push(`${varName} = Panel:new("${escapedName}", {`);
+      lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
+      lines.push(...unitLines);
+      lines.push(...parentLine);
+      lines.push(`  text = "${escapeLuaString(el.text)}", textAlign = "${el.textAlign}",`);
+      lines.push(`  fgColor = ${fg ?? 'nil'}, bgColor = ${bg ?? 'nil'},`);
+      lines.push(`  borderColor = ${border ?? 'nil'}, titleBgColor = ${titleBg ?? 'nil'},`);
+      lines.push(`  visible = ${el.visible},`);
+      lines.push(`  zIndex = ${el.zIndex},`);
+      lines.push(`  type = "${el.type}",`);
+      lines.push(`  display = "${el.display}", flexDirection = "${el.flexDirection}",`);
+      lines.push(`  gap = ${el.gap}, gapUnit = "${el.gapUnit}",`);
+      lines.push(`  alignItems = "${el.alignItems}", justifyContent = "${el.justifyContent}",`);
+      lines.push(`  gridTemplateCols = ${el.gridTemplateCols}, gridTemplateRows = ${el.gridTemplateRows},`);
+      lines.push(`  padding = ${el.padding}, paddingUnit = "${el.paddingUnit}",`);
       lines.push('})');
       break;
     }

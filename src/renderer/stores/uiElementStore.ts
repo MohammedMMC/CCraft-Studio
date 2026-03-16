@@ -107,7 +107,7 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
 
     const newElements: UIElement[] = [duplicate];
 
-    if (original.type === 'container') {
+    if (original.type === 'container' || original.type === 'panel') {
       const children = screen.uiElements.filter(e => e.parentId === elementId);
       for (const child of children) {
         const allNames = [...existingNames, ...newElements.map(e => e.name)];
@@ -202,7 +202,7 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
 
       if (parentId !== null) {
         const parent = s.uiElements.find(e => e.id === parentId);
-        if (!parent || parent.type !== 'container') return s;
+        if (!parent || (parent.type !== 'container' && parent.type !== 'panel')) return s;
         // Prevent circular nesting (ancestor can't become child of descendant)
         let ancestor: string | null = parentId;
         while (ancestor !== null) {
