@@ -1,3 +1,8 @@
+import { CCProject } from '@/models/Project';
+import { buildPositionMap, escapeLuaString, sanitize } from '@/utils/luaHelpers';
+import { readFileSync, readdirSync } from 'fs';
+import { generateUICode } from './uiCodeGen';
+
 export function generateHeader(projectName: string, author: string): string {
   const lines = [
     '-- ============================================================',
@@ -9,4 +14,106 @@ export function generateHeader(projectName: string, author: string): string {
   lines.push('-- ============================================================');
   lines.push('');
   return lines.join('\n');
+}
+
+export function getComponentsList(): string[] {
+  return readdirSync('./template/components').map(f => f.replace('.lua', ''));
+}
+
+export function getComponentLua(projectName: string, author: string, componentName: string): string {
+  return `${generateHeader(projectName, author)} ${readFileSync(`./template/components/${componentName}.lua`, "utf-8")}`;
+}
+
+export function generateFunctionsFile(projectName: string, author: string): string {
+  return `${generateHeader(projectName, author)}\n${readFileSync('./template/utils/functions.lua', "utf-8")}`;
+}
+
+export function generateVarsFile(project: CCProject): string {
+  const startScreen = project.screens.find(s => s.isStartScreen) ?? project.screens[0];
+  const lines: string[] = [
+    generateHeader(project.name, project.author),
+    '-- =============================================',
+    '-- Global Variables',
+    '-- =============================================',
+    '',
+  ];
+
+  for (const v of project.variables) {
+    const safeName = sanitize(v.name);
+    switch (v.type) {
+      case 'string': lines.push(`${safeName} = "${escapeLuaString(v.defaultValue)}"`); break;
+      case 'number': lines.push(`${safeName} = ${parseFloat(v.defaultValue) || 0}`); break;
+      case 'boolean': lines.push(`${safeName} = ${v.defaultValue === 'true' ? 'true' : 'false'}`); break;
+      case 'table': lines.push(`${safeName} = {}`); break;
+    }
+  }
+  if (project.variables.length === 0) lines.push('-- (no variables defined)');
+
+  lines.push('');
+  lines.push('-- Runtime state');
+  lines.push(`currentScreen = "${sanitize(startScreen?.name ?? 'Screen 1')}"`);
+  lines.push('running = true');
+  lines.push('');
+  lines.push('-- Screen components');
+  lines.push('screenComponents = {}');
+
+  return lines.join('\n');
+}
+
+export function generateHandlersFile(project: CCProject): string {
+  const lines: string[] = [
+    '-- =============================================',
+    '-- Event Handlers & Button Regions',
+    '-- =============================================',
+    '',
+    'handlers = {}',
+    '',
+  ];
+
+  for (const screen of project.screens) {
+    const sn = sanitize(screen.name);
+    lines.push(`handlers["${sn}"] = { onLoad = nil, onButtonClick = {}, onButtonFocus = {}, onButtonRelease = {}, onKeyPress = {}, onTimer = {}, onRedstone = nil, onModemMessage = {} }`);
+  }
+
+  lines.push('');
+  lines.push('screenDrawFunctions = {}');
+  for (const screen of project.screens) {
+    const sn = sanitize(screen.name);
+    lines.push(`screenDrawFunctions["${sn}"] = drawScreen_${sn}`);
+  }
+
+  lines.push('');
+  lines.push('buttonRegions = {}');
+  for (const screen of project.screens) {
+    const buttons = screen.uiElements.filter(e => e.type === 'button');
+    if (buttons.length === 0) continue;
+    const sn = sanitize(screen.name);
+    const posMap = buildPositionMap(screen.uiElements, project.displayWidth, project.displayHeight);
+    lines.push(`buttonRegions["${sn}"] = {`);
+    for (const btn of buttons) {
+      const pos = posMap.get(btn.id);
+      if (!pos) continue;
+      lines.push(`  { name = "${escapeLuaString(btn.name)}", x = ${pos.x}, y = ${pos.y}, w = ${pos.width}, h = ${pos.height} },`);
+    }
+    lines.push('}');
+  }
+  return lines.join('\n');
+}
+
+export function generateScreenFile(_project: CCProject, screenName: string, uiElements: any[]): string {
+  return `-- Screen: ${screenName}\n\n${generateUICode(uiElements, screenName, _project.displayWidth, _project.displayHeight)}`;
+}
+
+export function generateStartupFile(project: CCProject, onlyUI: boolean = false): string {
+  const startScreen = project.screens.find(s => s.isStartScreen) ?? project.screens[0];
+  const safeName = sanitize(startScreen?.name ?? 'Screen 1');
+
+  let lines = `${generateHeader(project.name, project.author)} ${readFileSync(`./template/startup.lua`, "utf-8")}`;
+  lines = lines.replace("-- {PROJECT_START}",
+    onlyUI
+      ? `resolveLayout(term.getSize())\ndrawScreen_${safeName}()`
+      : `navigate("${safeName}")\n` + readFileSync('./template/loop.lua', "utf-8")
+  );
+
+  return lines;
 }
