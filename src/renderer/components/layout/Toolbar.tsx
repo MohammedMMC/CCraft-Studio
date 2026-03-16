@@ -22,21 +22,17 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
   const redo = useHistoryStore((s) => s.redo);
   const updateProjectInfo = useProjectStore((s) => s.updateProjectInfo);
 
-  // Build current screen size value for the dropdown
   const screenSizeValue = useMemo(() => {
     if (!project) return '';
     const { device, displayWidth, displayHeight } = project;
-    // Check if it matches a monitor size
     if (device === 'monitor') {
       const match = MONITOR_SIZES.find(m => m.width === displayWidth && m.height === displayHeight);
       if (match) return `monitor:${match.blocks}`;
     }
-    // Check if it matches a device preset
     const preset = DEVICE_PRESETS[device];
     if (preset && preset.defaultWidth === displayWidth && preset.defaultHeight === displayHeight) {
       return `device:${device}`;
     }
-    // Custom size - show as monitor with closest match or just the current device
     return `device:${device}`;
   }, [project]);
 
@@ -192,7 +188,6 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
   );
 };
 
-// Simple SVG icons
 const UndoIcon = () => (
   <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
     <path d="M4.5 3L1 6.5l3.5 3.5v-2.5c3 0 5.5 1 7 4-.5-4-3-7-7-7V3z" />

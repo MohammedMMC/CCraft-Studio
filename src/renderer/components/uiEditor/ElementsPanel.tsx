@@ -7,8 +7,8 @@ import { UIElement, UI_ELEMENT_LABELS } from '../../models/UIElement';
 import { generateId } from '../../utils/idGenerator';
 
 interface DropIndicator {
-  parentId: string | null;   // which parent list
-  index: number;             // insert before this index in the sibling list
+  parentId: string | null;
+  index: number;
 }
 
 export const ElementsPanel: React.FC = () => {
@@ -28,7 +28,6 @@ export const ElementsPanel: React.FC = () => {
 
   const elements = screen.uiElements;
 
-  // Build sorted sibling lists per parent
   const getSiblings = useCallback((parentId: string | null) => {
     return [...elements]
       .filter(el => el.parentId === parentId)
@@ -44,12 +43,12 @@ export const ElementsPanel: React.FC = () => {
       childrenMap.get(el.parentId)!.push(el);
     }
   }
-  // Sort children by zIndex
+
   for (const [key, children] of childrenMap) {
     childrenMap.set(key, [...children].sort((a, b) => a.zIndex - b.zIndex));
   }
 
-  // Check if targetId is a descendant of ancestorId
+
   const isDescendant = (targetId: string, ancestorId: string): boolean => {
     let current = elements.find(e => e.id === targetId);
     while (current?.parentId) {
@@ -76,7 +75,6 @@ export const ElementsPanel: React.FC = () => {
       return;
     }
 
-    // Don't allow dropping onto own descendants
     if (isDescendant(el.id, draggedId)) {
       setDropTarget(null);
       setNestTargetId(null);
@@ -90,7 +88,6 @@ export const ElementsPanel: React.FC = () => {
     const idx = siblings.indexOf(el);
 
     if (isContainer) {
-      // 3 zones: top 25% = before, middle 50% = nest inside, bottom 25% = after
       if (y < h * 0.25) {
         setNestTargetId(null);
         setDropTarget({ parentId: el.parentId, index: idx });
@@ -102,7 +99,6 @@ export const ElementsPanel: React.FC = () => {
         setNestTargetId(el.id);
       }
     } else {
-      // 2 zones: top half = before, bottom half = after
       if (y < h / 2) {
         setDropTarget({ parentId: el.parentId, index: idx });
       } else {
@@ -116,7 +112,7 @@ export const ElementsPanel: React.FC = () => {
     e.preventDefault();
     e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
-    // Drop at end of top level
+
     setDropTarget({ parentId: null, index: topLevel.length });
     setNestTargetId(null);
   };
@@ -145,7 +141,6 @@ export const ElementsPanel: React.FC = () => {
     if (!el) return;
 
     if (nestTargetId) {
-      // Nesting into a container
       if (draggedId === nestTargetId) return;
       if (isDescendant(nestTargetId, draggedId)) return;
 
@@ -166,9 +161,7 @@ export const ElementsPanel: React.FC = () => {
       const prevParentId = el.parentId;
       const siblings = getSiblings(targetParentId);
 
-      // Build new order
       const currentIds = siblings.map(s => s.id).filter(id => id !== draggedId);
-      // Adjust insert index if element was removed from before the target
       let insertAt = targetIndex;
       const oldIdx = siblings.findIndex(s => s.id === draggedId);
       if (prevParentId === targetParentId && oldIdx !== -1 && oldIdx < targetIndex) {
@@ -176,15 +169,12 @@ export const ElementsPanel: React.FC = () => {
       }
       currentIds.splice(insertAt, 0, draggedId);
 
-      // Save old zIndexes for undo
       const oldZIndexes = siblings.map(s => ({ id: s.id, z: s.zIndex }));
 
-      // If changing parent, do that first
       if (prevParentId !== targetParentId) {
         setParent(activeScreenId, draggedId, targetParentId);
       }
 
-      // Apply new order
       applyReorder(targetParentId, currentIds);
 
       const sid = activeScreenId;

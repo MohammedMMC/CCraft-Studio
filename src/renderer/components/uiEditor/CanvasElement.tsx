@@ -49,7 +49,6 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
     e.stopPropagation();
     onSelect();
 
-    // Don't allow positional dragging for children inside containers
     if (isChild) return;
 
     setIsDragging(true);
@@ -95,7 +94,6 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({
   };
 
   const handleResizeMouseDown = (e: React.MouseEvent) => {
-    // Don't allow resize for children inside containers
     if (isChild) return;
 
     e.stopPropagation();

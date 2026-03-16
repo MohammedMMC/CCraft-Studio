@@ -81,7 +81,6 @@
   }
 }
 
-/* Block editor: diamond shape for boolean blocks */
 .clip-diamond {
   clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 50%, calc(100% - 8px) 100%, 8px 100%, 0% 50%);
   padding-left: 12px;

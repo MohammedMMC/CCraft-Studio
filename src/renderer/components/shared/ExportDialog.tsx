@@ -22,7 +22,6 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
 
   if (!project) return null;
 
-  // Flush the live Blockly workspace so exported code is up to date
   const flushLiveWorkspace = () => {
     const { liveWorkspace, liveScreenId, setXml, setLuaCode } = useBlocklyStore.getState();
     if (liveWorkspace && liveScreenId) {

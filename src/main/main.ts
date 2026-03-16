@@ -4,8 +4,6 @@ import * as fs from 'fs';
 import { setupIPC } from './ipc';
 import { buildMenu } from './menu';
 
-// Disable GPU hardware acceleration to prevent renderer crashes (0xC0000005)
-// when Blockly creates large SVG workspaces
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('disable-gpu-rasterization');
 

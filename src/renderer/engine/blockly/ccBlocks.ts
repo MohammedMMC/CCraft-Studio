@@ -1,7 +1,6 @@
 import * as Blockly from 'blockly';
 import { useProjectStore } from '../../stores/projectStore';
 
-// ===== Shared dropdown definitions =====
 const CC_COLORS: [string, string][] = [
   ['white', 'colors.white'],
   ['orange', 'colors.orange'],
@@ -49,7 +48,7 @@ function BUTTONS(): [string, string][] {
 
 export function defineAllBlocks() {
   // =====================================================================
-  // 1. EVENTS (hat blocks)
+  // 1. EVENTS
   // =====================================================================
 
   Blockly.Blocks['event_screen_load'] = {
@@ -353,8 +352,6 @@ export function defineAllBlocks() {
   // 3. TERMINAL API
   // =====================================================================
 
-  // --- Statement blocks ---
-
   Blockly.Blocks['term_write'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('TEXT')
@@ -503,8 +500,6 @@ export function defineAllBlocks() {
     },
   };
 
-  // --- Value blocks ---
-
   Blockly.Blocks['term_getWidth'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
@@ -579,8 +574,6 @@ export function defineAllBlocks() {
   // 4. REDSTONE API
   // =====================================================================
 
-  // --- Statement blocks ---
-
   Blockly.Blocks['rs_setOutput'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
@@ -624,8 +617,6 @@ export function defineAllBlocks() {
       this.setTooltip('Set bundled cable output on a side');
     },
   };
-
-  // --- Value blocks ---
 
   Blockly.Blocks['rs_getInput'] = {
     init(this: Blockly.Block) {
@@ -698,8 +689,6 @@ export function defineAllBlocks() {
   // =====================================================================
   // 5. FILESYSTEM API
   // =====================================================================
-
-  // --- Statement blocks ---
 
   Blockly.Blocks['fs_writeFile'] = {
     init(this: Blockly.Block) {
@@ -781,8 +770,6 @@ export function defineAllBlocks() {
     },
   };
 
-  // --- Value blocks ---
-
   Blockly.Blocks['fs_readFile'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('PATH').setCheck('String')
@@ -853,8 +840,6 @@ export function defineAllBlocks() {
   // 6. HTTP API
   // =====================================================================
 
-  // --- Statement blocks ---
-
   Blockly.Blocks['http_postRequest'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('URL').setCheck('String')
@@ -868,8 +853,6 @@ export function defineAllBlocks() {
       this.setTooltip('Send an HTTP POST request with a body');
     },
   };
-
-  // --- Value blocks ---
 
   Blockly.Blocks['http_get'] = {
     init(this: Blockly.Block) {
@@ -898,8 +881,6 @@ export function defineAllBlocks() {
   // 7. PERIPHERAL API
   // =====================================================================
 
-  // --- Statement blocks ---
-
   Blockly.Blocks['peripheral_call'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('ARGS')
@@ -915,8 +896,6 @@ export function defineAllBlocks() {
       this.setTooltip('Call a method on a peripheral with arguments');
     },
   };
-
-  // --- Value blocks ---
 
   Blockly.Blocks['peripheral_wrap'] = {
     init(this: Blockly.Block) {
@@ -988,8 +967,6 @@ export function defineAllBlocks() {
   // 8. TURTLE API
   // =====================================================================
 
-  // --- Movement statement blocks ---
-
   Blockly.Blocks['turtle_forward'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
@@ -1055,8 +1032,6 @@ export function defineAllBlocks() {
       this.setTooltip('Turn the turtle 90 degrees to the right');
     },
   };
-
-  // --- Action statement blocks ---
 
   Blockly.Blocks['turtle_dig'] = {
     init(this: Blockly.Block) {
@@ -1307,8 +1282,6 @@ export function defineAllBlocks() {
     },
   };
 
-  // --- Turtle value blocks ---
-
   Blockly.Blocks['turtle_detect'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
@@ -1466,8 +1439,6 @@ export function defineAllBlocks() {
   // 9. OS API
   // =====================================================================
 
-  // --- Statement blocks ---
-
   Blockly.Blocks['os_sleep'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('SECS').setCheck('Number')
@@ -1590,8 +1561,6 @@ export function defineAllBlocks() {
     },
   };
 
-  // --- Value blocks ---
-
   Blockly.Blocks['os_time'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
@@ -1665,8 +1634,6 @@ export function defineAllBlocks() {
   // =====================================================================
   // 10. REDNET API
   // =====================================================================
-
-  // --- Statement blocks ---
 
   Blockly.Blocks['rednet_open'] = {
     init(this: Blockly.Block) {
@@ -1750,8 +1717,6 @@ export function defineAllBlocks() {
     },
   };
 
-  // --- Value blocks ---
-
   Blockly.Blocks['rednet_receive'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
@@ -1791,8 +1756,6 @@ export function defineAllBlocks() {
   // =====================================================================
   // 11. TEXTUTILS API
   // =====================================================================
-
-  // --- Value blocks ---
 
   Blockly.Blocks['textutils_serialize'] = {
     init(this: Blockly.Block) {
@@ -1844,8 +1807,6 @@ export function defineAllBlocks() {
     },
   };
 
-  // --- Statement blocks ---
-
   Blockly.Blocks['textutils_slowPrint'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('TEXT').setCheck('String')
@@ -1877,8 +1838,6 @@ export function defineAllBlocks() {
   // =====================================================================
   // 12. PAINTUTILS API
   // =====================================================================
-
-  // --- Statement blocks ---
 
   Blockly.Blocks['paint_drawPixel'] = {
     init(this: Blockly.Block) {
@@ -1976,8 +1935,6 @@ export function defineAllBlocks() {
     },
   };
 
-  // --- Value blocks ---
-
   Blockly.Blocks['paint_loadImage'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('PATH').setCheck('String')
@@ -1991,8 +1948,6 @@ export function defineAllBlocks() {
   // =====================================================================
   // 13. WINDOW API
   // =====================================================================
-
-  // --- Statement / Value blocks ---
 
   Blockly.Blocks['window_create'] = {
     init(this: Blockly.Block) {
@@ -2056,8 +2011,6 @@ export function defineAllBlocks() {
       this.setTooltip('Redraw a window to the screen');
     },
   };
-
-  // --- Value blocks ---
 
   Blockly.Blocks['window_getWidth'] = {
     init(this: Blockly.Block) {
@@ -2128,8 +2081,6 @@ export function defineAllBlocks() {
   // 14. SETTINGS API
   // =====================================================================
 
-  // --- Statement blocks ---
-
   Blockly.Blocks['settings_set'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('VALUE')
@@ -2180,8 +2131,6 @@ export function defineAllBlocks() {
     },
   };
 
-  // --- Value blocks ---
-
   Blockly.Blocks['settings_get'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('DEFAULT')
@@ -2217,8 +2166,6 @@ export function defineAllBlocks() {
   // 16. DISK API
   // =====================================================================
 
-  // --- Statement blocks ---
-
   Blockly.Blocks['disk_eject'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
@@ -2244,8 +2191,6 @@ export function defineAllBlocks() {
       this.setTooltip('Set the label of a disk in a disk drive');
     },
   };
-
-  // --- Value blocks ---
 
   Blockly.Blocks['disk_isPresent'] = {
     init(this: Blockly.Block) {

@@ -2,13 +2,9 @@ import { create } from 'zustand';
 import type * as Blockly from 'blockly';
 
 interface BlocklyState {
-  // XML per screen id
   workspaceXml: Record<string, string>;
-  // Generated Lua code per screen id
   luaCode: Record<string, string>;
-  // Reference to the live workspace (set by BlocklyWorkspace component)
   liveWorkspace: Blockly.WorkspaceSvg | null;
-  // The screen ID the live workspace is currently showing
   liveScreenId: string | null;
 
   getXml: (screenId: string) => string | undefined;
@@ -18,11 +14,9 @@ interface BlocklyState {
   removeScreen: (screenId: string) => void;
   clear: () => void;
 
-  // For project save/load
   getAllXml: () => Record<string, string>;
   loadAllXml: (data: Record<string, string>) => void;
 
-  // Live workspace management
   setLiveWorkspace: (ws: Blockly.WorkspaceSvg | null, screenId: string | null) => void;
 }
 

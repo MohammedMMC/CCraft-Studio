@@ -218,8 +218,6 @@ export function registerAllGenerators() {
   // 3. TERMINAL API
   // =================================================================
 
-  // --- Statement blocks ---
-
   luaGenerator.addGenerator('term_write', (block, gen) => {
     const text = gen.valueToCode(block, 'TEXT', Order.NONE);
     return `${gen.getIndent()}term.write(${text})`;
@@ -266,8 +264,6 @@ export function registerAllGenerators() {
     return `${gen.getIndent()}term.blit(${text}, ${fg}, ${bg})`;
   });
 
-  // --- Value blocks ---
-
   luaGenerator.addGenerator('term_getWidth', () => {
     return [`({term.getSize()})`, Order.ATOMIC];
   });
@@ -300,8 +296,6 @@ export function registerAllGenerators() {
   // 4. REDSTONE API
   // =================================================================
 
-  // --- Statement blocks ---
-
   luaGenerator.addGenerator('rs_setOutput', (block, gen) => {
     const side = block.getFieldValue('SIDE');
     const value = block.getFieldValue('VALUE');
@@ -319,8 +313,6 @@ export function registerAllGenerators() {
     const value = gen.valueToCode(block, 'VALUE', Order.NONE);
     return `${gen.getIndent()}redstone.setBundledOutput("${side}", ${value})`;
   });
-
-  // --- Value blocks ---
 
   luaGenerator.addGenerator('rs_getInput', (block) => {
     const side = block.getFieldValue('SIDE');
@@ -357,8 +349,6 @@ export function registerAllGenerators() {
   // 5. FILESYSTEM API
   // =================================================================
 
-  // --- Statement blocks ---
-
   luaGenerator.addGenerator('fs_writeFile', (block, gen) => {
     const path = gen.valueToCode(block, 'PATH', Order.NONE);
     const content = gen.valueToCode(block, 'CONTENT', Order.NONE);
@@ -392,8 +382,6 @@ export function registerAllGenerators() {
     const to = gen.valueToCode(block, 'TO', Order.NONE);
     return `${gen.getIndent()}fs.copy(${from}, ${to})`;
   });
-
-  // --- Value blocks ---
 
   luaGenerator.addGenerator('fs_readFile', (block, gen) => {
     const path = gen.valueToCode(block, 'PATH', Order.NONE);
@@ -429,15 +417,11 @@ export function registerAllGenerators() {
   // 6. HTTP API
   // =================================================================
 
-  // --- Statement blocks ---
-
   luaGenerator.addGenerator('http_postRequest', (block, gen) => {
     const url = gen.valueToCode(block, 'URL', Order.NONE);
     const body = gen.valueToCode(block, 'BODY', Order.NONE);
     return `${gen.getIndent()}http.post(${url}, ${body})`;
   });
-
-  // --- Value blocks ---
 
   luaGenerator.addGenerator('http_get', (block, gen) => {
     const url = gen.valueToCode(block, 'URL', Order.NONE);
@@ -453,8 +437,6 @@ export function registerAllGenerators() {
   // 7. PERIPHERAL API
   // =================================================================
 
-  // --- Statement blocks ---
-
   luaGenerator.addGenerator('peripheral_call', (block, gen) => {
     const side = block.getFieldValue('SIDE');
     const method = block.getFieldValue('METHOD');
@@ -464,8 +446,6 @@ export function registerAllGenerators() {
     }
     return `${gen.getIndent()}peripheral.call("${side}", "${method}")`;
   });
-
-  // --- Value blocks ---
 
   luaGenerator.addGenerator('peripheral_wrap', (block) => {
     const side = block.getFieldValue('SIDE');
@@ -635,8 +615,6 @@ export function registerAllGenerators() {
   // 9. OS API
   // =================================================================
 
-  // --- Statement blocks ---
-
   luaGenerator.addGenerator('os_sleep', (block, gen) => {
     const secs = gen.valueToCode(block, 'SECS', Order.NONE);
     return `${gen.getIndent()}os.sleep(${secs})`;
@@ -670,8 +648,6 @@ export function registerAllGenerators() {
     const id = gen.valueToCode(block, 'ID', Order.NONE);
     return `${gen.getIndent()}os.cancelAlarm(${id})`;
   });
-
-  // --- Value blocks ---
 
   luaGenerator.addGenerator('os_startTimer', (block, gen) => {
     const secs = gen.valueToCode(block, 'SECS', Order.NONE);
@@ -715,8 +691,6 @@ export function registerAllGenerators() {
   // 10. REDNET API
   // =================================================================
 
-  // --- Statement blocks ---
-
   luaGenerator.addGenerator('rednet_open', (block, gen) => {
     const side = block.getFieldValue('SIDE');
     return `${gen.getIndent()}rednet.open("${side}")`;
@@ -757,8 +731,6 @@ export function registerAllGenerators() {
     return `${gen.getIndent()}rednet.unhost("${protocol}")`;
   });
 
-  // --- Value blocks ---
-
   luaGenerator.addGenerator('rednet_receive', (block) => {
     const timeout = block.getFieldValue('TIMEOUT');
     return [`({rednet.receive(${timeout})})`, Order.ATOMIC];
@@ -782,8 +754,6 @@ export function registerAllGenerators() {
   // 11. TEXTUTILS API
   // =================================================================
 
-  // --- Statement blocks ---
-
   luaGenerator.addGenerator('textutils_slowPrint', (block, gen) => {
     const text = gen.valueToCode(block, 'TEXT', Order.NONE);
     const rate = gen.valueToCode(block, 'RATE', Order.NONE);
@@ -795,8 +765,6 @@ export function registerAllGenerators() {
     const rate = gen.valueToCode(block, 'RATE', Order.NONE);
     return `${gen.getIndent()}textutils.slowWrite(${text}, ${rate})`;
   });
-
-  // --- Value blocks ---
 
   luaGenerator.addGenerator('textutils_serialize', (block, gen) => {
     const value = gen.valueToCode(block, 'VALUE', Order.NONE);
@@ -826,8 +794,6 @@ export function registerAllGenerators() {
   // =================================================================
   // 12. PAINTUTILS API
   // =================================================================
-
-  // --- Statement blocks ---
 
   luaGenerator.addGenerator('paint_drawPixel', (block, gen) => {
     const x = gen.valueToCode(block, 'X', Order.NONE);
@@ -870,8 +836,6 @@ export function registerAllGenerators() {
     return `${gen.getIndent()}paintutils.drawImage(${image}, ${x}, ${y})`;
   });
 
-  // --- Value blocks ---
-
   luaGenerator.addGenerator('paint_loadImage', (block, gen) => {
     const path = gen.valueToCode(block, 'PATH', Order.NONE);
     return [`paintutils.loadImage(${path})`, Order.ATOMIC];
@@ -881,8 +845,6 @@ export function registerAllGenerators() {
   // 13. WINDOW API
   // =================================================================
 
-  // --- Value block ---
-
   luaGenerator.addGenerator('window_create', (block, gen) => {
     const x = gen.valueToCode(block, 'X', Order.NONE);
     const y = gen.valueToCode(block, 'Y', Order.NONE);
@@ -890,8 +852,6 @@ export function registerAllGenerators() {
     const h = gen.valueToCode(block, 'H', Order.NONE);
     return [`window.create(term.current(), ${x}, ${y}, ${w}, ${h})`, Order.ATOMIC];
   });
-
-  // --- Statement blocks ---
 
   luaGenerator.addGenerator('window_setVisible', (block, gen) => {
     const win = gen.valueToCode(block, 'WIN', Order.ATOMIC);
@@ -912,8 +872,6 @@ export function registerAllGenerators() {
     const win = gen.valueToCode(block, 'WIN', Order.ATOMIC);
     return `${gen.getIndent()}${win}.redraw()`;
   });
-
-  // --- Value blocks ---
 
   luaGenerator.addGenerator('window_getWidth', (block, gen) => {
     const win = gen.valueToCode(block, 'WIN', Order.ATOMIC);
@@ -944,8 +902,6 @@ export function registerAllGenerators() {
   // 14. SETTINGS API
   // =================================================================
 
-  // --- Statement blocks ---
-
   luaGenerator.addGenerator('settings_set', (block, gen) => {
     const name = block.getFieldValue('NAME');
     const value = gen.valueToCode(block, 'VALUE', Order.NONE);
@@ -967,8 +923,6 @@ export function registerAllGenerators() {
     return `${gen.getIndent()}settings.load("${path}")`;
   });
 
-  // --- Value blocks ---
-
   luaGenerator.addGenerator('settings_get', (block, gen) => {
     const name = block.getFieldValue('NAME');
     const def = gen.valueToCode(block, 'DEFAULT', Order.NONE);
@@ -988,8 +942,6 @@ export function registerAllGenerators() {
   // 16. DISK API
   // =================================================================
 
-  // --- Statement blocks ---
-
   luaGenerator.addGenerator('disk_eject', (block, gen) => {
     const side = block.getFieldValue('SIDE');
     return `${gen.getIndent()}disk.eject("${side}")`;
@@ -1000,8 +952,6 @@ export function registerAllGenerators() {
     const label = gen.valueToCode(block, 'LABEL', Order.NONE);
     return `${gen.getIndent()}disk.setLabel("${side}", ${label})`;
   });
-
-  // --- Value blocks ---
 
   luaGenerator.addGenerator('disk_isPresent', (block) => {
     const side = block.getFieldValue('SIDE');
@@ -1032,8 +982,6 @@ export function registerAllGenerators() {
   // 17. UTILITY
   // =================================================================
 
-  // --- Statement blocks ---
-
   luaGenerator.addGenerator('term_print', (block, gen) => {
     const text = gen.valueToCode(block, 'TEXT', Order.NONE);
     return `${gen.getIndent()}print(${text})`;
@@ -1058,8 +1006,6 @@ export function registerAllGenerators() {
     gen.deindent();
     return `${gen.getIndent()}local _ok, _err = pcall(function()\n${doBody}\n${gen.getIndent()}end)\n${gen.getIndent()}if not _ok then\n${catchBody}\n${gen.getIndent()}end`;
   });
-
-  // --- Value blocks ---
 
   luaGenerator.addGenerator('tonumber_val', (block, gen) => {
     const text = gen.valueToCode(block, 'TEXT', Order.NONE);

@@ -203,10 +203,9 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
       if (parentId !== null) {
         const parent = s.uiElements.find(e => e.id === parentId);
         if (!parent || (parent.type !== 'container' && parent.type !== 'panel')) return s;
-        // Prevent circular nesting (ancestor can't become child of descendant)
         let ancestor: string | null = parentId;
         while (ancestor !== null) {
-          if (ancestor === elementId) return s; // circular!
+          if (ancestor === elementId) return s;
           const a = s.uiElements.find(e => e.id === ancestor);
           ancestor = a?.parentId ?? null;
         }

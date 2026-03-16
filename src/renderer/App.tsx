@@ -20,7 +20,6 @@ const flushBlocklyWorkspace = () => {
       setXml(liveScreenId, xml);
     }
   } catch {
-    // workspace may not be mounted
   }
 };
 
@@ -49,7 +48,6 @@ const handleSaveAs = async () => {
   const blocklyXml = useBlocklyStore.getState().getAllXml();
   const saveData = { ...project, _blocklyXml: blocklyXml };
   const content = JSON.stringify(saveData, null, 2);
-  // Force "Save As" by passing no filePath
   const result = await window.electronAPI.saveProject({ content });
   if (result) {
     useProjectStore.getState().setFilePath(result);
@@ -78,7 +76,6 @@ const App: React.FC = () => {
   const [showNewProject, setShowNewProject] = useState(false);
   const [showExport, setShowExport] = useState(false);
 
-  // Menu action handler
   useEffect(() => {
     if (!window.electronAPI) return;
     const unsubscribe = window.electronAPI.onMenuAction((action: string) => {
@@ -140,7 +137,6 @@ const App: React.FC = () => {
     return unsubscribe;
   }, [project]);
 
-  // Keyboard shortcuts
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const ctrl = e.ctrlKey || e.metaKey;
@@ -181,7 +177,6 @@ const App: React.FC = () => {
         useEditorStore.getState().resetZoom();
       }
       if (e.key === 'Delete' || e.key === 'Backspace') {
-        // Don't delete if focus is in an input/textarea
         const tag = (e.target as HTMLElement).tagName;
         if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
         const selectedId = useEditorStore.getState().selectedElementId;

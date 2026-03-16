@@ -8,7 +8,6 @@ import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContaine
 import { CanvasElement } from './CanvasElement';
 import { GridOverlay } from './GridOverlay';
 
-// Match the TerminalRenderer cell size so overlays align pixel-perfectly
 const CC_CHAR_WIDTH = 6;
 const CC_CHAR_HEIGHT = 9;
 const SCALE = 2;
@@ -49,7 +48,7 @@ function renderElementToBuffer(
         const textsp = [(text.length - text.trimStart().length), (text.length - text.trimEnd().length)];
         const plus2 = width < panel.text.length + 4 ? 0 : 2;
         const textpos = (textsp[1] == 0 ? textsp[0] - 4 + Number(textsp[0] == 4) + (plus2 == 0 ? 3 : 0) + Number(textsp[0] == 5) : (textsp[0] == 0 ? (Number(width == (plus2 + Number(textsp[1] == 5) + panel.text.length + 2)) || plus2 || 1) : (textsp[0] - (plus2 == 2 ? 1 : 0))));
-        
+
         buffer.fillRect(x, y, textpos, 1, ' ', panel.fgColor, panel.borderColor);
         buffer.fillRect(x + (textpos + panel.text.length + 2) + (textsp[0] != 2 && plus2 == 0 ? -2 : 0), y, width - (textpos + panel.text.length + 2) + (textsp[0] != 2 && plus2 == 0 ? 1 : 0), 1, ' ', panel.fgColor, panel.borderColor);
 
@@ -57,18 +56,15 @@ function renderElementToBuffer(
         buffer.fillRect(x, y, 1, height, ' ', panel.fgColor, panel.borderColor);
         buffer.fillRect(x + width - 1, y, 1, height, ' ', panel.fgColor, panel.borderColor);
 
-        // 2. Fill inner area with background color (inside the 1-char border)
         if (width > 2 && height > 2) {
           buffer.fillRect(x + 1, y + 1, width - 2, height - 2, ' ', panel.fgColor, panel.bgColor);
         }
 
         buffer.writeText(x + textpos, y, (plus2 == 2 ? " " : "") + text.trimStart().trimEnd() + (plus2 == 2 ? " " : ""), panel.fgColor, panel.titleBgColor);
       } else {
-        // Container: simple fill
         buffer.fillRect(x, y, width, height, ' ', el.fgColor, el.bgColor);
       }
 
-      // Find and render children
       const children = allElements
         .filter(c => c.parentId === el.id && c.visible)
         .sort((a, b) => a.zIndex - b.zIndex);
@@ -120,7 +116,7 @@ function renderChildAtPosition(
         const textsp = [(text.length - text.trimStart().length), (text.length - text.trimEnd().length)];
         const plus2 = width < panel.text.length + 4 ? 0 : 2;
         const textpos = (textsp[1] == 0 ? textsp[0] - 4 + Number(textsp[0] == 4) + (plus2 == 0 ? 3 : 0) + Number(textsp[0] == 5) : (textsp[0] == 0 ? (Number(width == (plus2 + Number(textsp[1] == 5) + panel.text.length + 2)) || plus2 || 1) : (textsp[0] - (plus2 == 2 ? 1 : 0))));
-        
+
         buffer.fillRect(x, y, textpos, 1, ' ', panel.fgColor, panel.borderColor);
         buffer.fillRect(x + (textpos + panel.text.length + 2) + (textsp[0] != 2 && plus2 == 0 ? -2 : 0), y, width - (textpos + panel.text.length + 2) + (textsp[0] != 2 && plus2 == 0 ? 1 : 0), 1, ' ', panel.fgColor, panel.borderColor);
 
@@ -128,7 +124,6 @@ function renderChildAtPosition(
         buffer.fillRect(x, y, 1, height, ' ', panel.fgColor, panel.borderColor);
         buffer.fillRect(x + width - 1, y, 1, height, ' ', panel.fgColor, panel.borderColor);
 
-        // 2. Fill inner area with background color (inside the 1-char border)
         if (width > 2 && height > 2) {
           buffer.fillRect(x + 1, y + 1, width - 2, height - 2, ' ', panel.fgColor, panel.bgColor);
         }
@@ -233,13 +228,11 @@ export const UIEditorCanvas: React.FC = () => {
     return new TerminalBuffer(project.displayWidth, project.displayHeight);
   }, [project?.displayWidth, project?.displayHeight]);
 
-  // Resolved position map for overlays
   const resolvedPositionMap = useMemo(() => {
     if (!screen || !project) return new Map();
     return buildResolvedPositionMap(screen.uiElements, project.displayWidth, project.displayHeight);
   }, [screen?.uiElements, project?.displayWidth, project?.displayHeight]);
 
-  // Re-render the terminal canvas whenever elements change
   useEffect(() => {
     if (!buffer || !screen || !canvasRef.current || !project) return;
 
@@ -251,7 +244,6 @@ export const UIEditorCanvas: React.FC = () => {
 
     buffer.clear('black');
 
-    // Only render top-level elements; children are rendered by their container
     const sorted = [...screen.uiElements]
       .filter((e) => e.visible && e.parentId === null)
       .sort((a, b) => a.zIndex - b.zIndex);
@@ -263,7 +255,6 @@ export const UIEditorCanvas: React.FC = () => {
     rendererRef.current.render();
   }, [buffer, screen, screen?.uiElements]);
 
-  // Ctrl+scroll zoom
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -282,7 +273,6 @@ export const UIEditorCanvas: React.FC = () => {
   const canvasHeight = project.displayHeight * CHAR_HEIGHT;
   const elements = [...screen.uiElements].sort((a, b) => a.zIndex - b.zIndex);
 
-  // Compute nesting depth so children overlay above their parent container
   const depthMap = useMemo(() => {
     const map = new Map<string, number>();
     const getDepth = (el: UIElement): number => {

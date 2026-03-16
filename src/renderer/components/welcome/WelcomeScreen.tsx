@@ -63,7 +63,6 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNewProject }) =>
         handleLoadProjectData(result.content, result.filePath);
         window.electronAPI.addRecentProject({ name: result.content.name, path: result.filePath });
       } else {
-        // File was moved or deleted — remove from recent list
         setRecentProjects((prev) => prev.filter((p) => p.path !== project.path));
       }
     } catch {

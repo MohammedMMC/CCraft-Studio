@@ -8,18 +8,15 @@ import { CCColor } from '../../models/CCColors';
 import { ColorPicker } from './ColorPicker';
 import { generateId } from '../../utils/idGenerator';
 
-// Clamp a number to a safe range
 const clamp = (val: number, min: number, max: number): number =>
   Math.max(min, Math.min(max, Math.round(val)));
 
-// Parse + clamp for number inputs (returns fallback if NaN)
 const parseNum = (raw: string, min: number, max: number, fallback: number): number => {
   const n = parseInt(raw);
   if (isNaN(n)) return fallback;
   return clamp(n, min, max);
 };
 
-// Max screen dimensions: largest CC monitor is 164x81; we allow some extra headroom
 const MAX_POS = 200;
 const MAX_SIZE = 200;
 
@@ -61,7 +58,6 @@ export const PropertiesPanel: React.FC = () => {
   }
 
   const update = (updates: Partial<UIElement>) => {
-    // Capture previous values for undo
     const prevValues: Partial<UIElement> = {};
     for (const key of Object.keys(updates)) {
       (prevValues as any)[key] = (element as any)[key];
@@ -178,7 +174,6 @@ export const PropertiesPanel: React.FC = () => {
                     let newVal = element.width;
                     if (u === '%') newVal = clamp(Math.round((resolved / displayWidth) * 100), 1, 100);
                     else if (u === 'px') newVal = resolved;
-                    // Compute resolved width with new unit to check if element fits
                     const tempEl = { ...element, widthUnit: u, ...(u !== 'fill' ? { width: newVal } : {}) } as UIElement;
                     const rw = resolveSize(tempEl, displayWidth, displayHeight).width;
                     const maxX = Math.max(1, displayWidth - rw + 1);
@@ -213,7 +208,6 @@ export const PropertiesPanel: React.FC = () => {
                     let newVal = element.height;
                     if (u === '%') newVal = clamp(Math.round((resolved / displayHeight) * 100), 1, 100);
                     else if (u === 'px') newVal = resolved;
-                    // Compute resolved height with new unit to check if element fits
                     const tempEl = { ...element, heightUnit: u, ...(u !== 'fill' ? { height: newVal } : {}) } as UIElement;
                     const rh = resolveSize(tempEl, displayWidth, displayHeight).height;
                     const maxY = Math.max(1, displayHeight - rh + 1);

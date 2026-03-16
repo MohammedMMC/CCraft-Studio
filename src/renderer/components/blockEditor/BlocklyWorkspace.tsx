@@ -10,7 +10,6 @@ import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { usePromptStore } from '../shared/PromptDialog';
 
-// One-time init
 let blocksRegistered = false;
 function ensureInit() {
   if (blocksRegistered) return;
@@ -18,7 +17,6 @@ function ensureInit() {
   defineAllBlocks();
   registerAllGenerators();
 
-  // Override Blockly's prompt dialog to use our custom one
   Blockly.dialog.setPrompt((message, defaultValue, callback) => {
     usePromptStore.getState().open({
       title: 'Blockly',
@@ -212,13 +210,9 @@ const DEFAULT_WORKSPACE_XML = `
 </xml>
 `.trim();
 
-// Custom PROCEDURE flyout using XML format (required because the lexical
-// variables plugin only implements mutationToDom/domToMutation, not
-// saveExtraState/loadExtraState — the default JSON flyout crashes).
 function procedureFlyoutXml(workspace: Blockly.WorkspaceSvg): Element[] {
   const xmlList: Element[] = [];
 
-  // "define function (no return)" template
   if (Blockly.Blocks['procedures_defnoreturn']) {
     const block = Blockly.utils.xml.createElement('block');
     block.setAttribute('type', 'procedures_defnoreturn');
@@ -234,7 +228,6 @@ function procedureFlyoutXml(workspace: Blockly.WorkspaceSvg): Element[] {
     xmlList.push(block);
   }
 
-  // "define function (with return)" template
   if (Blockly.Blocks['procedures_defreturn']) {
     const block = Blockly.utils.xml.createElement('block');
     block.setAttribute('type', 'procedures_defreturn');
@@ -250,7 +243,6 @@ function procedureFlyoutXml(workspace: Blockly.WorkspaceSvg): Element[] {
     xmlList.push(block);
   }
 
-  // "if return" block
   if (Blockly.Blocks['procedures_ifreturn']) {
     const block = Blockly.utils.xml.createElement('block');
     block.setAttribute('type', 'procedures_ifreturn');
@@ -262,7 +254,6 @@ function procedureFlyoutXml(workspace: Blockly.WorkspaceSvg): Element[] {
     xmlList[xmlList.length - 1].setAttribute('gap', '24');
   }
 
-  // Discover defined procedures and create matching call blocks
   const allProcs = Blockly.Procedures.allProcedures(workspace);
   function addCallers(procTuples: any[], callType: string) {
     for (const tuple of procTuples) {
@@ -294,12 +285,8 @@ export const BlocklyWorkspace: React.FC = () => {
   const activeScreenId = useProjectStore((s) => s.activeScreenId);
   const { getXml, setXml, setLuaCode } = useBlocklyStore();
 
-  // Use a ref so the change listener always calls the latest save logic
   const activeScreenRef = useRef(activeScreenId);
-  // Do NOT update activeScreenRef here eagerly — it's updated in the
-  // screen-switch effect AFTER saving the old screen.
 
-  // Flag to suppress saves during screen-switch loading
   const suppressSaveRef = useRef(false);
 
   const saveWorkspace = useCallback(() => {
@@ -314,7 +301,6 @@ export const BlocklyWorkspace: React.FC = () => {
     useProjectStore.getState().markDirty();
   }, [setXml, setLuaCode]);
 
-  // Create workspace (deferred to next frame to let DOM settle)
   useEffect(() => {
     if (!containerRef.current) return;
     const container = containerRef.current;
@@ -385,7 +371,6 @@ export const BlocklyWorkspace: React.FC = () => {
         workspaceRef.current.dispose();
         workspaceRef.current = null;
       }
-      // Clean up any Blockly elements injected onto document.body
       document.querySelectorAll(
         '.blocklyWidgetDiv, .blocklyDropDownDiv, .blocklyTooltipDiv'
       ).forEach((el) => el.remove());
@@ -423,7 +408,6 @@ export const BlocklyWorkspace: React.FC = () => {
     setTimeout(() => saveWorkspace(), 50);
   }, [activeScreenId, getXml, saveWorkspace]);
 
-  // Resize observer
   useEffect(() => {
     if (!containerRef.current || !workspaceRef.current) return;
     const ro = new ResizeObserver(() => {
@@ -433,7 +417,6 @@ export const BlocklyWorkspace: React.FC = () => {
     return () => ro.disconnect();
   }, []);
 
-  // Resize when switching back to blocks mode
   const mode = useEditorStore((s) => s.mode);
   useEffect(() => {
     if (mode === 'blocks' && workspaceRef.current) {
