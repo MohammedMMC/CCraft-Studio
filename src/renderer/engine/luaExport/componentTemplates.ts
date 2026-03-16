@@ -286,8 +286,8 @@ function Label:draw()
   local text = self:prop("text") or ""
   local align = self:prop("textAlign") or "left"
 
-  if fg then term.setTextColor(fg) end
-  if bg then term.setBackgroundColor(bg) end
+  term.setTextColor(fg)
+  term.setBackgroundColor(bg)
   term.setCursorPos(x, y)
   term.write(self:alignText(text, w, align))
 end
@@ -337,8 +337,8 @@ function Button:draw()
   local text = self:prop("text") or ""
   local align = self:prop("textAlign") or "center"
 
-  if fg then term.setTextColor(fg) end
-  if bg then term.setBackgroundColor(bg) end
+  term.setTextColor(fg)
+  term.setBackgroundColor(bg)
   for row = 0, h - 1 do
     term.setCursorPos(x, y + row)
     term.write(string.rep(" ", w))
@@ -359,8 +359,8 @@ function Button:drawFocused()
   local text = self:prop("text") or ""
   local align = self:prop("textAlign") or "center"
 
-  if fg then term.setTextColor(fg) end
-  if bg then term.setBackgroundColor(bg) end
+  term.setTextColor(fg)
+  term.setBackgroundColor(bg)
   for row = 0, h - 1 do
     term.setCursorPos(x, y + row)
     term.write(string.rep(" ", w))
@@ -519,8 +519,8 @@ function Panel:draw()
   end
   
   -- title
-  if titleBg then term.setBackgroundColor(titleBg) end
-  if fg then term.setTextColor(fg) end
+  term.setBackgroundColor(titleBg)
+  term.setTextColor(fg)
   
   local title = text:match("^%s*(.-)%s*$")
   if plus2 == 2 then
@@ -530,30 +530,28 @@ function Panel:draw()
   term.setCursorPos(x + textpos, y)
   term.write(title)
   
-  if borderColor then
-    term.setBackgroundColor(borderColor)
-    if fg then term.setTextColor(fg) end
-    term.setCursorPos(x, y)
-    term.write(string.rep(" ", textpos))
-    
-    local rightStart = x + (textpos + #text + 2) + ((textsp[1] ~= 2 and plus2 == 0) and -2 or 0)
-    local rightWidth = width - (textpos + #text + 2) + ((textsp[1] ~= 2 and plus2 == 0) and 1 or 0)
-    
-    term.setCursorPos(rightStart, y)
-    term.write(string.rep(" ", rightWidth))
-    
-    term.setCursorPos(x, y + height - 1)
-    term.write(string.rep(" ", width))
-    
-    for i = 0, height - 1 do
-      term.setCursorPos(x, y + i)
-      term.write(" ")
-    end
-    
-    for i = 0, height - 1 do
-      term.setCursorPos(x + width - 1, y + i)
-      term.write(" ")
-    end
+  term.setBackgroundColor(borderColor)
+  term.setTextColor(fg)
+  term.setCursorPos(x, y)
+  term.write(string.rep(" ", textpos))
+  
+  local rightStart = x + (textpos + #text + 2) + ((textsp[1] ~= 2 and plus2 == 0) and -2 or 0)
+  local rightWidth = width - (textpos + #text + 2) + ((textsp[1] ~= 2 and plus2 == 0) and 1 or 0)
+  
+  term.setCursorPos(rightStart, y)
+  term.write(string.rep(" ", rightWidth))
+  
+  term.setCursorPos(x, y + height - 1)
+  term.write(string.rep(" ", width))
+  
+  for i = 0, height - 1 do
+    term.setCursorPos(x, y + i)
+    term.write(" ")
+  end
+  
+  for i = 0, height - 1 do
+    term.setCursorPos(x + width - 1, y + i)
+    term.write(" ")
   end
 
   if bg and width > 2 and height > 2 then
