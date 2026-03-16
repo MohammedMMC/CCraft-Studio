@@ -423,22 +423,14 @@ function Container:draw()
   local w = self:prop("width")
   local h = self:prop("height")
 
-  if bg == nil then 
-    for _, child in ipairs(self.children) do
-      child:draw()
-    end
+  term.setBackgroundColor(bg)
+  for row = 0, h - 1 do
+    term.setCursorPos(x, y + row)
+    term.write(string.rep(" ", w))
   end
 
-  if bg then
-    term.setBackgroundColor(bg)
-    for row = 0, h - 1 do
-      term.setCursorPos(x, y + row)
-      term.write(string.rep(" ", w))
-    end
-
-    for _, child in ipairs(self.children) do
-      child:draw()
-    end
+  for _, child in ipairs(self.children) do
+    child:draw()
   end
 end
 `;
@@ -504,12 +496,6 @@ function Panel:draw()
   local text = self:prop("text") or ""
   local align = self:prop("textAlign") or "left"
   local aligned = self:alignText(text, width, align)
-
-  if bg == nil then 
-    for _, child in ipairs(self.children) do
-      child:draw()
-    end
-  end
 
   -- count leading/trailing spaces
   local lead = #(aligned:match("^%s*") or "")
@@ -578,10 +564,8 @@ function Panel:draw()
     end
   end
   
-  if bg then 
-    for _, child in ipairs(self.children) do
-      child:draw()
-    end
+  for _, child in ipairs(self.children) do
+    child:draw()
   end
 end
 `;

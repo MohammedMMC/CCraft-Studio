@@ -23,9 +23,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({ value, onChange, label
                 ? 'border-app-accent ring-1 ring-app-accent scale-110'
                 : 'border-transparent hover:border-app-text-dim'
             }`}
-            style={color === 'transparent' ? {
-              background: 'repeating-conic-gradient(#808080 0% 25%, #c0c0c0 0% 50%) 50% / 8px 8px',
-            } : { backgroundColor: CC_COLORS[color].hex }}
+            style={{ backgroundColor: CC_COLORS[color].hex }}
             title={color}
           />
         ))}

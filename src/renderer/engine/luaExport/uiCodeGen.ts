@@ -3,7 +3,6 @@ import { CCColor, CC_COLORS } from '../../models/CCColors';
 import { escapeLuaString, indent } from '../../utils/luaHelpers';
 
 function luaColor(color: CCColor): string | null {
-  if (color === 'transparent') return null;
   return CC_COLORS[color].luaName;
 }
 

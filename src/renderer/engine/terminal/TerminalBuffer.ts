@@ -32,9 +32,8 @@ export class TerminalBuffer {
     if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
       const existing = this.cells[y][x];
       this.cells[y][x] = {
-        char: bg === 'transparent' && char === ' ' ? existing.char : (char[0] || ' '),
-        fg: fg === 'transparent' ? existing.fg : fg,
-        bg: bg === 'transparent' ? existing.bg : bg,
+        char: char === ' ' ? existing.char : (char[0] || ' '),
+        fg, bg,
       };
     }
   }

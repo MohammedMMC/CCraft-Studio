@@ -2,8 +2,7 @@ export type CCColor =
   | 'white' | 'orange' | 'magenta' | 'lightBlue'
   | 'yellow' | 'lime' | 'pink' | 'gray'
   | 'lightGray' | 'cyan' | 'purple' | 'blue'
-  | 'brown' | 'green' | 'red' | 'black'
-  | 'transparent';
+  | 'brown' | 'green' | 'red' | 'black';
 
 export const CC_COLORS: Record<CCColor, { hex: string; luaName: string; luaValue: number }> = {
   white:     { hex: '#F0F0F0', luaName: 'colors.white',     luaValue: 1 },
@@ -22,7 +21,6 @@ export const CC_COLORS: Record<CCColor, { hex: string; luaName: string; luaValue
   green:     { hex: '#57A64E', luaName: 'colors.green',     luaValue: 8192 },
   red:       { hex: '#CC4C4C', luaName: 'colors.red',       luaValue: 16384 },
   black:     { hex: '#111111', luaName: 'colors.black',     luaValue: 32768 },
-  transparent: { hex: 'transparent', luaName: '',            luaValue: -1 },
 };
 
 export const CC_COLOR_NAMES: CCColor[] = [
@@ -30,5 +28,4 @@ export const CC_COLOR_NAMES: CCColor[] = [
   'yellow', 'lime', 'pink', 'gray',
   'lightGray', 'cyan', 'purple', 'blue',
   'brown', 'green', 'red', 'black',
-  'transparent',
 ];

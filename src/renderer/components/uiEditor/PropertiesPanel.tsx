@@ -234,7 +234,6 @@ export const PropertiesPanel: React.FC = () => {
                 label="Title Color"
                 value={element.fgColor}
                 onChange={(fgColor) => update({ fgColor })}
-                exclude={['transparent']}
               />
               <ColorPicker
                 label="Title Background"
@@ -259,7 +258,6 @@ export const PropertiesPanel: React.FC = () => {
                   label="Text Color"
                   value={element.fgColor}
                   onChange={(fgColor) => update({ fgColor })}
-                  exclude={['transparent']}
                 />
               )}
               <ColorPicker
@@ -365,7 +363,7 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
               <option value="right">Right</option>
             </select>
           </PropField>
-          <ColorPicker label="Focused Text Color" value={element.focusTextColor} onChange={(c) => update({ focusTextColor: c } as any)} exclude={['transparent']} />
+          <ColorPicker label="Focused Text Color" value={element.focusTextColor} onChange={(c) => update({ focusTextColor: c } as any)} />
           <ColorPicker label="Focused Background Color" value={element.focusBgColor} onChange={(c) => update({ focusBgColor: c } as any)} />
         </>
       );

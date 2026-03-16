@@ -185,7 +185,7 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
       <button onClick={handleSave} className="toolbar-btn px-3" title="Save (Ctrl+S)">
         Save
       </button>
-      <button onClick={() => {handleSave(); onExport();}} className="btn-primary text-xs px-3 py-1">
+      <button onClick={onExport} className="btn-primary text-xs px-3 py-1">
         Export
       </button>
     </div>
