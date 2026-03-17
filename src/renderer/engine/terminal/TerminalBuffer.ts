@@ -47,7 +47,7 @@ export class TerminalBuffer {
   fillRect(x: number, y: number, w: number, h: number, char: string, fg: CCColor, bg: CCColor) {
     for (let row = y; row < y + h && row < this.height; row++) {
       for (let col = x; col < x + w && col < this.width; col++) {
-        this.setCell(col, row, char, fg, bg);
+        this.setCell(col, row, char == ' ' ? '' : char, fg, bg);
       }
     }
   }
