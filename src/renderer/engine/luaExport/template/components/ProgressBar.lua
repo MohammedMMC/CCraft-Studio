@@ -6,55 +6,31 @@ ProgressBar = setmetatable({}, { __index = BaseObject })
 ProgressBar.__index = ProgressBar
 
 function ProgressBar:new(name, props)
-    local obj = BaseObject.new(self, name)
-    obj.x = props.x
-    obj.y = props.y
-    obj.width = props.width
-    obj.height = props.height
-    obj.widthUnit = props.widthUnit
-    obj.heightUnit = props.heightUnit
-    obj.rawWidth = props.rawWidth
-    obj.rawHeight = props.rawHeight
-    obj.text = props.text or ""
-    obj.textAlign = props.textAlign or "left"
-    obj.bgColor = props.bgColor
-    obj.fgColor = props.fgColor
-    obj.progressColor = props.progressColor
-    obj.progress = props.progress
-    obj.visible = props.visible
-    obj.zIndex = props.zIndex
-    obj.type = props.type
+    local obj = BaseObject.new(self, name, props)
+    
+    obj.type = "progressbar"
+
     return obj
 end
 
-function ProgressBar:draw()
+function ProgressBar:drawElement()
     if not self:isVisible() then return end
-    local x = self:prop("x")
-    local y = self:prop("y")
-    local width = self:prop("width")
-    local height = self:prop("height")
-    local fg = self:prop("fgColor")
-    local bg = self:prop("bgColor")
-    local progressColor = self:prop("progressColor")
-    local progress = self:prop("progress")
-    local text = self:prop("text") or ""
-    local align = self:prop("textAlign") or "left"
-    local alignedText = self:alignText(text, width, align)
+
+    local alignedText = self:alignText(self.text, self.width, self.textAlign)
 
     -- Draw background
-    term.setBackgroundColor(bg)
-    for j = 0, height - 1 do
-        term.setCursorPos(x, y + j)
-        term.write(string.rep(" ", width))
+    term.setBackgroundColor(self.bgColor)
+    for j = 0, self.height - 1 do
+        term.setCursorPos(self.x, self.y + j)
+        term.write(string.rep(" ", self.width))
     end
 
     -- Draw progress
-    if self:prop("progress") then
-        local progress = self:prop("progress")
-        local progressWidth = math.floor(width / 100 * progress)
-        term.setBackgroundColor(self:prop("progressColor"))
-        for j = 0, height - 1 do
-            term.setCursorPos(x, y + j)
+    if self.progress then
+        local progressWidth = math.floor(self.width / 100 * self.progress)
+        term.setBackgroundColor(self.progressColor)
+        for j = 0, self.height - 1 do
+            term.setCursorPos(self.x, self.y + j)
             term.write(string.rep(" ", progressWidth))
         end
     end
@@ -62,13 +38,13 @@ function ProgressBar:draw()
     -- Draw text
     for i = 1, #alignedText do
         local char = alignedText:sub(i, i)
-        term.setCursorPos(x + i - 1, y + math.floor(height / 2))
-        if i <= math.floor(width / 100 * progress) then
-            term.setTextColor(fg)
-            term.setBackgroundColor(progressColor)
+        term.setCursorPos(self.x + i - 1, self.y + math.floor(self.height / 2))
+        if i <= math.floor(self.width / 100 * self.progress) then
+            term.setTextColor(self.fgColor)
+            term.setBackgroundColor(self.progressColor)
         else
-            term.setTextColor(fg)
-            term.setBackgroundColor(bg)
+            term.setTextColor(self.fgColor)
+            term.setBackgroundColor(self.bgColor)
         end
         term.write(char)
     end

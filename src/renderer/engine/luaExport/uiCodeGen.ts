@@ -138,7 +138,6 @@ function generateComponentInstance(
       lines.push(`  fgColor = ${fg ?? 'nil'}, bgColor = ${bg ?? 'nil'},`);
       lines.push(`  visible = ${el.visible},`);
       lines.push(`  zIndex = ${el.zIndex},`);
-      lines.push(`  type = "${el.type}",`);
       lines.push('})');
       break;
     }
@@ -157,7 +156,6 @@ function generateComponentInstance(
       lines.push(`  focusTextColor = ${focusFg ?? 'nil'}, focusBgColor = ${focusBg ?? 'nil'},`);
       lines.push(`  visible = ${el.visible},`);
       lines.push(`  zIndex = ${el.zIndex},`);
-      lines.push(`  type = "${el.type}",`);
       lines.push('})');
       break;
     }
@@ -172,7 +170,6 @@ function generateComponentInstance(
       lines.push(`  fgColor = ${fg ?? 'nil'}, bgColor = ${bg ?? 'nil'},`);
       lines.push(`  visible = ${el.visible},`);
       lines.push(`  zIndex = ${el.zIndex},`);
-      lines.push(`  type = "${el.type}",`);
       lines.push(`  display = "${el.display}", flexDirection = "${el.flexDirection}",`);
       lines.push(`  gap = ${el.gap}, gapUnit = "${el.gapUnit}",`);
       lines.push(`  alignItems = "${el.alignItems}", justifyContent = "${el.justifyContent}",`);
@@ -196,7 +193,6 @@ function generateComponentInstance(
       lines.push(`  borderColor = ${border ?? 'nil'}, titleBgColor = ${titleBg ?? 'nil'},`);
       lines.push(`  visible = ${el.visible},`);
       lines.push(`  zIndex = ${el.zIndex},`);
-      lines.push(`  type = "${el.type}",`);
       lines.push(`  display = "${el.display}", flexDirection = "${el.flexDirection}",`);
       lines.push(`  gap = ${el.gap}, gapUnit = "${el.gapUnit}",`);
       lines.push(`  alignItems = "${el.alignItems}", justifyContent = "${el.justifyContent}",`);
@@ -216,7 +212,6 @@ function generateComponentInstance(
       lines.push(`  visible = ${el.visible},`);
       lines.push(`  zIndex = ${el.zIndex},`);
       lines.push(`  progressColor = ${luaColor(el.progressColor)}, progress = ${el.progress},`);
-      lines.push(`  type = "${el.type}",`);
       lines.push('})');
       break;
     }

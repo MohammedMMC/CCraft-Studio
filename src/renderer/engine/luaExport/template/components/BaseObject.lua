@@ -5,18 +5,23 @@
 BaseObject = {}
 BaseObject.__index = BaseObject
 
-function BaseObject:new(name)
+function BaseObject:new(name, props)
     local obj = setmetatable({}, self)
     obj.name = name
+
+    for pn, pi in pairs(props) do
+        obj[pn] = pi
+    end
+    
     return obj
 end
 
-function BaseObject:prop(key)
-    return self[key]
+function BaseObject:isVisible()
+    return self.visible
 end
 
-function BaseObject:isVisible()
-    return self:prop("visible") ~= false
+function BaseObject:setVisible(visible)
+    self.visible = visible
 end
 
 function BaseObject:alignText(text, width, align)
@@ -33,6 +38,13 @@ function BaseObject:alignText(text, width, align)
 end
 
 function BaseObject:draw()
+    if not self:isVisible() then return end
+
+    self:drawElement()
+
+    for _, child in ipairs(self.children or {}) do
+        child:draw()
+    end
 end
 
 -- Resolve responsive layout based on actual screen size
