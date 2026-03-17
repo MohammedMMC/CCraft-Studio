@@ -382,21 +382,26 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
             </>
           )}
 
-          <PropField label="Display">
-            <select className="select-field text-xs" value={element.display} onChange={(e) => update({ display: e.target.value } as any)}>
-              <option value="flex">Flex</option>
-              <option value="grid">Grid</option>
-            </select>
-          </PropField>
-
-          {element.display === 'flex' && (
-            <>
+          <div className={`grid grid-cols-${element.display === 'flex' ? 2 : 1} gap-2`}>
+            <PropField label="Display">
+              <select className="select-field text-xs" value={element.display} onChange={(e) => update({ display: e.target.value } as any)}>
+                <option value="flex">Flex</option>
+                <option value="grid">Grid</option>
+              </select>
+            </PropField>
+            {element.display === 'flex' && (
               <PropField label="Direction">
                 <select className="select-field text-xs" value={element.flexDirection} onChange={(e) => update({ flexDirection: e.target.value } as any)}>
                   <option value="row">Row</option>
                   <option value="column">Column</option>
                 </select>
               </PropField>
+            )}
+
+          </div>
+
+          {element.display === 'flex' && (
+            <>
               <PropField label="Justify Content">
                 <select className="select-field text-xs" value={element.justifyContent} onChange={(e) => update({ justifyContent: e.target.value } as any)}>
                   <option value="start">Start</option>
@@ -405,56 +410,59 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
                   <option value="space-between">Space Between</option>
                 </select>
               </PropField>
+              <PropField label="Align Items">
+                <select className="select-field text-xs" value={element.alignItems} onChange={(e) => update({ alignItems: e.target.value } as any)}>
+                  <option value="start">Start</option>
+                  <option value="center">Center</option>
+                  <option value="end">End</option>
+                </select>
+              </PropField>
             </>
           )}
 
           {element.display === 'grid' && (
             <>
-              <PropField label="Columns">
-                <input type="number" className="input-field text-xs" value={element.gridTemplateCols} min={1} max={20}
-                  onChange={(e) => update({ gridTemplateCols: parseNum(e.target.value, 1, 20, 2) } as any)} />
-              </PropField>
-              <PropField label="Rows">
-                <input type="number" className="input-field text-xs" value={element.gridTemplateRows} min={1} max={20}
-                  onChange={(e) => update({ gridTemplateRows: parseNum(e.target.value, 1, 20, 2) } as any)} />
-              </PropField>
+              <div className="grid grid-cols-2 gap-2">
+                <PropField label="Columns">
+                  <input type="number" className="input-field text-xs" value={element.gridTemplateCols} min={1} max={20}
+                    onChange={(e) => update({ gridTemplateCols: parseNum(e.target.value, 1, 20, 2) } as any)} />
+                </PropField>
+                <PropField label="Rows">
+                  <input type="number" className="input-field text-xs" value={element.gridTemplateRows} min={1} max={20}
+                    onChange={(e) => update({ gridTemplateRows: parseNum(e.target.value, 1, 20, 2) } as any)} />
+                </PropField>
+              </div>
             </>
           )}
 
-          <PropField label="Align Items">
-            <select className="select-field text-xs" value={element.alignItems} onChange={(e) => update({ alignItems: e.target.value } as any)}>
-              <option value="start">Start</option>
-              <option value="center">Center</option>
-              <option value="end">End</option>
-            </select>
-          </PropField>
+          <div className="grid grid-cols-2 gap-2">
+            <PropField label="Gap">
+              <div className="flex gap-1">
+                <input type="number" className="input-field text-xs flex-1 min-w-0"
+                  value={element.gap} min={0} max={element.gapUnit === '%' ? 100 : 50}
+                  onChange={(e) => update({ gap: parseNum(e.target.value, 0, element.gapUnit === '%' ? 100 : 50, 0) } as any)} />
+                <button
+                  className="w-7 h-auto flex items-center justify-center rounded text-[10px] font-bold border border-app-border bg-app-bg-hover text-app-text-dim hover:text-app-accent hover:border-app-accent/50 transition-colors flex-shrink-0"
+                  onClick={() => update({ gapUnit: element.gapUnit === 'px' ? '%' : 'px' } as any)}
+                >
+                  {element.gapUnit === 'px' ? 'px' : '%'}
+                </button>
+              </div>
+            </PropField>
 
-          <PropField label="Gap">
-            <div className="flex gap-1">
-              <input type="number" className="input-field text-xs flex-1 min-w-0"
-                value={element.gap} min={0} max={element.gapUnit === '%' ? 100 : 50}
-                onChange={(e) => update({ gap: parseNum(e.target.value, 0, element.gapUnit === '%' ? 100 : 50, 0) } as any)} />
-              <button
-                className="w-7 h-auto flex items-center justify-center rounded text-[10px] font-bold border border-app-border bg-app-bg-hover text-app-text-dim hover:text-app-accent hover:border-app-accent/50 transition-colors flex-shrink-0"
-                onClick={() => update({ gapUnit: element.gapUnit === 'px' ? '%' : 'px' } as any)}
-              >
-                {element.gapUnit === 'px' ? 'px' : '%'}
-              </button>
-            </div>
-          </PropField>
-
-          <PropField label="Padding">
-            <div className="flex gap-1">
-              <input type="number" className="input-field text-xs flex-1 min-w-0" value={element.padding} min={0} max={element.paddingUnit === '%' ? 50 : 10}
-                onChange={(e) => update({ padding: parseNum(e.target.value, 0, element.paddingUnit === '%' ? 50 : 10, 0) } as any)} />
-              <button
-                className="w-7 h-auto flex items-center justify-center rounded text-[10px] font-bold border border-app-border bg-app-bg-hover text-app-text-dim hover:text-app-accent hover:border-app-accent/50 transition-colors flex-shrink-0"
-                onClick={() => update({ paddingUnit: element.paddingUnit === 'px' ? '%' : 'px' } as any)}
-              >
-                {element.paddingUnit === 'px' ? 'px' : '%'}
-              </button>
-            </div>
-          </PropField>
+            <PropField label="Padding">
+              <div className="flex gap-1">
+                <input type="number" className="input-field text-xs flex-1 min-w-0" value={element.padding} min={0} max={element.paddingUnit === '%' ? 50 : 10}
+                  onChange={(e) => update({ padding: parseNum(e.target.value, 0, element.paddingUnit === '%' ? 50 : 10, 0) } as any)} />
+                <button
+                  className="w-7 h-auto flex items-center justify-center rounded text-[10px] font-bold border border-app-border bg-app-bg-hover text-app-text-dim hover:text-app-accent hover:border-app-accent/50 transition-colors flex-shrink-0"
+                  onClick={() => update({ paddingUnit: element.paddingUnit === 'px' ? '%' : 'px' } as any)}
+                >
+                  {element.paddingUnit === 'px' ? 'px' : '%'}
+                </button>
+              </div>
+            </PropField>
+          </div>
         </>
       );
     case 'progressbar':

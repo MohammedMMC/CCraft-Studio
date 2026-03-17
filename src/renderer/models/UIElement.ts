@@ -161,11 +161,11 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
 };
 
 export const UI_ELEMENT_LABELS: Record<UIElementType, { label: string; icon: string; description: string }> = {
-  label: { label: 'Label', icon: 'T', description: 'Static text display' },
-  button: { label: 'Button', icon: 'B', description: 'Clickable button with text' },
-  container: { label: 'Container', icon: 'C', description: 'Layout container for elements' },
-  panel: { label: 'Panel', icon: 'P', description: 'Layout container for elements but with a title and border' },
-  progressbar: { label: 'Progress Bar', icon: 'G', description: 'An element to display progress' },
+  label: { label: 'Label', icon: 'T', description: 'Display Text' },
+  button: { label: 'Button', icon: 'B', description: 'Clickable Button' },
+  container: { label: 'Container', icon: 'C', description: 'Group Elements' },
+  panel: { label: 'Panel', icon: 'P', description: 'Titled Container' },
+  progressbar: { label: 'Progress Bar', icon: 'G', description: 'Show Progress' },
 };
 
 /**

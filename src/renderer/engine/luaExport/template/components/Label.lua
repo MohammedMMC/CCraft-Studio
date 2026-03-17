@@ -33,11 +33,18 @@ function Label:draw()
     local x = self:prop("x")
     local y = self:prop("y")
     local w = self:prop("width")
+    local h = self:prop("height")
     local text = self:prop("text") or ""
     local align = self:prop("textAlign") or "left"
 
     term.setTextColor(fg)
     term.setBackgroundColor(bg)
+
+    for row = 0, h - 1 do
+        term.setCursorPos(x, y + row)
+        term.write(string.rep(" ", w))
+    end
+
     term.setCursorPos(x, y)
     term.write(self:alignText(text, w, align))
 end

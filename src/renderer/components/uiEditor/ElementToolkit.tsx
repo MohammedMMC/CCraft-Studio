@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { UIElementType, UI_ELEMENT_LABELS } from '../../models/UIElement';
 import { useUIElementStore } from '../../stores/uiElementStore';
 import { useProjectStore } from '../../stores/projectStore';
@@ -15,6 +15,9 @@ export const ElementToolkit: React.FC = () => {
   const removeElement = useUIElementStore((s) => s.removeElement);
   const activeScreenId = useProjectStore((s) => s.activeScreenId);
   const selectElement = useEditorStore((s) => s.selectElement);
+
+  const [hoveredOnElement, setHoveredOnElement] = useState("");
+  const hoverTimeout = useRef<NodeJS.Timeout | undefined>();
 
   const handleAddElement = (type: UIElementType) => {
     if (!activeScreenId) return;
@@ -45,6 +48,8 @@ export const ElementToolkit: React.FC = () => {
           return (
             <button
               key={type}
+              onMouseEnter={() => hoverTimeout.current = setTimeout(() => setHoveredOnElement(type), 300)}
+              onMouseLeave={() => {clearTimeout(hoverTimeout.current); setHoveredOnElement("");}}
               onClick={() => handleAddElement(type)}
               className="w-full flex items-center gap-2.5 px-3 py-2 rounded
                          bg-app-surface border border-app-border
@@ -60,7 +65,15 @@ export const ElementToolkit: React.FC = () => {
                 <div className="text-xs font-medium text-app-text group-hover:text-app-text-bright">
                   {meta.label}
                 </div>
-                <div className="text-[10px] text-app-text-dim">{meta.description}</div>
+
+                <div
+                  className={
+                    "text-[10px] text-app-text-dim overflow-hidden transition-all duration-1000 ease-out " +
+                    (hoveredOnElement === type ? "max-h-20 opacity-100" : "max-h-0 opacity-0")
+                  }
+                >
+                  {meta.description}
+                </div>
               </div>
             </button>
           );
