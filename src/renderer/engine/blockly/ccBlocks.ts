@@ -273,7 +273,7 @@ export function defineAllBlocks() {
     init(this: Blockly.Block) {
       this.appendValueInput('VALUE').setCheck('Number')
         .appendField('set')
-        .appendField(new Blockly.FieldTextInput('progressBar1'), 'ELEMENT')
+        .appendField(new Blockly.FieldTextInput('progressbar1'), 'ELEMENT')
         .appendField('progress to');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);

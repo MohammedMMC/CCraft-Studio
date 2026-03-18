@@ -17,7 +17,6 @@ export interface BaseElement {
   height: number;
   widthUnit: SizeUnit;
   heightUnit: SizeUnit;
-  fgColor: CCColor;
   bgColor: CCColor;
   visible: boolean;
   zIndex: number;
@@ -28,12 +27,14 @@ export type UIElementType =
   | 'button'
   | 'container'
   | 'panel'
-  | 'progressbar';
+  | 'progressbar'
+  | 'slider';
 
 export interface LabelElement extends BaseElement {
   type: 'label';
   text: string;
   textAlign: 'left' | 'center' | 'right';
+  fgColor: CCColor;
 }
 
 export interface ButtonElement extends BaseElement {
@@ -42,6 +43,7 @@ export interface ButtonElement extends BaseElement {
   textAlign: 'left' | 'center' | 'right';
   focusBgColor: CCColor;
   focusTextColor: CCColor;
+  fgColor: CCColor;
 }
 
 export interface ContainerElement extends BaseElement {
@@ -56,6 +58,7 @@ export interface ContainerElement extends BaseElement {
   gridTemplateRows: number;
   padding: number;
   paddingUnit: 'px' | '%';
+  fgColor: CCColor;
 }
 
 export interface PanelElement extends BaseElement {
@@ -74,6 +77,7 @@ export interface PanelElement extends BaseElement {
   gridTemplateRows: number;
   padding: number;
   paddingUnit: 'px' | '%';
+  fgColor: CCColor;
 }
 
 export interface ProgressBarElement extends BaseElement {
@@ -82,6 +86,19 @@ export interface ProgressBarElement extends BaseElement {
   textAlign: 'left' | 'center' | 'right';
   progressColor: CCColor;
   progress: number;
+  fgColor: CCColor;
+}
+
+export interface SliderElement extends BaseElement {
+  type: 'slider';
+  handleColor: CCColor,
+  filledColor: CCColor,
+  sliderColor: CCColor,
+  step: number,
+  to: number,
+  from: number,
+  value: number,
+  orientation: 'hltr' | 'hrtl' | 'vttb' | 'vbtt',
 }
 
 export type UIElement =
@@ -89,7 +106,8 @@ export type UIElement =
   | ButtonElement
   | ContainerElement
   | PanelElement
-  | ProgressBarElement;
+  | ProgressBarElement
+  | SliderElement;
 
 type OmitBase<T> = T extends UIElement ? Omit<T, 'id' | 'name' | 'zIndex'> : never;
 type UIElementDefaults = { [K in UIElementType]: OmitBase<Extract<UIElement, { type: K }>> };
@@ -158,6 +176,22 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     progress: 50,
     parentId: null,
   },
+  slider: {
+    type: 'slider',
+    x: 1, y: 1, width: 20, height: 3,
+    widthUnit: 'px', heightUnit: 'px',
+    bgColor: 'black',
+    handleColor: 'gray',
+    filledColor: 'lightGray',
+    sliderColor: 'white',
+    visible: true,
+    step: 1,
+    from: 0,
+    to: 100,
+    value: 50,
+    orientation: 'hltr',
+    parentId: null,
+  },
 };
 
 export const UI_ELEMENT_LABELS: Record<UIElementType, { label: string; icon: string; description: string }> = {
@@ -166,6 +200,8 @@ export const UI_ELEMENT_LABELS: Record<UIElementType, { label: string; icon: str
   container: { label: 'Container', icon: 'C', description: 'Group Elements' },
   panel: { label: 'Panel', icon: 'P', description: 'Titled Container' },
   progressbar: { label: 'Progress Bar', icon: 'G', description: 'Show Progress' },
+  slider: { label: 'Slider', icon: 'S', description: 'Value Control' }
+
 };
 
 /**

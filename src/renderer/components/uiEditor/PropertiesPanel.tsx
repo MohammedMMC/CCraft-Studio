@@ -247,7 +247,7 @@ export const PropertiesPanel: React.FC = () => {
             </>
           ) : (
             <>
-              {element.type !== 'container' && (
+              {(element.type !== 'container' && element.type !== 'slider') && (
                 <ColorPicker
                   label="Text Color"
                   value={element.fgColor}
@@ -483,6 +483,40 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
             <input type="number" className="input-field text-xs" value={element.progress} min={0} max={100}
               onChange={(e) => update({ progress: parseNum(e.target.value, 0, 100, 0) } as any)} />
           </PropField>
+        </>
+      );
+    case 'slider':
+      return (
+        <>
+          <ColorPicker label="Filled Color" value={element.filledColor} onChange={(c) => update({ filledColor: c } as any)} />
+          <ColorPicker label="Handle Color" value={element.handleColor} onChange={(c) => update({ handleColor: c } as any)} />
+          <ColorPicker label="Slider Color" value={element.sliderColor} onChange={(c) => update({ sliderColor: c } as any)} />
+          <PropField label="Orientation">
+            <select className="select-field text-xs" value={element.orientation} onChange={(e) => update({ orientation: e.target.value } as any)}>
+              <option value="hltr">Horizontal - Left To Right</option>
+              <option value="hrtl">Horizontal - Right To Left</option>
+              <option value="vttb">Vertical - Top To Bottom</option>
+              <option value="vbtt">Vertical - Bottom To Top</option>
+            </select>
+          </PropField>
+          <div className="grid grid-cols-2 gap-2">
+            <PropField label="Value">
+              <input type="number" className="input-field text-xs" value={element.value} min={element.from} max={element.to}
+                onChange={(e) => update({ value: parseNum(e.target.value, element.from, element.to, 0) } as any)} />
+            </PropField>
+            <PropField label="Step">
+              <input type="number" className="input-field text-xs" value={element.step}
+                onChange={(e) => update({ step: parseNum(e.target.value, -Infinity, Infinity, 0) } as any)} />
+            </PropField>
+            <PropField label="From">
+              <input type="number" className="input-field text-xs" value={element.from}
+                onChange={(e) => update({ from: parseNum(e.target.value, -Infinity, element.to - 1, 0), value: parseNum(String(element.value), parseNum(e.target.value, -Infinity, element.to - 1, 0), element.to, 0) } as any)} />
+            </PropField>
+            <PropField label="To">
+              <input type="number" className="input-field text-xs" value={element.to}
+                onChange={(e) => update({ to: parseNum(e.target.value, element.from + 1, Infinity, 0), value: parseNum(String(element.value), element.from, parseNum(e.target.value, element.from + 1, Infinity, 0), 0) } as any)} />
+            </PropField>
+          </div>
         </>
       );
     default:
