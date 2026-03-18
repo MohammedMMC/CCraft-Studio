@@ -8,7 +8,7 @@ const MAIN_FONT_FAMILY = 'MinecraftFont';
 const TELETEXT_FONT_FAMILY = 'TeletextFont';
 
 export const TELETEXT_USED_CHARS = {
-  bottomDash: "", bottomBigDash: "", topDash: "", topBigDash: "", middleDash: ""
+  bottomDash: "", bottomBigDash: "", topDash: "", topBigDash: "", middleDash: "", full: ""
 };
 
 // Preload the font so canvas can use it immediately

@@ -493,8 +493,8 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
           <ColorPicker label="Slider Color" value={element.sliderColor} onChange={(c) => update({ sliderColor: c } as any)} />
           <PropField label="Style">
             <select className="select-field text-xs" value={element.style} onChange={(e) => update({ style: e.target.value } as any)}>
-              <option value="thinhandle">Thin Handle</option>
-              <option value="bighandle">Big Handle</option>
+              <option value="thin">Thin</option>
+              <option value="thick">Thick</option>
             </select>
           </PropField>
           <PropField label="Orientation">
