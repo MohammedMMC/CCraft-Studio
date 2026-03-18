@@ -9,6 +9,11 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'TeletextFont';
+  src: url('/fonts/teletext.ttf');
+}
+
 @layer base {
   * {
     margin: 0;

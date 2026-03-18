@@ -4,12 +4,20 @@ import { CC_COLORS } from '../../models/CCColors';
 const CC_CHAR_WIDTH = 6;
 const CC_CHAR_HEIGHT = 9;
 const SCALE = 2;
-const FONT_FAMILY = 'MinecraftFont';
+const MAIN_FONT_FAMILY = 'MinecraftFont';
+const TELETEXT_FONT_FAMILY = 'TeletextFont';
+
+export const TELETEXT_USED_CHARS = {
+  bottomDash: "", bottomBigDash: "", topDash: "", topBigDash: "", middleDash: ""
+};
 
 // Preload the font so canvas can use it immediately
-let fontLoaded = false;
-const fontPromise = document.fonts.load(`${CC_CHAR_HEIGHT * SCALE}px ${FONT_FAMILY}`).then(() => {
-  fontLoaded = true;
+let fontsLoaded = false;
+const fontPromise = Promise.all([
+  document.fonts.load(`${CC_CHAR_HEIGHT * SCALE}px ${MAIN_FONT_FAMILY}`),
+  document.fonts.load(`${CC_CHAR_HEIGHT * SCALE}px ${TELETEXT_FONT_FAMILY}`)
+]).then(() => {
+  fontsLoaded = true;
 });
 
 export class TerminalRenderer {
@@ -28,10 +36,12 @@ export class TerminalRenderer {
 
     this.updateCanvasSize();
 
-    // If font isn't loaded yet, re-render once it is
-    if (!fontLoaded) {
+    if (!fontsLoaded) {
       fontPromise.then(() => this.render());
     }
+
+    setTimeout(() => this.render(), 100);
+    setTimeout(() => this.render(), 150);
   }
 
   updateCanvasSize() {
@@ -51,14 +61,13 @@ export class TerminalRenderer {
     const cw = this.charWidth;
     const ch = this.charHeight;
 
-    // Clear
     ctx.fillStyle = CC_COLORS.black.hex;
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Configure text rendering — no smoothing for pixel font
     ctx.imageSmoothingEnabled = false;
     ctx.textBaseline = 'top';
-    ctx.font = `${ch}px ${FONT_FAMILY}, monospace`;
+    ctx.textAlign = "left";
+    ctx.font = `${ch}px ${MAIN_FONT_FAMILY}, ${TELETEXT_FONT_FAMILY}, monospace`;
 
     // Render cells
     for (let y = 0; y < height; y++) {
@@ -74,7 +83,7 @@ export class TerminalRenderer {
         // Character
         if (cell.char !== ' ') {
           ctx.fillStyle = CC_COLORS[cell.fg].hex;
-          ctx.fillText(cell.char, px + 1, py + 1);
+          ctx.fillText(cell.char, px + (Object.values(TELETEXT_USED_CHARS).includes(cell.char) ? 0 : 1), py + (Object.values(TELETEXT_USED_CHARS).includes(cell.char) ? -2 : 1));
         }
       }
     }

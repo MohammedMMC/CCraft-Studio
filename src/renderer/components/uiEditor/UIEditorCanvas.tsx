@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { TerminalBuffer } from '../../engine/terminal/TerminalBuffer';
-import { TerminalRenderer } from '../../engine/terminal/TerminalRenderer';
+import { TELETEXT_USED_CHARS, TerminalRenderer } from '../../engine/terminal/TerminalRenderer';
 import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContainerLayout, isContainerLike } from '../../models/UIElement';
 import { CanvasElement } from './CanvasElement';
 import { GridOverlay } from './GridOverlay';
@@ -95,16 +95,29 @@ function renderElementToBuffer(
 
       if (el.orientation.startsWith('v')) {
         for (let i = 0; i < Math.round(height / 100 * percentValue); i++) {
-          buffer.writeText(x, y + i, alignText('|', width, 'center'), el.filledColor, el.filledColor);
+          buffer.writeText(x, y + i, alignText('|', width, 'center'), el.filledColor, el.bgColor);
         }
         for (let i = 0; i < height - Math.round(height / 100 * percentValue); i++) {
-          buffer.writeText(x, y + Math.round(height / 100 * percentValue) + i, alignText('|', width, 'center'), el.sliderColor, el.sliderColor);
+          buffer.writeText(x, y + Math.round(height / 100 * percentValue) + i, alignText('|', width, 'center'), el.sliderColor, el.bgColor);
         }
         buffer.fillRect(x, y + Math.round((height - 1) / 100 * percentValue), width, 1, ' ', el.handleColor, el.handleColor);
 
       } else {
-        buffer.writeText(x, y + Math.floor(height / 2), '-'.repeat(Math.round(width / 100 * percentValue)), el.filledColor, el.filledColor);
-        buffer.writeText(x + Math.round(width / 100 * percentValue), y + Math.floor(height / 2), '-'.repeat(width - Math.round(width / 100 * percentValue)), el.sliderColor, el.sliderColor);
+        // Filled Part
+        buffer.writeText(
+          x, y + Math.floor(height / 2),
+          (height > 1 ? ' ' : TELETEXT_USED_CHARS.middleDash).repeat(Math.round(width / 100 * percentValue)),
+          el.filledColor, height > 1 ? el.filledColor : el.bgColor
+        );
+        
+        // UnFilled Part
+        buffer.writeText(
+          x + Math.round(width / 100 * percentValue), y + Math.floor(height / 2),
+          (height > 1 ? ' ' : TELETEXT_USED_CHARS.middleDash).repeat(width - Math.round(width / 100 * percentValue)),
+          el.sliderColor, height > 1 ? el.sliderColor : el.bgColor
+        );
+
+        // Handle
         buffer.fillRect(x + Math.round((width - 1) / 100 * percentValue), y, 1, height, ' ', el.handleColor, el.handleColor);
       }
       break;

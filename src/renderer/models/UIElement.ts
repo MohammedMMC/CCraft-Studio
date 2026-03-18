@@ -98,6 +98,7 @@ export interface SliderElement extends BaseElement {
   to: number,
   from: number,
   value: number,
+  style: "bighandle" | "thinhandle",
   orientation: 'hltr' | 'hrtl' | 'vttb' | 'vbtt',
 }
 
@@ -184,6 +185,7 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     handleColor: 'gray',
     filledColor: 'lightGray',
     sliderColor: 'white',
+    style: 'thinhandle',
     visible: true,
     step: 1,
     from: 0,
