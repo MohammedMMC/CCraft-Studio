@@ -3,7 +3,7 @@ import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { TerminalBuffer } from '../../engine/terminal/TerminalBuffer';
 import { TELETEXT_USED_CHARS, TerminalRenderer } from '../../engine/terminal/TerminalRenderer';
-import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContainerLayout, isContainerLike } from '../../models/UIElement';
+import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContainerLayout, isContainerLike, SliderElement } from '../../models/UIElement';
 import { CanvasElement } from './CanvasElement';
 import { GridOverlay } from './GridOverlay';
 
@@ -106,25 +106,25 @@ function renderElementToBuffer(
         // Filled Part
         if (height > 1) {
           buffer.writeText(
-            x, y,
+            x + (el.orientation === "hrtl" ? Math.round(width / 100 * (100 - percentValue)) : 0), y,
             TELETEXT_USED_CHARS[el.style == "thick" ? "bottomBigDash" : "bottomDash"].repeat(width - Math.round(width / 100 * (100 - percentValue))),
             el.filledColor, el.bgColor
           );
           for (let i = 1; i <= height - 2; i++) {
             buffer.writeText(
-              x, y + i,
+              x + (el.orientation === "hrtl" ? Math.round(width / 100 * (100 - percentValue)) : 0), y + i,
               TELETEXT_USED_CHARS.full.repeat(width - Math.round(width / 100 * (100 - percentValue))),
               el.filledColor, el.bgColor
             );
           }
           buffer.writeText(
-            x, y + height - 1,
+            x + (el.orientation === "hrtl" ? Math.round(width / 100 * (100 - percentValue)) : 0), y + height - 1,
             TELETEXT_USED_CHARS[el.style == "thick" ? "topBigDash" : "topDash"].repeat(width - Math.round(width / 100 * (100 - percentValue))),
             el.filledColor, el.bgColor
           );
         } else {
           buffer.writeText(
-            x, y + Math.floor(height / 2),
+            x + (el.orientation === "hrtl" ? Math.round(width / 100 * (100 - percentValue)) : 0), y + Math.floor(height / 2),
             TELETEXT_USED_CHARS.middleDash.repeat(Math.round(width / 100 * percentValue)),
             el.filledColor, el.bgColor
           );
@@ -133,48 +133,48 @@ function renderElementToBuffer(
         // UnFilled Part
         if (height > 1) {
           buffer.writeText(
-            x + Math.round(width / 100 * percentValue), y,
+            x + (el.orientation === "hrtl" ? 0 : Math.round(width / 100 * percentValue)), y,
             TELETEXT_USED_CHARS[el.style == "thick" ? "bottomBigDash" : "bottomDash"].repeat(width - Math.round(width / 100 * percentValue)),
             el.sliderColor, el.bgColor
           );
           for (let i = 1; i <= height - 2; i++) {
             buffer.writeText(
-              x + Math.round(width / 100 * percentValue), y + i,
+              x + (el.orientation === "hrtl" ? 0 : Math.round(width / 100 * percentValue)), y + i,
               TELETEXT_USED_CHARS.full.repeat(width - Math.round(width / 100 * percentValue)),
               el.sliderColor, el.bgColor
             );
           }
           buffer.writeText(
-            x + Math.round(width / 100 * percentValue), y + height - 1,
+            x + (el.orientation === "hrtl" ? 0 : Math.round(width / 100 * percentValue)), y + height - 1,
             TELETEXT_USED_CHARS[el.style == "thick" ? "topBigDash" : "topDash"].repeat(width - Math.round(width / 100 * percentValue)),
             el.sliderColor, el.bgColor
           );
         } else {
           buffer.writeText(
-            x + Math.round(width / 100 * percentValue), y + Math.floor(height / 2),
+            x + (el.orientation === "hrtl" ? 0 : Math.round(width / 100 * percentValue)), y + Math.floor(height / 2),
             TELETEXT_USED_CHARS.middleDash.repeat(width - Math.round(width / 100 * percentValue)),
             el.sliderColor, el.bgColor
           );
         }
 
         // Handle
-        if (el.style === "thick") {
-          buffer.fillRect(x + Math.round((width - 1) / 100 * percentValue), y, 1, height, ' ', el.handleColor, el.handleColor);
+        if (el.style === "thick" || height <= 1) {
+          buffer.fillRect(x + (el.orientation === "hrtl" ? width - Math.round((width - 1) / 100 * percentValue) - 1 : Math.round((width - 1) / 100 * percentValue)), y, 1, height, ' ', el.handleColor, el.handleColor);
         } else {
           buffer.writeText(
-            x + Math.round((width - 1) / 100 * percentValue), y,
+            x + (el.orientation === "hrtl" ? width - Math.round((width - 1) / 100 * percentValue) - 1 : Math.round((width - 1) / 100 * percentValue)), y,
             TELETEXT_USED_CHARS.bottomBigDash,
             el.handleColor, el.bgColor
           );
           for (let i = 1; i <= height - 2; i++) {
             buffer.writeText(
-              x + Math.round((width - 1) / 100 * percentValue), y + i,
+              x + (el.orientation === "hrtl" ? width - Math.round((width - 1) / 100 * percentValue) - 1 : Math.round((width - 1) / 100 * percentValue)), y + i,
               TELETEXT_USED_CHARS.full,
               el.handleColor, el.bgColor
             );
           }
           buffer.writeText(
-            x + Math.round((width - 1) / 100 * percentValue), y + height - 1,
+            x + (el.orientation === "hrtl" ? width - Math.round((width - 1) / 100 * percentValue) - 1 : Math.round((width - 1) / 100 * percentValue)), y + height - 1,
             TELETEXT_USED_CHARS.topBigDash,
             el.handleColor, el.bgColor
           );
