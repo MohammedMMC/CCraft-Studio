@@ -10,6 +10,6 @@ If you'd like to test the current state of the project, you can download the lat
 ### Feedback & Support
 
 - **Found a bug or have a suggestion?** Please open an [issue](https://github.com/MohammedMMC/CCraft-Studio/issues)
-- **Have a Questions?** Feel free to start a [discussion](https://github.com/MohammedMMC/CCraft-Studio/issues)
+- **Have a Questions?** Feel free to start a [discussion](https://github.com/MohammedMMC/CCraft-Studio/discussions)
 
 Thank you for your interest in CCraft Studio!
