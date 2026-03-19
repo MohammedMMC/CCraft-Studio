@@ -5,3 +5,6 @@ HELP.md
 .gitignore
 package-lock.json
 .vscode
+app-installer.iss
+electron-builder.yml
+release
