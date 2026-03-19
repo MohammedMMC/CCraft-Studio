@@ -1,10 +1,13 @@
-node_modules
-dist
-build
-HELP.md
+# Files
 .gitignore
 package-lock.json
-.vscode
-app-installer.iss
 electron-builder.yml
+app-installer.iss
+HELP.md
+# Folders
+node_modules
 release
+installers
+dist
+build
+.vscode
