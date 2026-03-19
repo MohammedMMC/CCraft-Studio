@@ -7,7 +7,6 @@ HELP.md
 # Folders
 node_modules
 release
-installers
 dist
 build
 .vscode
