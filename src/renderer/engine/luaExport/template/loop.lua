@@ -1,8 +1,12 @@
+local isTouching = false
+
 while running do
     local event, p1, p2, p3, p4, p5 = os.pullEvent()
+
     if event == "mouse_click" or event == "monitor_touch" then
+        isTouching = true
         local button, mx, my = p1, p2, p3
-        if event == "monitor_touch" then mx, my = p2, p3 end
+
         local sc = screenComponents[currentScreen]
         for _, btn in ipairs(buttonRegions[currentScreen] or {}) do
             local comp = sc and sc[btn.name:gsub("[^%w_]", "_")]
@@ -15,7 +19,18 @@ while running do
                 break
             end
         end
+    elseif event == "mouse_drag" and isTouching then
+        local button, mx, my = p1, p2, p3
+        if isTouching then
+            for _, comp in pairs(screenComponents[currentScreen] or {}) do
+                if comp.type == "slider" then
+                    comp:checkTouch(mx, my, button)
+                end
+            end
+            drawCurrentScreen()
+        end
     elseif event == "mouse_up" then
+        isTouching = false
         local button, mx, my = p1, p2, p3
         local sc = screenComponents[currentScreen]
         for _, btn in ipairs(buttonRegions[currentScreen] or {}) do
