@@ -14,8 +14,6 @@ function Label:new(name, props)
 end
 
 function Label:drawElement()
-    if not self:isVisible() then return end
-
     term.setTextColor(self.fgColor)
     term.setBackgroundColor(self.bgColor)
 

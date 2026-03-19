@@ -215,6 +215,22 @@ function generateComponentInstance(
       lines.push('})');
       break;
     }
+
+    case 'slider': {
+      lines.push(`${varName} = Slider:new("${escapedName}", {`);
+      lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
+      lines.push(...unitLines);
+      lines.push(...parentLine);
+      lines.push(`  filledColor = ${luaColor(el.filledColor)}, sliderColor = ${luaColor(el.sliderColor)},`);
+      lines.push(`  handleColor = ${luaColor(el.handleColor)}, bgColor = ${luaColor(el.bgColor)},`);
+      lines.push(`  visible = ${el.visible},`);
+      lines.push(`  zIndex = ${el.zIndex},`); 
+      lines.push(`  from = ${el.from}, to = ${el.to},`);
+      lines.push(`  step = ${el.step}, value = ${el.value},`);
+      lines.push(`  style = "${el.style}", orientation = "${el.orientation}",`);
+      lines.push('})');
+      break;
+    }
   }
 
   return lines;

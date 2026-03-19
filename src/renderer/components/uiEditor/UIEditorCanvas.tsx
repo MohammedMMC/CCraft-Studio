@@ -19,10 +19,11 @@ function renderElementToBuffer(
   allElements: UIElement[],
   displayWidth: number,
   displayHeight: number,
+  isChild = false,
 ) {
   const x = el.x - 1;
   const y = el.y - 1;
-  const { width, height } = resolveSize(el, displayWidth, displayHeight);
+  const { width, height } = isChild ? { width: displayWidth, height: displayHeight } : resolveSize(el, displayWidth, displayHeight);
 
   switch (el.type) {
     case 'label': {
@@ -91,7 +92,7 @@ function renderElementToBuffer(
       break;
     }
     case 'slider': {
-      let percentValue = Math.round((el.value - el.from) * (100) / (el.to - el.from));
+      let percentValue = Math.round((el.value - el.from) * 100 / (el.to - el.from));
 
       if (el.orientation.startsWith('v')) {
         // Filled Part
@@ -215,7 +216,6 @@ function renderElementToBuffer(
             el.handleColor, el.bgColor
           );
         }
-
       }
       break;
     }
@@ -232,20 +232,13 @@ function renderChildAtPosition(
   const x = absX - 1;
   const y = absY - 1;
 
+  if (["label", "button", "progressbar", "slider"].includes(child.type)) {
+    child.x = absX; child.y = absY;
+    renderElementToBuffer(buffer, child, allElements, width, height, true);
+    return;
+  }
+
   switch (child.type) {
-    case 'label': {
-      buffer.fillRect(x, y, width, height, ' ', child.fgColor, child.bgColor);
-      const text = alignText(child.text, width, child.textAlign);
-      buffer.writeText(x, y, text.slice(0, width), child.fgColor, child.bgColor);
-      break;
-    }
-    case 'button': {
-      buffer.fillRect(x, y, width, height, ' ', child.fgColor, child.bgColor);
-      const midY = y + Math.floor(height / 2);
-      const text = alignText(child.text, width, child.textAlign);
-      buffer.writeText(x, midY, text.slice(0, width), child.fgColor, child.bgColor);
-      break;
-    }
     case 'container':
     case 'panel': {
       if (child.type === 'panel') {
@@ -283,17 +276,6 @@ function renderChildAtPosition(
         if (!gc) continue;
         renderChildAtPosition(buffer, gc, allElements, pos.x, pos.y, pos.width, pos.height);
       }
-      break;
-    }
-    case 'progressbar': {
-      buffer.fillRect(x, y, width, height, ' ', child.fgColor, child.bgColor);
-      const progressWidth = Math.round(width / 100 * child.progress);
-
-      buffer.fillRect(x, y, progressWidth, height, ' ', child.progressColor, child.progressColor);
-      const text = alignText(child.text, width, child.textAlign);
-      text.slice(0, width).split('').forEach((char, i) => {
-        buffer.writeText(x + i, y + Math.floor(height / 2), char, child.fgColor, i < progressWidth ? child.progressColor : child.bgColor);
-      });
       break;
     }
   }

@@ -14,8 +14,6 @@ function ProgressBar:new(name, props)
 end
 
 function ProgressBar:drawElement()
-    if not self:isVisible() then return end
-
     local alignedText = self:alignText(self.text, self.width, self.textAlign)
 
     -- Draw background
