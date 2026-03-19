@@ -96,47 +96,47 @@ function renderElementToBuffer(
       if (el.orientation.startsWith('v')) {
         // Filled Part
         if (width > 1) {
-          for (let i = 0; i < Math.round(height / 100 * percentValue); i++) {
-            buffer.writeText(x, y + i, TELETEXT_USED_CHARS.rightDash, el.filledColor, el.bgColor);
+          for (let i = 0; i < (el.orientation == "vbtt" ? height - Math.round(height / 100 * (100 - percentValue)) : Math.round(height / 100 * percentValue)); i++) {
+            buffer.writeText(x, y + (el.orientation == "vbtt" ? Math.round(height / 100 * (100 - percentValue)) : 0) + i, TELETEXT_USED_CHARS.rightDash, el.filledColor, el.bgColor);
           }
           for (let iw = 0; iw < width - 2; iw++) {
 
-            for (let i = 0; i < Math.round(height / 100 * percentValue); i++) {
-              buffer.writeText(x + iw + 1, y + i, TELETEXT_USED_CHARS.full, el.filledColor, el.bgColor);
+            for (let i = 0; i < (el.orientation == "vbtt" ? height - Math.round(height / 100 * (100 - percentValue)) : Math.round(height / 100 * percentValue)); i++) {
+              buffer.writeText(x + iw + 1, y + (el.orientation == "vbtt" ? Math.round(height / 100 * (100 - percentValue)) : 0) + i, TELETEXT_USED_CHARS.full, el.filledColor, el.bgColor);
             }
 
           }
-          for (let i = 0; i < Math.round(height / 100 * percentValue); i++) {
-            buffer.writeText(x + width - 1, y + i, TELETEXT_USED_CHARS.leftDash, el.filledColor, el.bgColor);
+          for (let i = 0; i < (el.orientation == "vbtt" ? height - Math.round(height / 100 * (100 - percentValue)) : Math.round(height / 100 * percentValue)); i++) {
+            buffer.writeText(x + width - 1, y + (el.orientation == "vbtt" ? Math.round(height / 100 * (100 - percentValue)) : 0) + i, TELETEXT_USED_CHARS.leftDash, el.filledColor, el.bgColor);
           }
         } else {
-          for (let i = 0; i < Math.round(height / 100 * percentValue); i++) {
-            buffer.writeText(x, y + i, alignText(el.style === "thick" ? TELETEXT_USED_CHARS.full : '|', width, 'center'), el.filledColor, el.bgColor);
+          for (let i = 0; i < (el.orientation == "vbtt" ? height - Math.round(height / 100 * (100 - percentValue)) : Math.round(height / 100 * percentValue)); i++) {
+            buffer.writeText(x, y + (el.orientation == "vbtt" ? Math.round(height / 100 * (100 - percentValue)) : 0) + i, alignText(el.style === "thick" ? TELETEXT_USED_CHARS.full : '|', width, 'center'), el.filledColor, el.bgColor);
           }
         }
 
         // UnFilled Part
         if (width > 1) {
           for (let i = 0; i < Math.round(height / 100 * (100 - percentValue)); i++) {
-            buffer.writeText(x, y + Math.round(height / 100 * percentValue) + i, TELETEXT_USED_CHARS.rightDash, el.sliderColor, el.bgColor);
+            buffer.writeText(x, y + (el.orientation == "vbtt" ? 0 : Math.round(height / 100 * percentValue)) + i, TELETEXT_USED_CHARS.rightDash, el.sliderColor, el.bgColor);
           }
           for (let iw = 0; iw < width - 2; iw++) {
 
             for (let i = 0; i < Math.round(height / 100 * (100 - percentValue)); i++) {
-              buffer.writeText(x + iw + 1, y + Math.round(height / 100 * percentValue) + i, TELETEXT_USED_CHARS.full, el.sliderColor, el.bgColor);
+              buffer.writeText(x + iw + 1, y + (el.orientation == "vbtt" ? 0 : Math.round(height / 100 * percentValue)) + i, TELETEXT_USED_CHARS.full, el.sliderColor, el.bgColor);
             }
 
           }
           for (let i = 0; i < Math.round(height / 100 * (100 - percentValue)); i++) {
-            buffer.writeText(x + width - 1, y + Math.round(height / 100 * percentValue) + i, TELETEXT_USED_CHARS.leftDash, el.sliderColor, el.bgColor);
+            buffer.writeText(x + width - 1, y + (el.orientation == "vbtt" ? 0 : Math.round(height / 100 * percentValue)) + i, TELETEXT_USED_CHARS.leftDash, el.sliderColor, el.bgColor);
           }
         } else {
           for (let i = 0; i < height - Math.round(height / 100 * percentValue); i++) {
-            buffer.writeText(x, y + Math.round(height / 100 * percentValue) + i, alignText(el.style === "thick" ? TELETEXT_USED_CHARS.full : '|', width, 'center'), el.sliderColor, el.bgColor);
+            buffer.writeText(x, y + (el.orientation == "vbtt" ? 0 : Math.round(height / 100 * percentValue)) + i, alignText(el.style === "thick" ? TELETEXT_USED_CHARS.full : '|', width, 'center'), el.sliderColor, el.bgColor);
           }
         }
         // Handle
-        buffer.fillRect(x, y + Math.round((height - 1) / 100 * percentValue), width, 1, ' ', el.handleColor, el.handleColor);
+        buffer.fillRect(x, y + (el.orientation == "vbtt" ? height - Math.round((height - 1) / 100 * percentValue) - 1 : Math.round((height - 1) / 100 * percentValue)), width, 1, ' ', el.handleColor, el.handleColor);
 
       } else {
         // Filled Part

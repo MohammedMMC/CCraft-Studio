@@ -185,7 +185,7 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     handleColor: 'gray',
     filledColor: 'lightGray',
     sliderColor: 'white',
-    style: 'thin',
+    style: 'thick',
     visible: true,
     step: 1,
     from: 0,
