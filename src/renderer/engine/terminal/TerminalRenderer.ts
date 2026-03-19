@@ -5,20 +5,10 @@ const CC_CHAR_WIDTH = 6;
 const CC_CHAR_HEIGHT = 9;
 const SCALE = 2;
 const MAIN_FONT_FAMILY = 'MinecraftFont';
-const TELETEXT_FONT_FAMILY = 'TeletextFont';
-
-export const TELETEXT_USED_CHARS = {
-  bottomDash: "", bottomBigDash: "", topDash: "", topBigDash: "", middleDash: "", full: "", leftDash: "", rightDash: ""
-};
 
 // Preload the font so canvas can use it immediately
 let fontsLoaded = false;
-const fontPromise = Promise.all([
-  document.fonts.load(`${CC_CHAR_HEIGHT * SCALE}px ${MAIN_FONT_FAMILY}`),
-  document.fonts.load(`${CC_CHAR_HEIGHT * SCALE}px ${TELETEXT_FONT_FAMILY}`)
-]).then(() => {
-  fontsLoaded = true;
-});
+const fontPromise = document.fonts.load(`${CC_CHAR_HEIGHT * SCALE}px ${MAIN_FONT_FAMILY}`).then(() => fontsLoaded = true);
 
 export class TerminalRenderer {
   private canvas: HTMLCanvasElement;
@@ -67,7 +57,7 @@ export class TerminalRenderer {
     ctx.imageSmoothingEnabled = false;
     ctx.textBaseline = 'top';
     ctx.textAlign = "left";
-    ctx.font = `${ch}px ${MAIN_FONT_FAMILY}, ${TELETEXT_FONT_FAMILY}, monospace`;
+    ctx.font = `${ch}px ${MAIN_FONT_FAMILY}, monospace`;
 
     // Render cells
     for (let y = 0; y < height; y++) {
@@ -83,10 +73,7 @@ export class TerminalRenderer {
         // Character
         if (cell.char !== ' ') {
           ctx.fillStyle = CC_COLORS[cell.fg].hex;
-          ctx.fillText(cell.char,
-            px + (Object.values(TELETEXT_USED_CHARS).includes(cell.char)
-              ? ([TELETEXT_USED_CHARS.leftDash, TELETEXT_USED_CHARS.rightDash].includes(cell.char) ? -1 : 0) : 1),
-            py + (Object.values(TELETEXT_USED_CHARS).includes(cell.char) ? -2 : 1));
+          ctx.fillText(cell.char, px + 1, py + 1);
         }
       }
     }

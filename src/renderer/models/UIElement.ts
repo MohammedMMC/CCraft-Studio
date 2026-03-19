@@ -93,12 +93,9 @@ export interface SliderElement extends BaseElement {
   type: 'slider';
   handleColor: CCColor,
   filledColor: CCColor,
-  sliderColor: CCColor,
-  step: number,
   to: number,
   from: number,
   value: number,
-  style: "thick" | "thin",
   orientation: 'hltr' | 'hrtl' | 'vttb' | 'vbtt',
 }
 
@@ -184,10 +181,7 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     bgColor: 'black',
     handleColor: 'gray',
     filledColor: 'lightGray',
-    sliderColor: 'white',
-    style: 'thick',
     visible: true,
-    step: 1,
     from: 0,
     to: 100,
     value: 50,
