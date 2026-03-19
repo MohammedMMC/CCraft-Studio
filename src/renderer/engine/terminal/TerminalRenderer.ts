@@ -8,7 +8,7 @@ const MAIN_FONT_FAMILY = 'MinecraftFont';
 const TELETEXT_FONT_FAMILY = 'TeletextFont';
 
 export const TELETEXT_USED_CHARS = {
-  bottomDash: "", bottomBigDash: "", topDash: "", topBigDash: "", middleDash: "", full: ""
+  bottomDash: "", bottomBigDash: "", topDash: "", topBigDash: "", middleDash: "", full: "", leftDash: "", rightDash: ""
 };
 
 // Preload the font so canvas can use it immediately
@@ -83,7 +83,10 @@ export class TerminalRenderer {
         // Character
         if (cell.char !== ' ') {
           ctx.fillStyle = CC_COLORS[cell.fg].hex;
-          ctx.fillText(cell.char, px + (Object.values(TELETEXT_USED_CHARS).includes(cell.char) ? 0 : 1), py + (Object.values(TELETEXT_USED_CHARS).includes(cell.char) ? -2 : 1));
+          ctx.fillText(cell.char,
+            px + (Object.values(TELETEXT_USED_CHARS).includes(cell.char)
+              ? ([TELETEXT_USED_CHARS.leftDash, TELETEXT_USED_CHARS.rightDash].includes(cell.char) ? -1 : 0) : 1),
+            py + (Object.values(TELETEXT_USED_CHARS).includes(cell.char) ? -2 : 1));
         }
       }
     }
