@@ -85,6 +85,7 @@ export interface CCProject {
   createdAt: string;
   modifiedAt: string;
   version: string;
+  customMonitors: { blocks: string; width: number; height: number }[];
 }
 
 export function createDefaultProject(overrides: Partial<CCProject> = {}): CCProject {
@@ -111,15 +112,13 @@ export function createDefaultProject(overrides: Partial<CCProject> = {}): CCProj
     createdAt: new Date().toISOString(),
     modifiedAt: new Date().toISOString(),
     version: '1.0.0',
+    customMonitors: [],
     ...overrides,
   };
 }
 
 export const MONITOR_SIZES: { blocks: string; width: number; height: number }[] = [
   { blocks: '1x1', width: 7, height: 5 },
-  { blocks: '1x2', width: 7, height: 12 },
-  { blocks: '1x3', width: 7, height: 19 },
-  { blocks: '2x1', width: 18, height: 5 },
   { blocks: '2x2', width: 18, height: 12 },
   { blocks: '2x3', width: 18, height: 19 },
   { blocks: '3x2', width: 29, height: 12 },
@@ -127,8 +126,14 @@ export const MONITOR_SIZES: { blocks: string; width: number; height: number }[] 
   { blocks: '4x3', width: 39, height: 19 },
   { blocks: '4x4', width: 39, height: 29 },
   { blocks: '5x3', width: 50, height: 19 },
-  { blocks: '5x4', width: 39, height: 26 },
-  { blocks: '6x4', width: 61, height: 26 },
-  { blocks: '6x5', width: 61, height: 33 },
-  { blocks: '8x6', width: 82, height: 40 },
+  { blocks: '5x4', width: 50, height: 26 },
 ];
+
+export function getMonitorSize(blocks: string): { blocks: string; width: number; height: number } {
+  const [cols, rows] = blocks.split('x').map(Number);
+  return {
+    blocks,
+    width: 7 + (cols - 1) * 11 - Math.floor((cols - 1) / 3),
+    height: 5 + (rows - 1) * 7 + Math.floor((rows - 1) / 3) * 3 - Math.floor((rows - 1) / 4) * 3,
+  };
+}

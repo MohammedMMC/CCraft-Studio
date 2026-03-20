@@ -14,7 +14,7 @@ interface ProjectState {
   markClean: () => void;
   closeProject: () => void;
 
-  updateProjectInfo: (updates: Partial<Pick<CCProject, 'name' | 'author' | 'description' | 'device' | 'displayWidth' | 'displayHeight' | 'colorMode'>>) => void;
+  updateProjectInfo: (updates: Partial<Pick<CCProject, 'name' | 'author' | 'description' | 'device' | 'displayWidth' | 'displayHeight' | 'colorMode' | 'customMonitors'>>) => void;
 
   setActiveScreen: (screenId: string) => void;
   addScreen: (name: string) => string;

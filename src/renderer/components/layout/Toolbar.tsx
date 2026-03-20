@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { useHistoryStore } from '../../stores/historyStore';
 import { useBlocklyStore } from '../../stores/blocklyStore';
-import { DEVICE_PRESETS, MONITOR_SIZES, DeviceType } from '../../models/Project';
+import { DEVICE_PRESETS, MONITOR_SIZES, DeviceType, getMonitorSize } from '../../models/Project';
+import { CustomMonitor } from '../shared/CustomMonitor';
 
 export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
   const project = useProjectStore((s) => s.project);
@@ -21,13 +22,19 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
   const undo = useHistoryStore((s) => s.undo);
   const redo = useHistoryStore((s) => s.redo);
   const updateProjectInfo = useProjectStore((s) => s.updateProjectInfo);
+  const [showCustomMonitor, setShowCustomMonitor] = useState<boolean>(false);
 
   const screenSizeValue = useMemo(() => {
     if (!project) return '';
     const { device, displayWidth, displayHeight } = project;
     if (device === 'monitor') {
       const match = MONITOR_SIZES.find(m => m.width === displayWidth && m.height === displayHeight);
-      if (match) return `monitor:${match.blocks}`;
+      if (match) {
+        return `monitor:${match.blocks}`;
+      } else {
+        const customMatch = project.customMonitors.find(m => m.width === displayWidth && m.height === displayHeight);
+        if (customMatch) return `custom:${customMatch.blocks}`;
+      }
     }
     const preset = DEVICE_PRESETS[device];
     if (preset && preset.defaultWidth === displayWidth && preset.defaultHeight === displayHeight) {
@@ -49,13 +56,25 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
       }
     } else if (type === 'monitor') {
       const monitor = MONITOR_SIZES.find(m => m.blocks === key);
-      if (monitor) {
+      if (!monitor && key === 'custom') {
+        setShowCustomMonitor(true);
+      } else if (monitor) {
         updateProjectInfo({
           device: 'monitor',
           displayWidth: monitor.width,
           displayHeight: monitor.height,
         });
       }
+    } else if (type === 'custom') {
+      const monitor = getMonitorSize(key);
+
+      updateProjectInfo({
+        device: 'monitor',
+        customMonitors: [...new Map([...(project?.customMonitors || []), monitor].map((i) => [i.width + 'x' + i.height, i])).values()],
+        displayWidth: monitor.width,
+        displayHeight: monitor.height,
+      });
+
     }
   };
 
@@ -93,21 +112,19 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
       <div className="flex items-center bg-app-bg rounded mx-2">
         <button
           onClick={() => setMode('ui')}
-          className={`px-3 py-1 text-xs rounded transition-all ${
-            mode === 'ui'
-              ? 'bg-app-accent text-app-bg font-medium'
-              : 'text-app-text-dim hover:text-app-text'
-          }`}
+          className={`px-3 py-1 text-xs rounded transition-all ${mode === 'ui'
+            ? 'bg-app-accent text-app-bg font-medium'
+            : 'text-app-text-dim hover:text-app-text'
+            }`}
         >
           UI Editor
         </button>
         <button
           onClick={() => setMode('blocks')}
-          className={`px-3 py-1 text-xs rounded transition-all ${
-            mode === 'blocks'
-              ? 'bg-app-accent text-app-bg font-medium'
-              : 'text-app-text-dim hover:text-app-text'
-          }`}
+          className={`px-3 py-1 text-xs rounded transition-all ${mode === 'blocks'
+            ? 'bg-app-accent text-app-bg font-medium'
+            : 'text-app-text-dim hover:text-app-text'
+            }`}
         >
           Blocks
         </button>
@@ -170,9 +187,22 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
                 </option>
               ))}
             </optgroup>
+            <optgroup label="Custom Monitors">
+              {(project?.customMonitors || []).map((m) => (
+                <option key={`custom:${m.blocks}`} value={`custom:${m.blocks}`}>
+                  {m.blocks} Monitor ({m.width}x{m.height})
+                </option>
+              ))}
+              <option key="monitor:custom" value="monitor:custom">
+                Create Monitor
+              </option>
+            </optgroup>
           </select>
         </>
       )}
+
+      {/* Custom Monitor Modal */}
+      <CustomMonitor isOpen={showCustomMonitor} onClose={() => setShowCustomMonitor(false)} onCreate={(s) => handleScreenSizeChange(`custom:${s.blocks}`)} />
 
       {/* Spacer */}
       <div className="flex-1" />

@@ -29,7 +29,7 @@ export function setupIPC(): void {
 
   ipcMain.handle('dialog:saveProject', async (_event, data: { content: string; filePath?: string }) => {
     let targetPath = data.filePath;
-    
+
     if (!targetPath) {
       const result = await dialog.showSaveDialog({
         title: 'Save CCraft Project',
@@ -95,7 +95,7 @@ export function setupIPC(): void {
     const recentFile = path.join(configDir, 'recent.json');
     let recent: { name: string; path: string; openedAt: string }[] = [];
     if (fs.existsSync(recentFile)) {
-      try { recent = JSON.parse(fs.readFileSync(recentFile, 'utf-8')); } catch { /* ignore */ }
+      try { recent = JSON.parse(fs.readFileSync(recentFile, 'utf-8')); } catch { }
     }
     recent = recent.filter(r => r.path !== entry.path);
     recent.unshift({ ...entry, openedAt: new Date().toISOString() });
