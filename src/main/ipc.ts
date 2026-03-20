@@ -1,13 +1,19 @@
 import { ipcMain, dialog, BrowserWindow } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
+
+export const DEFAULT_DOCS_DIR = path.join(os.homedir(), 'Documents', 'CCraft-Studio');
 
 export function setupIPC(): void {
+  fs.mkdirSync(DEFAULT_DOCS_DIR, { recursive: true });
+
   ipcMain.handle('dialog:openProject', async () => {
     const result = await dialog.showOpenDialog({
       title: 'Open CCraft Project',
       filters: [{ name: 'CCraft Project', extensions: ['ccproj'] }],
       properties: ['openFile'],
+      defaultPath: path.join(DEFAULT_DOCS_DIR, '/'),
     });
     if (result.canceled || result.filePaths.length === 0) return null;
     const filePath = result.filePaths[0];
@@ -23,11 +29,12 @@ export function setupIPC(): void {
 
   ipcMain.handle('dialog:saveProject', async (_event, data: { content: string; filePath?: string }) => {
     let targetPath = data.filePath;
+    
     if (!targetPath) {
       const result = await dialog.showSaveDialog({
         title: 'Save CCraft Project',
         filters: [{ name: 'CCraft Project', extensions: ['ccproj'] }],
-        defaultPath: 'project.ccproj',
+        defaultPath: path.join(DEFAULT_DOCS_DIR, 'project.ccproj'),
       });
       if (result.canceled || !result.filePath) return null;
       targetPath = result.filePath;
