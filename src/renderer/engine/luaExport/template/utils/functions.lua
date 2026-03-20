@@ -2,11 +2,11 @@
 -- Global Functions
 -- =============================================
 
-local lastDraw = 0
+-- local lastDraw = 0
 
 function drawCurrentScreen()
-    if os.clock() - lastDraw < 0.2 then return end
-    lastDraw = os.clock()
+    -- if os.clock() - lastDraw < 0.2 then return end
+    -- lastDraw = os.clock()
 
     resolveLayout(term.getSize())
     local fn = screenDrawFunctions[currentScreen]

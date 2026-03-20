@@ -37,6 +37,12 @@ function BaseObject:alignText(text, width, align)
     end
 end
 
+function BaseObject:onEvent(event, p1, p2, p3, p4, p5)end
+function BaseObject:onReleaseEvent(button,x,y)end
+function BaseObject:onClickEvent(button,x,y)end
+function BaseObject:onDragEvent(button,x,y)end
+
+
 function BaseObject:draw()
     if not self:isVisible() then return end
 

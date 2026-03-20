@@ -15,22 +15,23 @@ function Slider:new(name, props)
 end
 
 function Slider:getValue() return self.value end
+
 function Slider:setValue(val) self.value = math.max(self.from, math.min(self.to, math.floor(val + 0.5))) end
 
-function Slider:checkTouch(x, y, button)
+function Slider:checkTouch(button, x, y)
     if self.visible == false then return false end
 
-    if x >= self.x and x < self.x + self.width and y >= self.y and y < self.y + self.height then
-        self.value =
-            self.from
-            + (self.to - self.from)
-            * ((self.orientation:match("^" .. "v")
-                and (self.orientation == "vbtt" and 100 - math.floor((y - self.y) * 100 / (self.height - 1) + 0.5) or math.floor((y - self.y) * 100 / (self.height - 1) + 0.5))
-                or (self.orientation == "hrtl" and 100 - math.floor((x - self.x) * 100 / (self.width - 1) + 0.5) or math.floor((x - self.x) * 100 / (self.width - 1) + 0.5))) / 100)
-        self.value = math.max(self.from, math.min(self.to, math.floor(self.value + 0.5)))
+    return x >= self.x and x < self.x + self.width and y >= self.y and y < self.y + self.height;
+end
 
-        return true;
-    end
+function Slider:onDragEvent(button, x, y)
+    self.value =
+        self.from
+        + (self.to - self.from)
+        * ((self.orientation:match("^" .. "v")
+            and (self.orientation == "vbtt" and 100 - math.floor((y - self.y) * 100 / (self.height - 1) + 0.5) or math.floor((y - self.y) * 100 / (self.height - 1) + 0.5))
+            or (self.orientation == "hrtl" and 100 - math.floor((x - self.x) * 100 / (self.width - 1) + 0.5) or math.floor((x - self.x) * 100 / (self.width - 1) + 0.5))) / 100)
+    self.value = math.max(self.from, math.min(self.to, math.floor(self.value + 0.5)))
 end
 
 function Slider:drawElement()

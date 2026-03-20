@@ -176,10 +176,10 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
   },
   slider: {
     type: 'slider',
-    x: 1, y: 1, width: 20, height: 3,
+    x: 1, y: 1, width: 20, height: 1,
     widthUnit: 'px', heightUnit: 'px',
-    bgColor: 'black',
-    handleColor: 'gray',
+    bgColor: 'gray',
+    handleColor: 'white',
     filledColor: 'lightGray',
     visible: true,
     from: 0,
