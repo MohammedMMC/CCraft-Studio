@@ -203,7 +203,7 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
 
 const DEFAULT_WORKSPACE_XML = `
 <xml xmlns="https://developers.google.com/blockly/xml">
-  <block type="event_screen_load" x="30" y="30">
+  <block type="event_screen_load" x="500" y="150">
     <statement name="DO">
     </statement>
   </block>
