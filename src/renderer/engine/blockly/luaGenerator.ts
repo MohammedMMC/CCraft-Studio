@@ -989,7 +989,7 @@ export function registerAllGenerators() {
 
   luaGenerator.addGenerator('term_redirect', (block, gen) => {
     const dest = gen.valueToCode(block, 'TYPE', Order.NONE);
-    return `${gen.getIndent()}redirect(${dest})`;
+    return `${gen.getIndent()}term.redirect(${dest})`;
   });
 
   luaGenerator.addGenerator('sleep_secs', (block, gen) => {

@@ -47,6 +47,15 @@ export function buildMenu(win: BrowserWindow): Menu {
         { label: 'CC:Tweaked Documentation', click: () => {
           require('electron').shell.openExternal('https://tweaked.cc/');
         }},
+        { label: 'Have a question?', click: () => {
+          require('electron').shell.openExternal('https://github.com/MohammedMMC/CCraft-Studio/discussions');
+        }},
+        { label: 'Report an Issue', click: () => {
+          require('electron').shell.openExternal('https://github.com/MohammedMMC/CCraft-Studio/issues');
+        }},
+        { label: 'Releases', click: () => {
+          require('electron').shell.openExternal('https://github.com/MohammedMMC/CCraft-Studio/releases');
+        }},
       ],
     },
   ];
