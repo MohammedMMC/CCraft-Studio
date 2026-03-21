@@ -8,8 +8,6 @@ ProgressBar.__index = ProgressBar
 function ProgressBar:new(name, props)
     local obj = BaseObject.new(self, name, props)
     
-    obj.type = "progressbar"
-
     return obj
 end
 

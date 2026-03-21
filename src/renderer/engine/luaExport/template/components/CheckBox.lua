@@ -8,7 +8,6 @@ CheckBox.__index = CheckBox
 function CheckBox:new(name, props)
     local obj = BaseObject.new(self, name, props)
 
-    obj.type = "checkbox"
     obj.checked = false
 
     return obj

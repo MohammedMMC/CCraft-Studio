@@ -8,7 +8,6 @@ Container.__index = Container
 function Container:new(name, props)
     local obj = BaseObject.new(self, name, props)
     
-    obj.type = "container"
     obj.children = {}
 
     return obj

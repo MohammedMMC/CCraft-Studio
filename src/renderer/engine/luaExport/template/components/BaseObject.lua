@@ -8,7 +8,7 @@ BaseObject.__index = BaseObject
 function BaseObject:new(name, props)
     local obj = setmetatable({}, self)
     obj.name = name
-
+    
     for pn, pi in pairs(props) do
         obj[pn] = pi
     end
@@ -23,6 +23,7 @@ end
 function BaseObject:setVisible(visible)
     self.visible = visible
 end
+
 
 function BaseObject:alignText(text, width, align)
     local len = #text
@@ -244,21 +245,4 @@ function resolveLayout(screenW, screenH)
         end
     end
 
-    -- Step 2: Rebuild button hit regions
-    if buttonRegions then
-        for screenName, regions in pairs(buttonRegions) do
-            local sc = screenComponents[screenName]
-            if sc then
-                for _, btn in ipairs(regions) do
-                    local comp = sc[btn.name:gsub("[^%w_]", "_")]
-                    if comp then
-                        btn.x = comp.x
-                        btn.y = comp.y
-                        btn.w = comp.width
-                        btn.h = comp.height
-                    end
-                end
-            end
-        end
-    end
 end

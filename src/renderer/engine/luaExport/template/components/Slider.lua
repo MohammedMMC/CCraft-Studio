@@ -9,8 +9,6 @@ Slider.__index = Slider
 function Slider:new(name, props)
     local obj = BaseObject.new(self, name, props)
 
-    obj.type = "slider"
-
     return obj
 end
 

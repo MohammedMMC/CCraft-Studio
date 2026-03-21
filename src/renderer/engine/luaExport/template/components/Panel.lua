@@ -8,7 +8,6 @@ Panel.__index = Panel
 function Panel:new(name, props)
     local obj = BaseObject.new(self, name, props)
 
-    obj.type = "panel"
     obj.children = {}
     
     return obj

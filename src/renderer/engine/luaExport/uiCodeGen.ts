@@ -1,6 +1,6 @@
 import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContainerLayout, isContainerLike } from '../../models/UIElement';
 import { escapeLuaString, indent, luaColor, sanitize } from '../../utils/luaHelpers';
-import { CC_COLORS } from '../../models/CCColors';
+import { CC_COLOR_NAMES, CC_COLORS } from '../../models/CCColors';
 
 export function buildPositionMap(
   elements: UIElement[],
@@ -112,142 +112,48 @@ function generateComponentInstance(
   const lines: string[] = [];
   const escapedName = escapeLuaString(el.name);
 
-  const unitLines: string[] = [];
+  const CLASSES_NAMES = {
+    "progressbar": "ProgressBar",
+    "container": "Container",
+    "checkbox": "CheckBox",
+    "button": "Button",
+    "slider": "Slider",
+    "label": "Label",
+    "panel": "Panel",
+  };
+
+  lines.push(`${varName} = ${CLASSES_NAMES[el.type]}:new("${varName}", {`);
+
+  lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
+
   if (el.widthUnit !== 'px') {
-    unitLines.push(`  widthUnit = "${el.widthUnit}", rawWidth = ${el.width},`);
+    lines.push(`  rawWidth = ${el.width},`);
   }
   if (el.heightUnit !== 'px') {
-    unitLines.push(`  heightUnit = "${el.heightUnit}", rawHeight = ${el.height},`);
+    lines.push(`  rawHeight = ${el.height},`);
   }
-
-  const parentLine: string[] = [];
   if (el.parentId) {
     const parent = allElements.find(p => p.id === el.parentId);
-    if (parent) parentLine.push(`  parentName = "${escapeLuaString(parent.name)}",`);
+    if (parent) lines.push(`  parentName = "${escapeLuaString(parent.name)}",`);
   }
 
-  switch (el.type) {
-    case 'label': {
-      const fg = luaColor(el.fgColor);
-      const bg = luaColor(el.bgColor);
-      lines.push(`${varName} = Label:new("${varName + "_" + escapedName}", {`);
-      lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
-      lines.push(...unitLines);
-      lines.push(...parentLine);
-      lines.push(`  text = "${escapeLuaString(el.text)}", textAlign = "${el.textAlign}",`);
-      lines.push(`  fgColor = ${fg ?? 'nil'}, bgColor = ${bg ?? 'nil'},`);
-      lines.push(`  visible = ${el.visible},`);
-      lines.push(`  zIndex = ${el.zIndex},`);
-      lines.push('})');
-      break;
+  Object.entries(el).filter(([key]) =>
+    !['x', 'y', 'width', 'height', 'parentId', 'id'].includes(key)
+  ).forEach(([key, value]: [string, any]) => {
+    if (typeof value === 'string') {
+      if (key.includes('Color') && CC_COLOR_NAMES.includes(value as any)) {
+        lines.push(`  ${key} = ${luaColor(value as any)},`);
+      } else {
+        lines.push(`  ${key} = "${escapeLuaString(value)}",`);
+      }
+    } else if (typeof value === 'number' || typeof value === 'boolean' || value === null) {
+      lines.push(`  ${key} = ${value === null ? 'nil' : value},`);
+    } else {
+      lines.push(`  ${key} = "${value}",`);
     }
+  });
 
-    case 'button': {
-      const fg = luaColor(el.fgColor);
-      const bg = luaColor(el.bgColor);
-      const focusFg = luaColor(el.focusTextColor);
-      const focusBg = luaColor(el.focusBgColor);
-      lines.push(`${varName} = Button:new("${escapedName}", {`);
-      lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
-      lines.push(...unitLines);
-      lines.push(...parentLine);
-      lines.push(`  text = "${escapeLuaString(el.text)}", textAlign = "${el.textAlign}",`);
-      lines.push(`  fgColor = ${fg ?? 'nil'}, bgColor = ${bg ?? 'nil'},`);
-      lines.push(`  focusTextColor = ${focusFg ?? 'nil'}, focusBgColor = ${focusBg ?? 'nil'},`);
-      lines.push(`  visible = ${el.visible},`);
-      lines.push(`  zIndex = ${el.zIndex},`);
-      lines.push('})');
-      break;
-    }
-
-    case 'container': {
-      const fg = luaColor(el.fgColor);
-      const bg = luaColor(el.bgColor);
-      lines.push(`${varName} = Container:new("${escapedName}", {`);
-      lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
-      lines.push(...unitLines);
-      lines.push(...parentLine);
-      lines.push(`  fgColor = ${fg ?? 'nil'}, bgColor = ${bg ?? 'nil'},`);
-      lines.push(`  visible = ${el.visible},`);
-      lines.push(`  zIndex = ${el.zIndex},`);
-      lines.push(`  display = "${el.display}", flexDirection = "${el.flexDirection}",`);
-      lines.push(`  gap = ${el.gap}, gapUnit = "${el.gapUnit}",`);
-      lines.push(`  alignItems = "${el.alignItems}", justifyContent = "${el.justifyContent}",`);
-      lines.push(`  gridTemplateCols = ${el.gridTemplateCols}, gridTemplateRows = ${el.gridTemplateRows},`);
-      lines.push(`  padding = ${el.padding}, paddingUnit = "${el.paddingUnit}",`);
-      lines.push('})');
-      break;
-    }
-
-    case 'panel': {
-      const fg = luaColor(el.fgColor);
-      const bg = luaColor(el.bgColor);
-      const border = luaColor(el.borderColor);
-      const titleBg = luaColor(el.titleBgColor);
-      lines.push(`${varName} = Panel:new("${escapedName}", {`);
-      lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
-      lines.push(...unitLines);
-      lines.push(...parentLine);
-      lines.push(`  text = "${escapeLuaString(el.text)}", textAlign = "${el.textAlign}",`);
-      lines.push(`  fgColor = ${fg ?? 'nil'}, bgColor = ${bg ?? 'nil'},`);
-      lines.push(`  borderColor = ${border ?? 'nil'}, titleBgColor = ${titleBg ?? 'nil'},`);
-      lines.push(`  visible = ${el.visible},`);
-      lines.push(`  zIndex = ${el.zIndex},`);
-      lines.push(`  display = "${el.display}", flexDirection = "${el.flexDirection}",`);
-      lines.push(`  gap = ${el.gap}, gapUnit = "${el.gapUnit}",`);
-      lines.push(`  alignItems = "${el.alignItems}", justifyContent = "${el.justifyContent}",`);
-      lines.push(`  gridTemplateCols = ${el.gridTemplateCols}, gridTemplateRows = ${el.gridTemplateRows},`);
-      lines.push(`  padding = ${el.padding}, paddingUnit = "${el.paddingUnit}",`);
-      lines.push('})');
-      break;
-    }
-
-    case 'progressbar': {
-      lines.push(`${varName} = ProgressBar:new("${escapedName}", {`);
-      lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
-      lines.push(...unitLines);
-      lines.push(...parentLine);
-      lines.push(`  text = "${escapeLuaString(el.text)}", textAlign = "${el.textAlign}",`);
-      lines.push(`  fgColor = ${luaColor(el.fgColor)}, bgColor = ${luaColor(el.bgColor)},`);
-      lines.push(`  visible = ${el.visible},`);
-      lines.push(`  zIndex = ${el.zIndex},`);
-      lines.push(`  progressColor = ${luaColor(el.progressColor)}, progress = ${el.progress},`);
-      lines.push('})');
-      break;
-    }
-
-    case 'slider': {
-      lines.push(`${varName} = Slider:new("${escapedName}", {`);
-      lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
-      lines.push(...unitLines);
-      lines.push(...parentLine);
-      lines.push(`  filledColor = ${luaColor(el.filledColor)},`);
-      lines.push(`  handleColor = ${luaColor(el.handleColor)}, bgColor = ${luaColor(el.bgColor)},`);
-      lines.push(`  visible = ${el.visible},`);
-      lines.push(`  zIndex = ${el.zIndex},`); 
-      lines.push(`  from = ${el.from}, to = ${el.to},`);
-      lines.push(`  value = ${el.value},`);
-      lines.push(`  orientation = "${el.orientation}",`);
-      lines.push('})');
-      break;
-    }
-
-    case 'checkbox': {
-      lines.push(`${varName} = CheckBox:new("${escapedName}", {`);
-      lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
-      lines.push(...unitLines);
-      lines.push(...parentLine);
-      lines.push(`  boxColor = ${luaColor(el.boxColor)},checkColor = ${luaColor(el.checkColor)},`);
-      lines.push(`  textColor = ${luaColor(el.textColor)}, bgColor = ${luaColor(el.bgColor)},`);
-      lines.push(`  checkIcon = "${el.checkIcon}",`);
-      lines.push(`  checked = "${el.checked}",`);
-      lines.push(`  text = "${escapeLuaString(el.text)}", textAlign = "${el.textAlign}",`);
-      lines.push(`  visible = ${el.visible},`);
-      lines.push(`  zIndex = ${el.zIndex},`); 
-      lines.push('})');
-      break;
-    }
-  }
+  lines.push('})');
 
   return lines;
 }

@@ -8,8 +8,6 @@ Label.__index = Label
 function Label:new(name, props)
     local obj = BaseObject.new(self, name, props)
     
-    obj.type = "label"
-    
     return obj
 end
 

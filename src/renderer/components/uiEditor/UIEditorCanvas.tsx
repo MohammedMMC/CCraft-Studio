@@ -131,7 +131,7 @@ function renderChildAtPosition(
   const x = absX - 1;
   const y = absY - 1;
 
-  if (["label", "button", "progressbar", "slider"].includes(child.type)) {
+  if (!["panel", "container"].includes(child.type)) {
     child.x = absX; child.y = absY;
     renderElementToBuffer(buffer, child, allElements, width, height, true);
     return;

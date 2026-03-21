@@ -8,7 +8,6 @@ Button.__index = Button
 function Button:new(name, props)
     local obj = BaseObject.new(self, name, props)
 
-    obj.type = "button"
     obj.isFocused = false
 
     return obj

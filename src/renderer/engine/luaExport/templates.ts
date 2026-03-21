@@ -83,21 +83,6 @@ export function generateHandlersFile(project: CCProject): string {
     lines.push(`screenDrawFunctions["${sn}"] = drawScreen_${sn}`);
   }
 
-  lines.push('');
-  lines.push('buttonRegions = {}');
-  for (const screen of project.screens) {
-    const buttons = screen.uiElements.filter(e => e.type === 'button');
-    if (buttons.length === 0) continue;
-    const sn = sanitize(screen.name);
-    const posMap = buildPositionMap(screen.uiElements, project.displayWidth, project.displayHeight);
-    lines.push(`buttonRegions["${sn}"] = {`);
-    for (const btn of buttons) {
-      const pos = posMap.get(btn.id);
-      if (!pos) continue;
-      lines.push(`  { name = "${escapeLuaString(btn.name)}", x = ${pos.x}, y = ${pos.y}, w = ${pos.width}, h = ${pos.height} },`);
-    }
-    lines.push('}');
-  }
   return generateHeader(project.name, project.author) + lines.join('\n');
 }
 
