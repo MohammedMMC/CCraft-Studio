@@ -283,7 +283,6 @@ export const BlocklyWorkspace: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const workspaceRef = useRef<Blockly.WorkspaceSvg | null>(null);
   const activeScreenId = useProjectStore((s) => s.activeScreenId);
-  const [isFlyoutPinned, setFlyoutPinned] = useState(true);
   const { getXml, setXml, setLuaCode } = useBlocklyStore();
 
   const activeScreenRef = useRef(activeScreenId);
@@ -376,29 +375,6 @@ export const BlocklyWorkspace: React.FC = () => {
       ).forEach((el) => el.remove());
     };
   }, []);
-
-  useEffect(() => {
-    if (!workspaceRef.current) return;
-    console.log(document.querySelector(".blocklyFlyout"));
-    const flyout = document.querySelector<HTMLDivElement>(".blocklyFlyout");
-    if (flyout && flyout.style && flyout.style.display) {
-      flyout.style.display = isFlyoutPinned ? 'block' : 'unset';
-      console.log(flyout.style.display);
-
-    }
-    const ws = workspaceRef.current;
-
-    const wsFlyout = ws.getFlyout();
-    const originalHide = wsFlyout?.hide;
-    if (wsFlyout) {
-      wsFlyout.hide = function () {
-        if (!isFlyoutPinned) {
-          originalHide?.call(this);
-        }
-      };
-    }
-
-  }, [document.querySelector(".blocklyFlyout"), isFlyoutPinned]);
 
   const prevScreenRef = useRef(activeScreenId);
   useEffect(() => {
