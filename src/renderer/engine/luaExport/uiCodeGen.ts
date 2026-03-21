@@ -231,6 +231,22 @@ function generateComponentInstance(
       lines.push('})');
       break;
     }
+
+    case 'checkbox': {
+      lines.push(`${varName} = Checkbox:new("${escapedName}", {`);
+      lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
+      lines.push(...unitLines);
+      lines.push(...parentLine);
+      lines.push(`  boxColor = ${luaColor(el.boxColor)},checkColor = ${luaColor(el.checkColor)},`);
+      lines.push(`  textColor = ${luaColor(el.textColor)}, bgColor = ${luaColor(el.bgColor)},`);
+      lines.push(`  checkIcon = "${el.checkIcon}",`);
+      lines.push(`  checked = "${el.checked}",`);
+      lines.push(`  text = "${escapeLuaString(el.text)}", textAlign = "${el.textAlign}",`);
+      lines.push(`  visible = ${el.visible},`);
+      lines.push(`  zIndex = ${el.zIndex},`); 
+      lines.push('})');
+      break;
+    }
   }
 
   return lines;

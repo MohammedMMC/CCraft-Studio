@@ -104,6 +104,20 @@ function renderElementToBuffer(
       }
       break;
     }
+    case 'checkbox': {
+      const boxSize = Math.min(width, height);
+      buffer.fillRect(x, y, width, height, ' ', el.bgColor, el.bgColor);
+      buffer.fillRect(x, y, boxSize, boxSize, ' ', el.boxColor, el.boxColor);
+
+      if (el.checked) {
+        const icon = el.checkIcon[0] || 'x';
+        buffer.writeText(x + Math.floor((boxSize - 1) / 2), y + Math.floor((boxSize - 1) / 2), icon, el.checkColor, el.boxColor);
+      }
+
+      const text = alignText(el.text, width - boxSize - 1, el.textAlign);
+      buffer.writeText(x + boxSize + 1, y + Math.floor(height / 2), text.slice(0, width - boxSize - 1), el.textColor, el.bgColor);
+      break;
+    }
   }
 }
 

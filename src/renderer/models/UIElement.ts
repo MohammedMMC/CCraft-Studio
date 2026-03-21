@@ -28,7 +28,8 @@ export type UIElementType =
   | 'container'
   | 'panel'
   | 'progressbar'
-  | 'slider';
+  | 'slider'
+  | 'checkbox';
 
 export interface LabelElement extends BaseElement {
   type: 'label';
@@ -99,13 +100,25 @@ export interface SliderElement extends BaseElement {
   orientation: 'hltr' | 'hrtl' | 'vttb' | 'vbtt',
 }
 
+export interface CheckboxElement extends BaseElement {
+  type: 'checkbox';
+  text: string;
+  textColor: CCColor;
+  boxColor: CCColor;
+  checkColor: CCColor;
+  checkIcon: string;
+  checked: boolean;
+  textAlign: 'left' | 'center' | 'right';
+}
+
 export type UIElement =
   | LabelElement
   | ButtonElement
   | ContainerElement
   | PanelElement
   | ProgressBarElement
-  | SliderElement;
+  | SliderElement
+  | CheckboxElement;
 
 type OmitBase<T> = T extends UIElement ? Omit<T, 'id' | 'name' | 'zIndex'> : never;
 type UIElementDefaults = { [K in UIElementType]: OmitBase<Extract<UIElement, { type: K }>> };
@@ -188,6 +201,18 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     orientation: 'hltr',
     parentId: null,
   },
+  checkbox: {
+    type: 'checkbox',
+    x: 1, y: 1, width: 10, height: 1,
+    widthUnit: 'px', heightUnit: 'px',
+    bgColor: 'black', textColor: 'white',
+    text: 'Checkbox',
+    boxColor: 'gray', checkColor: 'white',
+    checkIcon: 'x',
+    textAlign: 'left',
+    checked: false,
+    visible: true, parentId: null,
+  }
 };
 
 export const UI_ELEMENT_LABELS: Record<UIElementType, { label: string; icon: string; description: string }> = {
@@ -196,8 +221,8 @@ export const UI_ELEMENT_LABELS: Record<UIElementType, { label: string; icon: str
   container: { label: 'Container', icon: 'C', description: 'Group Elements' },
   panel: { label: 'Panel', icon: 'P', description: 'Titled Container' },
   progressbar: { label: 'Progress Bar', icon: 'G', description: 'Show Progress' },
-  slider: { label: 'Slider', icon: 'S', description: 'Value Control' }
-
+  slider: { label: 'Slider', icon: 'S', description: 'Value Control' },
+  checkbox: { label: 'Checkbox', icon: 'X', description: 'Toggle Option' },
 };
 
 /**

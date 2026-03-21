@@ -247,7 +247,7 @@ export const PropertiesPanel: React.FC = () => {
             </>
           ) : (
             <>
-              {(element.type !== 'container' && element.type !== 'slider') && (
+              {(element.type !== 'container' && element.type !== 'slider' && element.type !== 'checkbox') && (
                 <ColorPicker
                   label="Text Color"
                   value={element.fgColor}
@@ -514,6 +514,31 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
           </div>
         </>
       );
+    case 'checkbox':
+      return (
+        <>
+          <PropField label="Text">
+            <input className="input-field text-xs" value={element.text} maxLength={200} onChange={(e) => update({ text: e.target.value.slice(0, 200) } as any)} />
+          </PropField>
+          <PropField label="Text Align">
+            <select className="select-field text-xs" value={element.textAlign} onChange={(e) => update({ textAlign: e.target.value as any } as any)}>
+              <option value="left">Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select>
+          </PropField>
+          <ColorPicker label="Text Color" value={element.textColor} onChange={(c) => update({ textColor: c } as any)} />
+          <ColorPicker label="Box Color" value={element.boxColor} onChange={(c) => update({ boxColor: c } as any)} />
+          <ColorPicker label="Check Color" value={element.checkColor} onChange={(c) => update({ checkColor: c } as any)} />
+          <PropField label="Checked">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" className="checkbox-field" checked={element.checked} onChange={(e) => update({ checked: e.target.checked } as any)} />
+              <span className="text-xs text-app-text">{element.checked ? 'Yes' : 'No'}</span>
+            </label>
+          </PropField>
+        </>
+      );
+
     default:
       return null;
   }
