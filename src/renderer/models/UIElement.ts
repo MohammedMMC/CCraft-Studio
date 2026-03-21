@@ -206,7 +206,7 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     x: 1, y: 1, width: 10, height: 1,
     widthUnit: 'px', heightUnit: 'px',
     bgColor: 'black', textColor: 'white',
-    text: 'Checkbox',
+    text: 'CheckBox',
     boxColor: 'gray', checkColor: 'white',
     checkIcon: 'x',
     textAlign: 'left',
@@ -222,7 +222,7 @@ export const UI_ELEMENT_LABELS: Record<UIElementType, { label: string; icon: str
   panel: { label: 'Panel', icon: 'P', description: 'Titled Container' },
   progressbar: { label: 'Progress Bar', icon: 'G', description: 'Show Progress' },
   slider: { label: 'Slider', icon: 'S', description: 'Value Control' },
-  checkbox: { label: 'Checkbox', icon: 'X', description: 'Toggle Option' },
+  checkbox: { label: 'CheckBox', icon: 'X', description: 'Toggle Option' },
 };
 
 /**

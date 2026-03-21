@@ -110,7 +110,7 @@ function renderElementToBuffer(
       buffer.fillRect(x, y, boxSize, boxSize, ' ', el.boxColor, el.boxColor);
 
       if (el.checked) {
-        const icon = el.checkIcon[0] || 'x';
+        const icon = el.checkIcon || 'x';
         buffer.writeText(x + Math.floor((boxSize - 1) / 2), y + Math.floor((boxSize - 1) / 2), icon, el.checkColor, el.boxColor);
       }
 

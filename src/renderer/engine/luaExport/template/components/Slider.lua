@@ -18,12 +18,6 @@ function Slider:getValue() return self.value end
 
 function Slider:setValue(val) self.value = math.max(self.from, math.min(self.to, math.floor(val + 0.5))) end
 
-function Slider:checkTouch(button, x, y)
-    if self.visible == false then return false end
-
-    return x >= self.x and x < self.x + self.width and y >= self.y and y < self.y + self.height;
-end
-
 function Slider:onDragEvent(button, x, y)
     self.value =
         self.from

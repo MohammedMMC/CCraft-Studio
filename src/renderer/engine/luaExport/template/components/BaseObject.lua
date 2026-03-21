@@ -37,6 +37,11 @@ function BaseObject:alignText(text, width, align)
     end
 end
 
+function BaseObject:checkTouch(checkBox, x, y)
+    if not self:isVisible() then return false end
+    return x >= self.x and x < self.x + self.width and y >= self.y and y < self.y + self.height
+end
+
 function BaseObject:onEvent(event, p1, p2, p3, p4, p5)end
 function BaseObject:onReleaseEvent(button,x,y)end
 function BaseObject:onClickEvent(button,x,y)end

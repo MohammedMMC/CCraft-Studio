@@ -14,12 +14,6 @@ function Button:new(name, props)
     return obj
 end
 
-function Button:checkTouch(button, x, y)
-    if not self:isVisible() then return false end
-
-    return x >= self.x and x < self.x + self.width and y >= self.y and y < self.y + self.height
-end
-
 function Button:onClickEvent(button, x, y)
     self.isFocused = true
     local h = handlers[currentScreen]

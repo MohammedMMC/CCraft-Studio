@@ -233,7 +233,7 @@ function generateComponentInstance(
     }
 
     case 'checkbox': {
-      lines.push(`${varName} = Checkbox:new("${escapedName}", {`);
+      lines.push(`${varName} = CheckBox:new("${escapedName}", {`);
       lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
       lines.push(...unitLines);
       lines.push(...parentLine);
