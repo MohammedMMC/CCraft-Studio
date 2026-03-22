@@ -8,7 +8,7 @@ BaseObject.__index = BaseObject
 function BaseObject:new(name, props)
     local obj = setmetatable({}, self)
     obj.name = name
-    
+
     for pn, pi in pairs(props) do
         obj[pn] = pi
     end
@@ -43,10 +43,10 @@ function BaseObject:checkTouch(checkBox, x, y)
     return x >= self.x and x < self.x + self.width and y >= self.y and y < self.y + self.height
 end
 
-function BaseObject:onEvent(event, p1, p2, p3, p4, p5)end
-function BaseObject:onReleaseEvent(button,x,y)end
-function BaseObject:onClickEvent(button,x,y)end
-function BaseObject:onDragEvent(button,x,y)end
+-- function BaseObject:onEvent(event, p1, p2, p3, p4, p5)end
+-- function BaseObject:onReleaseEvent(button,x,y)end
+-- function BaseObject:onClickEvent(button,x,y)end
+-- function BaseObject:onDragEvent(button,x,y)end
 
 
 function BaseObject:draw()
@@ -229,16 +229,16 @@ function resolveLayout(screenW, screenH)
     end
 
     -- Step 1: For each screen, resolve all components
-    for _, screen in pairs(screenComponents) do
+    for _, screen in pairs(screens) do
         -- Resolve top-level component sizes
-        for key, comp in pairs(screen) do
+        for key, comp in pairs(screen.children) do
             if type(comp) == "table" and comp.name and not comp.parentName then
                 comp.width, comp.height = resolveSize(comp, screenW, screenH)
             end
         end
 
         -- Resolve container children recursively
-        for key, comp in pairs(screen) do
+        for key, comp in pairs(screen.children) do
             if type(comp) == "table" and comp.children and not comp.parentName then
                 resolveContainer(comp, comp.x, comp.y, comp.width, comp.height)
             end

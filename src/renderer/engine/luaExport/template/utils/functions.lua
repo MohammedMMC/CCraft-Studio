@@ -2,12 +2,9 @@
 -- Global Functions
 -- =============================================
 
--- local lastDraw = 0
-
 function drawCurrentScreen()
-    -- if os.clock() - lastDraw < 0.2 then return end
-    -- lastDraw = os.clock()
-    -- term.clear()
+    term.setBackgroundColor(colors.black)
+    term.clear()
     resolveLayout(term.getSize())
     local scn = getScreen(currentScreen)
     if scn and scn.draw then scn:draw() end
@@ -23,8 +20,8 @@ end
 function refreshScreen() drawCurrentScreen() end
 
 function getElement(name)
-    local sc = screenComponents[currentScreen]
-    if sc then return sc[name:gsub("[^%w_]", "_")] end
+    local scn = getScreen(currentScreen)
+    if scn then return scn:getChild(name) end
 end
 
 function getScreen(name)

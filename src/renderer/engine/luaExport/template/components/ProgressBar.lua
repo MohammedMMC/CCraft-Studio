@@ -11,6 +11,10 @@ function ProgressBar:new(name, props)
     return obj
 end
 
+function ProgressBar:setProgress(progress)
+    self.progress = progress
+end
+
 function ProgressBar:drawElement()
     local alignedText = self:alignText(self.text, self.width, self.textAlign)
 
