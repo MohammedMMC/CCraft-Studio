@@ -21,12 +21,12 @@ export const CustomMonitor: React.FC<CustomMonitorProps> = ({ isOpen, onClose, o
         <div className="flex items-center justify-between gap-4 p-3 bg-app-bg rounded border border-app-border">
           <div className="flex items-center gap-4 p-3">
             <div className="text-center">
-              <input className="text-2xl font-mono text-app-accent bg-transparent text-center" type="number" min="1" max="8" value={monitorSize.split('x')[0]} onChange={(e) => setMonitorSize(`${e.target.value}x${monitorSize.split('x')[1]}`)} />
+              <input className="text-2xl font-mono text-app-accent bg-transparent text-center" type="number" min="1" max="20" value={monitorSize.split('x')[0]} onChange={(e) => setMonitorSize(`${e.target.value}x${monitorSize.split('x')[1]}`)} />
               <div className="text-[10px] text-app-text-dim">Width</div>
             </div>
             <div className="text-app-text-dim">&times;</div>
             <div className="text-center">
-              <input className="text-2xl font-mono text-app-accent bg-transparent text-center" type="number" min="1" max="6" value={monitorSize.split('x')[1]} onChange={(e) => setMonitorSize(`${monitorSize.split('x')[0]}x${e.target.value}`)} />
+              <input className="text-2xl font-mono text-app-accent bg-transparent text-center" type="number" min="1" max="20" value={monitorSize.split('x')[1]} onChange={(e) => setMonitorSize(`${monitorSize.split('x')[0]}x${e.target.value}`)} />
               <div className="text-[10px] text-app-text-dim">Height</div>
             </div>
             <div className="text-xs text-app-text-dim ml-2">Monitors</div>
