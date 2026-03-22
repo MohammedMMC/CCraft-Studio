@@ -18,6 +18,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({ isOpen, onCl
   const [monitorSize, setMonitorSize] = useState('2x2');
   const [customWidth, setCustomWidth] = useState(51);
   const [customHeight, setCustomHeight] = useState(19);
+  const [useCraftOS, setUseCraftOS] = useState(false);
   const [colorMode, setColorMode] = useState<'color' | 'grayscale'>('color');
 
   const createProject = useProjectStore((s) => s.createProject);
@@ -84,144 +85,105 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({ isOpen, onCl
 
     // Step 1: Device Selection
     () => (
-      <div className="space-y-3">
-        <p className="text-xs text-app-text-dim mb-2">Select the target device for your program:</p>
-        <div className="grid grid-cols-2 gap-2">
-          {(Object.entries(DEVICE_PRESETS) as [DeviceType, typeof DEVICE_PRESETS[DeviceType]][]).map(
-            ([key, dev]) => (
-              <button
-                key={key}
-                onClick={() => setDevice(key)}
-                className={`p-3 rounded border text-left transition-all ${
-                  device === key
-                    ? 'border-app-accent bg-app-accent/10 text-app-text-bright'
-                    : 'border-app-border bg-app-bg hover:bg-app-hover text-app-text'
+      <div className="space-y-6">
+        <div>
+          <p className="text-xs text-app-text-dim mb-2">Default Monitor Size</p>
+          <select
+            value={monitorSize}
+            onChange={(e) => setMonitorSize(e.target.value)}
+            className="select-field"
+            title="Preview screen size"
+          >
+            <optgroup label="Devices">
+              {(Object.entries(DEVICE_PRESETS) as [DeviceType, typeof DEVICE_PRESETS[DeviceType]][]).filter(([key, preset]) => preset.supportsColor && !preset.sizeEditable).map(([key, preset]) => (
+                <option key={`${preset.defaultWidth}x${preset.defaultHeight}`} value={`${preset.defaultWidth}x${preset.defaultHeight}`}>
+                  {preset.label.replace("Advanced ", "")} ({preset.defaultWidth}x{preset.defaultHeight})
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Monitors">
+              {MONITOR_SIZES.map((m) => (
+                <option key={m.blocks} value={m.blocks}>
+                  {m.blocks} Monitor ({m.width}x{m.height})
+                </option>
+              ))}
+            </optgroup>
+          </select>
+        </div>
+
+        <div>
+          <p className="text-xs text-app-text-dim mb-2">Color Mode</p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setColorMode('color')}
+              className={`flex-1 p-2 py-4 rounded border text-sm transition-all ${colorMode === 'color'
+                ? 'border-app-accent bg-app-accent/10 text-app-text-bright'
+                : 'border-app-border bg-app-bg hover:bg-app-hover'
                 }`}
-              >
-                <div className="text-sm font-medium">{dev.label}</div>
-                <div className="text-xs text-app-text-dim mt-1">{dev.description}</div>
-                <div className="flex gap-2 mt-2">
-                  {dev.supportsColor && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-app-accent/20 text-app-accent">Color</span>
-                  )}
-                  {dev.supportsTouch && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-app-success/20 text-app-success">Touch</span>
-                  )}
-                </div>
-              </button>
-            )
-          )}
+            >
+              <div className="flex gap-1 justify-center mb-1">
+                {['red', 'orange', 'yellow', 'lime', 'blue', 'purple'].map((c) => (
+                  <span
+                    key={c}
+                    className="w-3 h-3 rounded-sm"
+                    style={{ backgroundColor: CC_COLORS[c as CCColor].hex }}
+                  />
+                ))}
+              </div>
+              16 Colors
+            </button>
+            <button
+              onClick={() => setColorMode('grayscale')}
+              className={`flex-1 p-2 py-4 rounded border text-sm transition-all ${colorMode === 'grayscale'
+                ? 'border-app-accent bg-app-accent/10 text-app-text-bright'
+                : 'border-app-border bg-app-bg hover:bg-app-hover'
+                }`}
+            >
+              <div className="flex gap-1 justify-center mb-1">
+                {['white', 'lightGray', 'gray', 'black'].map((c) => (
+                  <span
+                    key={c}
+                    className="w-3 h-3 rounded-sm"
+                    style={{ backgroundColor: CC_COLORS[c as CCColor].hex }}
+                  />
+                ))}
+              </div>
+              Grayscale
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <p className="text-xs text-app-text-dim mb-2">CraftOS-PC Terminal</p>
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={useCraftOS}
+                onChange={(e) => setUseCraftOS(e.target.checked)}
+                className="form-checkbox"
+              />
+              Use CraftOS-PC Terminal
+            </label>
+          </div>
+          {useCraftOS && (<div className="mt-2 text-sm text-red-500 flex-1 p-2 rounded border border-red-500 bg-red-500/10">
+            This options is a 3rd party feature and may not be fully stable or safe!
+          </div>)}
         </div>
       </div>
     ),
 
     // Step 2: Display Settings
     () => {
-      const size = getDisplaySize();
       return (
         <div className="space-y-4">
-          {device === 'monitor' && (
-            <div>
-              <label className="block text-xs text-app-text-dim mb-1">Monitor Size (blocks)</label>
-              <select
-                className="select-field"
-                value={monitorSize}
-                onChange={(e) => setMonitorSize(e.target.value)}
-              >
-                {MONITOR_SIZES.map((ms) => (
-                  <option key={ms.blocks} value={ms.blocks}>
-                    {ms.blocks} ({ms.width}x{ms.height} chars)
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          <div className="flex items-center gap-4 p-3 bg-app-bg rounded border border-app-border">
-            <div className="text-center">
-              <div className="text-2xl font-mono text-app-accent">{size.width}</div>
-              <div className="text-[10px] text-app-text-dim">Width</div>
-            </div>
-            <div className="text-app-text-dim">&times;</div>
-            <div className="text-center">
-              <div className="text-2xl font-mono text-app-accent">{size.height}</div>
-              <div className="text-[10px] text-app-text-dim">Height</div>
-            </div>
-            <div className="text-xs text-app-text-dim ml-4">characters</div>
-          </div>
-
-          {preset.supportsColor && (
-            <div>
-              <label className="block text-xs text-app-text-dim mb-2">Color Mode</label>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setColorMode('color')}
-                  className={`flex-1 p-2 rounded border text-sm transition-all ${
-                    colorMode === 'color'
-                      ? 'border-app-accent bg-app-accent/10 text-app-text-bright'
-                      : 'border-app-border bg-app-bg hover:bg-app-hover'
-                  }`}
-                >
-                  <div className="flex gap-1 justify-center mb-1">
-                    {['red', 'orange', 'yellow', 'lime', 'blue', 'purple'].map((c) => (
-                      <span
-                        key={c}
-                        className="w-3 h-3 rounded-sm"
-                        style={{ backgroundColor: CC_COLORS[c as CCColor].hex }}
-                      />
-                    ))}
-                  </div>
-                  16 Colors
-                </button>
-                <button
-                  onClick={() => setColorMode('grayscale')}
-                  className={`flex-1 p-2 rounded border text-sm transition-all ${
-                    colorMode === 'grayscale'
-                      ? 'border-app-accent bg-app-accent/10 text-app-text-bright'
-                      : 'border-app-border bg-app-bg hover:bg-app-hover'
-                  }`}
-                >
-                  <div className="flex gap-1 justify-center mb-1">
-                    {['white', 'lightGray', 'gray', 'black'].map((c) => (
-                      <span
-                        key={c}
-                        className="w-3 h-3 rounded-sm"
-                        style={{ backgroundColor: CC_COLORS[c as CCColor].hex }}
-                      />
-                    ))}
-                  </div>
-                  Grayscale
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Preview */}
-          <div className="mt-4">
-            <label className="block text-xs text-app-text-dim mb-2">Terminal Preview</label>
-            <div className="bg-black rounded border border-app-border p-2 flex items-center justify-center overflow-hidden">
-              <div
-                className="border border-cc-gray"
-                style={{
-                  width: `${Math.min(size.width * 6, 400)}px`,
-                  height: `${Math.min(size.height * 9, 200)}px`,
-                  backgroundColor: CC_COLORS.black.hex,
-                }}
-              >
-                <div className="w-full h-full flex items-center justify-center">
-                  <span style={{ color: CC_COLORS.yellow.hex, fontSize: '10px', fontFamily: 'monospace' }}>
-                    {size.width}x{size.height}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+          
         </div>
       );
     },
   ];
 
-  const stepTitles = ['Project Info', 'Device', 'Display'];
+  const stepTitles = ['Project Info', 'Settings', 'Display'];
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="New Project" width="max-w-xl">
@@ -231,21 +193,19 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({ isOpen, onCl
           <React.Fragment key={i}>
             <button
               onClick={() => setStep(i)}
-              className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-all ${
-                i === step
-                  ? 'bg-app-accent/20 text-app-accent font-medium'
-                  : i < step
-                    ? 'text-app-success cursor-pointer hover:bg-app-hover'
-                    : 'text-app-text-dim'
-              }`}
+              className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-all ${i === step
+                ? 'bg-app-accent/20 text-app-accent font-medium'
+                : i < step
+                  ? 'text-app-success cursor-pointer hover:bg-app-hover'
+                  : 'text-app-text-dim'
+                }`}
             >
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                i === step
-                  ? 'bg-app-accent text-app-bg'
-                  : i < step
-                    ? 'bg-app-success text-app-bg'
-                    : 'bg-app-border text-app-text-dim'
-              }`}>
+              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${i === step
+                ? 'bg-app-accent text-app-bg'
+                : i < step
+                  ? 'bg-app-success text-app-bg'
+                  : 'bg-app-border text-app-text-dim'
+                }`}>
                 {i < step ? '\u2713' : i + 1}
               </span>
               {title}

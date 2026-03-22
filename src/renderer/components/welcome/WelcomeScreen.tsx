@@ -88,15 +88,11 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNewProject }) =>
           <button
             onClick={onNewProject}
             className="btn-primary text-base px-8 py-3"
-          >
-            New Project
-          </button>
+          >New Project</button>
           <button
             onClick={handleOpenProject}
             className="btn-secondary text-base px-8 py-3"
-          >
-            Open Project
-          </button>
+          >Open Project</button>
         </div>
 
         {/* Recent Projects */}
