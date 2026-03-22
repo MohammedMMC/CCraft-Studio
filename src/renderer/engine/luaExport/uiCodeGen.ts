@@ -2,6 +2,16 @@ import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContaine
 import { escapeLuaString, indent, luaColor, sanitize } from '../../utils/luaHelpers';
 import { CC_COLOR_NAMES, CC_COLORS } from '../../models/CCColors';
 
+const CLASSES_NAMES = {
+  "progressbar": "ProgressBar",
+  "container": "Container",
+  "checkbox": "CheckBox",
+  "button": "Button",
+  "slider": "Slider",
+  "label": "Label",
+  "panel": "Panel",
+};
+
 export function buildPositionMap(
   elements: UIElement[],
   displayWidth: number,
@@ -55,15 +65,13 @@ export function generateUICode(
   const lines: string[] = [];
   const i = indent(1);
 
-  lines.push(`local screen_${safeName} = {}`);
+  lines.push(`local screen = Screen:new("${safeName}")`);
   lines.push('');
 
   const allVisible = elements.filter(e => e.visible && posMap.has(e.id));
 
   for (const el of allVisible) {
-    const pos = posMap.get(el.id)!;
-    const varName = `screen_${safeName}.${sanitize(el.name)}`;
-    lines.push(...generateComponentInstance(el, pos, varName, elements));
+    lines.push(...generateComponentInstance(el, posMap.get(el.id)!, elements));
     lines.push('');
   }
 
@@ -73,7 +81,7 @@ export function generateUICode(
       .filter(c => c.parentId === el.id && c.visible && posMap.has(c.id))
       .sort((a, b) => a.zIndex - b.zIndex);
     for (const child of children) {
-      lines.push(`screen_${safeName}.${sanitize(el.name)}:addChild(screen_${safeName}.${sanitize(child.name)})`);
+      lines.push(`screen:getChild("${sanitize(el.name)}"):addChild(screen:getChild("${sanitize(child.name)}"))`);
     }
     if (children.length > 0) lines.push('');
   }
@@ -82,23 +90,11 @@ export function generateUICode(
     .filter(e => e.parentId === null)
     .sort((a, b) => a.zIndex - b.zIndex);
 
-  lines.push(`screen_${safeName}._drawOrder = {`);
   for (const el of topLevel) {
-    lines.push(`${i}screen_${safeName}.${sanitize(el.name)},`);
+    lines.push(`screen:addDrawOrder("${sanitize(el.name)}")`);
   }
-  lines.push('}');
   lines.push('');
-
-  lines.push(`function drawScreen_${safeName}()`);
-  lines.push(`${i}term.setBackgroundColor(${CC_COLORS.black.luaName})`);
-  lines.push(`${i}term.clear()`);
-  lines.push(`${i}for _, obj in ipairs(screen_${safeName}._drawOrder) do`);
-  lines.push(`${i}${i}obj:draw()`);
-  lines.push(`${i}end`);
-  lines.push('end');
-  lines.push('');
-
-  lines.push(`screenComponents["${safeName}"] = screen_${safeName}`);
+  lines.push(`table.insert(screens, screen)`);
 
   return lines.join('\n');
 }
@@ -106,23 +102,11 @@ export function generateUICode(
 function generateComponentInstance(
   el: UIElement,
   pos: { x: number; y: number; width: number; height: number },
-  varName: string,
   allElements: UIElement[],
 ): string[] {
   const lines: string[] = [];
-  const escapedName = escapeLuaString(el.name);
 
-  const CLASSES_NAMES = {
-    "progressbar": "ProgressBar",
-    "container": "Container",
-    "checkbox": "CheckBox",
-    "button": "Button",
-    "slider": "Slider",
-    "label": "Label",
-    "panel": "Panel",
-  };
-
-  lines.push(`${varName} = ${CLASSES_NAMES[el.type]}:new("${varName}", {`);
+  lines.push(`screen:addChild(${CLASSES_NAMES[el.type]}:new("${sanitize(el.name)}", {`);
 
   lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
 
@@ -153,7 +137,7 @@ function generateComponentInstance(
     }
   });
 
-  lines.push('})');
+  lines.push('}))');
 
   return lines;
 }

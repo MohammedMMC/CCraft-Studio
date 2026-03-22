@@ -1,6 +1,6 @@
 import { escapeLuaString, sanitize } from '@/utils/luaHelpers';
 import { CCProject } from '@/models/Project';
-import { buildPositionMap, generateUICode, parseEventCode } from './uiCodeGen';
+import { generateUICode, parseEventCode } from './uiCodeGen';
 
 const TEMPLATE_DATA = import.meta.glob("./template/**/*.lua", {
   eager: true, import: "default",
@@ -33,12 +33,7 @@ export function generateFunctionsFile(projectName: string, author: string): stri
 
 export function generateVarsFile(project: CCProject): string {
   const startScreen = project.screens.find(s => s.isStartScreen) ?? project.screens[0];
-  const lines: string[] = [
-    '-- =============================================',
-    '-- Global Variables',
-    '-- =============================================',
-    '',
-  ];
+  let lines = `${generateHeader(project.name, project.author)}${TEMPLATE_DATA["./template/utils/vars.lua"]}`.split('\n');
 
   for (const v of project.variables) {
     const safeName = sanitize(v.name);
@@ -51,25 +46,13 @@ export function generateVarsFile(project: CCProject): string {
   }
 
   lines.push('');
-  lines.push('-- Runtime state');
   lines.push(`currentScreen = "${sanitize(startScreen?.name ?? 'Screen 1')}"`);
-  lines.push('running = true');
-  lines.push('');
-  lines.push('-- Screen components');
-  lines.push('screenComponents = {}');
 
-  return generateHeader(project.name, project.author) + lines.join('\n');
+  return lines.join('\n');
 }
 
 export function generateHandlersFile(project: CCProject): string {
-  const lines: string[] = [
-    '-- =============================================',
-    '-- Event Handlers & Button Regions',
-    '-- =============================================',
-    '',
-    'handlers = {}',
-    '',
-  ];
+  let lines = `${generateHeader(project.name, project.author)}${TEMPLATE_DATA["./template/utils/handlers.lua"]}`.split('\n');
 
   for (const screen of project.screens) {
     const sn = sanitize(screen.name);
@@ -77,13 +60,8 @@ export function generateHandlersFile(project: CCProject): string {
   }
 
   lines.push('');
-  lines.push('screenDrawFunctions = {}');
-  for (const screen of project.screens) {
-    const sn = sanitize(screen.name);
-    lines.push(`screenDrawFunctions["${sn}"] = drawScreen_${sn}`);
-  }
 
-  return generateHeader(project.name, project.author) + lines.join('\n');
+  return lines.join('\n');
 }
 
 export function generateScreenFile(project: CCProject, screenName: string, uiElements: any[]): string {

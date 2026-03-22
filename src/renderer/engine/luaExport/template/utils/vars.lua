@@ -1,5 +1,6 @@
 -- =============================================
--- Event Handlers
+-- Global Variables
 -- =============================================
 
-handlers = {}
+running = true
+screens = {}
