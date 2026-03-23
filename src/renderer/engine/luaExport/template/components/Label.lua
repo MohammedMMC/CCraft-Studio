@@ -12,14 +12,14 @@ function Label:new(name, props)
 end
 
 function Label:drawElement()
-    term.setTextColor(self.fgColor)
-    term.setBackgroundColor(self.bgColor)
+    self.monitor.setTextColor(self.fgColor)
+    self.monitor.setBackgroundColor(self.bgColor)
 
     for row = 0, self.height - 1 do
-        term.setCursorPos(self.x, self.y + row)
-        term.write(string.rep(" ", self.width))
+        self.monitor.setCursorPos(self.x, self.y + row)
+        self.monitor.write(string.rep(" ", self.width))
     end
 
-    term.setCursorPos(self.x, self.y)
-    term.write(self:alignText(self.text, self.width, self.textAlign))
+    self.monitor.setCursorPos(self.x, self.y)
+    self.monitor.write(self:alignText(self.text, self.width, self.textAlign))
 end

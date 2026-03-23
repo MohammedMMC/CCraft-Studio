@@ -140,7 +140,7 @@ export const PropertiesPanel: React.FC = () => {
 
               {screen.isWorkingScreen && (
                 <>
-                  <PropField label="Text Align">
+                  <PropField label="Display Type">
                     <select className="select-field text-xs" value={screen.displayType} onChange={(e) => setScreenDisplayType(screen.id, e.target.value as any)}>
                       <option value="terminal">Terminal</option>
                       <option value="monitor">Monitor</option>

@@ -18,9 +18,9 @@ function Container:addChild(child)
 end
 
 function Container:drawElement()
-    term.setBackgroundColor(self.bgColor)
+    self.monitor.setBackgroundColor(self.bgColor)
     for row = 0, self.height - 1 do
-        term.setCursorPos(self.x, self.y + row)
-        term.write(string.rep(" ", self.width))
+        self.monitor.setCursorPos(self.x, self.y + row)
+        self.monitor.write(string.rep(" ", self.width))
     end
 end

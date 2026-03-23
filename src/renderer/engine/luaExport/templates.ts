@@ -32,7 +32,7 @@ export function generateFunctionsFile(projectName: string, author: string): stri
 }
 
 export function generateVarsFile(project: CCProject): string {
-  const startScreen = project.screens.find(s => s.isWorkingScreen) ?? project.screens[0];
+  const workingScreens = project.screens.filter(s => s.isWorkingScreen);
   let lines = `${generateHeader(project.name, project.author)}${TEMPLATE_DATA["./template/utils/vars.lua"]}`.split('\n');
 
   for (const v of project.variables) {
@@ -46,7 +46,7 @@ export function generateVarsFile(project: CCProject): string {
   }
 
   lines.push('');
-  lines.push(`currentScreen = "${sanitize(startScreen?.name ?? 'Screen 1')}"`);
+  lines.push(`workingScreens = { "${workingScreens.map(scn => sanitize(scn.name)).join('", "')}" }`);
 
   return lines.join('\n');
 }
@@ -87,14 +87,14 @@ export function generateLogicFile(project: CCProject, screenName: string, blockC
 }
 
 export function generateStartupFile(project: CCProject, onlyUI: boolean = false): string {
-  const startScreen = project.screens.find(s => s.isWorkingScreen) ?? project.screens[0];
-  const safeName = sanitize(startScreen?.name ?? 'Screen 1');
+  const workingScreens = project.screens.filter(s => s.isWorkingScreen);
+  const safeName = sanitize(workingScreens[0]?.name ?? 'Screen 1');
 
   let lines = `${generateHeader(project.name, project.author)}${TEMPLATE_DATA["./template/startup.lua"]}`;
   lines = lines.replace("-- {PROJECT_START}",
     onlyUI
       ? `resolveLayout(term.getSize())\ndrawScreen_${safeName}()`
-      : (`navigate("${safeName}")\n\n` + TEMPLATE_DATA["./template/loop.lua"])
+      : (`\n` + TEMPLATE_DATA["./template/loop.lua"])
   );
 
   return lines;

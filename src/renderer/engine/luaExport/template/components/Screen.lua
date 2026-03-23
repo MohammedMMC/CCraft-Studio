@@ -14,7 +14,16 @@ function Screen:new(name, props)
     obj.children = {}
     obj.bgColor = props.bgColor or colors.black
 
-    obj.width, obj.height = term.getSize()
+    obj.isWorkingScreen = props.isWorkingScreen or false
+    obj.displayType = props.displayType or 'any'
+    obj.monitorsWidthSize = props.monitorsWidthSize
+    obj.monitorsHeightSize = props.monitorsHeightSize
+    obj.monitorsWidthUnit = props.monitorsWidthUnit
+    obj.monitorsHeightUnit = props.monitorsHeightUnit
+
+    obj.monitor = props.displayType == 'terminal' and term or nil
+
+    obj.width, obj.height = nil, nil
 
     return obj
 end
@@ -37,10 +46,10 @@ function Screen:addDrawOrder(child)
 end
 
 function Screen:draw()
-    term.setBackgroundColor(self.bgColor)
+    self.monitor.setBackgroundColor(self.bgColor)
     for j = 0, self.height - 1 do
-        term.setCursorPos(1, 1 + j)
-        term.write(string.rep(" ", self.width))
+        self.monitor.setCursorPos(1, 1 + j)
+        self.monitor.write(string.rep(" ", self.width))
     end
 
     for _, name in ipairs(self.drawOrder) do

@@ -4,3 +4,4 @@
 
 running = true
 screens = {}
+monitors = {}

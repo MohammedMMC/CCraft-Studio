@@ -17,7 +17,7 @@ function Slider:setValue(val)
     self.value = math.max(self.from, math.min(self.to, math.floor(val + 0.5)))
 end
 
-function Slider:onDragEvent(button, x, y)
+function Slider:onDragEvent(x, y)
     self:setValue(self.from
         + (self.to - self.from)
         * ((self.orientation:match("^" .. "v")
@@ -28,44 +28,44 @@ end
 function Slider:drawElement()
     local percentValue = math.floor(((self.value - self.from) * 100 / (self.to - self.from)) + 0.5);
 
-    term.setCursorPos(self.x, self.y)
-    term.setBackgroundColor(self.bgColor)
+    self.monitor.setCursorPos(self.x, self.y)
+    self.monitor.setBackgroundColor(self.bgColor)
     for j = 0, self.height - 1 do
-        term.setCursorPos(self.x, self.y + j)
-        term.write(string.rep(" ", self.width))
+        self.monitor.setCursorPos(self.x, self.y + j)
+        self.monitor.write(string.rep(" ", self.width))
     end
 
     if self.orientation:match("^" .. "v") then
-        term.setBackgroundColor(self.filledColor)
+        self.monitor.setBackgroundColor(self.filledColor)
         for j = 0, math.floor(self.height * percentValue / 100 + 0.5) - 1 do
-            term.setCursorPos(self.x,
+            self.monitor.setCursorPos(self.x,
                 self.y + (self.orientation == "vbtt" and math.floor(self.height * (100 - percentValue) / 100 + 0.5) or 0) +
                 j)
-            term.write(string.rep(" ", self.width))
+            self.monitor.write(string.rep(" ", self.width))
         end
 
-        term.setCursorPos(self.x, self.y +
+        self.monitor.setCursorPos(self.x, self.y +
             math.floor((self.height - 1) * (self.orientation == "vbtt" and 100 - percentValue or percentValue) / 100 +
                 0.5))
-        term.setBackgroundColor(self.handleColor)
-        term.write(string.rep(" ", self.width))
+        self.monitor.setBackgroundColor(self.handleColor)
+        self.monitor.write(string.rep(" ", self.width))
     else
-        term.setBackgroundColor(self.filledColor)
+        self.monitor.setBackgroundColor(self.filledColor)
         for j = 0, self.height - 1 do
-            term.setCursorPos(
+            self.monitor.setCursorPos(
                 self.x + (self.orientation == "hrtl" and math.floor(self.width * (100 - percentValue) / 100 + 0.5) or 0),
                 self.y + j)
-            term.write(string.rep(" ", math.floor(self.width * percentValue / 100 + 0.5)))
+            self.monitor.write(string.rep(" ", math.floor(self.width * percentValue / 100 + 0.5)))
         end
 
-        term.setBackgroundColor(self.handleColor)
+        self.monitor.setBackgroundColor(self.handleColor)
         for j = 0, self.height - 1 do
-            term.setCursorPos(
+            self.monitor.setCursorPos(
                 self.x +
                 math.floor((self.width - 1) * (self.orientation == "hrtl" and 100 - percentValue or percentValue) / 100 +
                     0.5),
                 self.y + j)
-            term.write(string.rep(" ", 1))
+            self.monitor.write(string.rep(" ", 1))
         end
     end
 end

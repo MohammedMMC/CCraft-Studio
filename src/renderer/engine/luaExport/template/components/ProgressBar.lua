@@ -19,33 +19,33 @@ function ProgressBar:drawElement()
     local alignedText = self:alignText(self.text, self.width, self.textAlign)
 
     -- Draw background
-    term.setBackgroundColor(self.bgColor)
+    self.monitor.setBackgroundColor(self.bgColor)
     for j = 0, self.height - 1 do
-        term.setCursorPos(self.x, self.y + j)
-        term.write(string.rep(" ", self.width))
+        self.monitor.setCursorPos(self.x, self.y + j)
+        self.monitor.write(string.rep(" ", self.width))
     end
 
     -- Draw progress
     if self.progress then
         local progressWidth = math.floor(self.width / 100 * self.progress)
-        term.setBackgroundColor(self.progressColor)
+        self.monitor.setBackgroundColor(self.progressColor)
         for j = 0, self.height - 1 do
-            term.setCursorPos(self.x, self.y + j)
-            term.write(string.rep(" ", progressWidth))
+            self.monitor.setCursorPos(self.x, self.y + j)
+            self.monitor.write(string.rep(" ", progressWidth))
         end
     end
 
     -- Draw text
     for i = 1, #alignedText do
         local char = alignedText:sub(i, i)
-        term.setCursorPos(self.x + i - 1, self.y + math.floor(self.height / 2))
+        self.monitor.setCursorPos(self.x + i - 1, self.y + math.floor(self.height / 2))
         if i <= math.floor(self.width / 100 * self.progress) then
-            term.setTextColor(self.fgColor)
-            term.setBackgroundColor(self.progressColor)
+            self.monitor.setTextColor(self.fgColor)
+            self.monitor.setBackgroundColor(self.progressColor)
         else
-            term.setTextColor(self.fgColor)
-            term.setBackgroundColor(self.bgColor)
+            self.monitor.setTextColor(self.fgColor)
+            self.monitor.setBackgroundColor(self.bgColor)
         end
-        term.write(char)
+        self.monitor.write(char)
     end
 end

@@ -1,7 +1,7 @@
 import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContainerLayout, isContainerLike } from '../../models/UIElement';
 import { escapeLuaString, indent, luaColor, sanitize } from '../../utils/luaHelpers';
 import { CC_COLOR_NAMES, CC_COLORS } from '../../models/CCColors';
-import { CCProject } from '@/models/Project';
+import { CCProject, getMonitorSize } from '@/models/Project';
 
 const CLASSES_NAMES = {
   "progressbar": "ProgressBar",
@@ -68,13 +68,19 @@ export function generateUICode(
   const lines: string[] = [];
   const i = indent(1);
 
-  lines.push(`local screen = Screen:new("${safeName}", { bgColor = ${luaColor(screen?.bgColor || 'black')} })`);
+  const monitorSize = getMonitorSize(`${screen?.monitorsHeightSize}x${screen?.monitorsWidthSize}`);
+  lines.push(`local screen = Screen:new("${safeName}", { 
+    bgColor = ${luaColor(screen?.bgColor || 'black')},
+    isWorkingScreen = ${screen?.isWorkingScreen}, displayType = "${screen?.displayType}",
+    monitorsHeightSize = ${monitorSize.height}, monitorsWidthSize = ${monitorSize.width},
+    monitorsHeightUnit = "${screen?.monitorsHeightUnit}", monitorsWidthUnit = "${screen?.monitorsWidthUnit}",
+  })`);
   lines.push('');
 
   const allVisible = elements.filter(e => e.visible && posMap.has(e.id));
-
+  
   for (const el of allVisible) {
-    lines.push(...generateComponentInstance(el, posMap.get(el.id)!, elements));
+    lines.push(...generateComponentInstance(safeName, el, posMap.get(el.id)!, elements));
     lines.push('');
   }
 
@@ -103,6 +109,7 @@ export function generateUICode(
 }
 
 function generateComponentInstance(
+  screenName: string,
   el: UIElement,
   pos: { x: number; y: number; width: number; height: number },
   allElements: UIElement[],
@@ -139,6 +146,8 @@ function generateComponentInstance(
       lines.push(`  ${key} = "${value}",`);
     }
   });
+
+  lines.push(`   screenName = "${screenName}",`);
 
   lines.push('}))');
 

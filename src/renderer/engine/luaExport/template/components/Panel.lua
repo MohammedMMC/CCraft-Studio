@@ -39,46 +39,46 @@ function Panel:drawElement()
         end
     end
 
-    term.setBackgroundColor(self.titleBgColor)
-    term.setTextColor(self.fgColor)
+    self.monitor.setBackgroundColor(self.titleBgColor)
+    self.monitor.setTextColor(self.fgColor)
 
     local title = self.text:match("^%s*(.-)%s*$")
     if plus2 == 2 then
         title = " " .. title .. " "
     end
 
-    term.setCursorPos(self.x + textpos, self.y)
-    term.write(title)
+    self.monitor.setCursorPos(self.x + textpos, self.y)
+    self.monitor.write(title)
 
-    term.setBackgroundColor(self.borderColor)
-    term.setTextColor(self.fgColor)
-    term.setCursorPos(self.x, self.y)
-    term.write(string.rep(" ", textpos))
+    self.monitor.setBackgroundColor(self.borderColor)
+    self.monitor.setTextColor(self.fgColor)
+    self.monitor.setCursorPos(self.x, self.y)
+    self.monitor.write(string.rep(" ", textpos))
 
     local rightStart = self.x + (textpos + #self.text + 2) + ((textsp[1] ~= 2 and plus2 == 0) and -2 or 0)
     local rightWidth = self.width - (textpos + #self.text + 2) + ((textsp[1] ~= 2 and plus2 == 0) and 1 or 0)
 
-    term.setCursorPos(rightStart, self.y)
-    term.write(string.rep(" ", rightWidth))
+    self.monitor.setCursorPos(rightStart, self.y)
+    self.monitor.write(string.rep(" ", rightWidth))
 
-    term.setCursorPos(self.x, self.y + self.height - 1)
-    term.write(string.rep(" ", self.width))
+    self.monitor.setCursorPos(self.x, self.y + self.height - 1)
+    self.monitor.write(string.rep(" ", self.width))
 
     for i = 0, self.height - 1 do
-        term.setCursorPos(self.x, self.y + i)
-        term.write(" ")
+        self.monitor.setCursorPos(self.x, self.y + i)
+        self.monitor.write(" ")
     end
 
     for i = 0, self.height - 1 do
-        term.setCursorPos(self.x + self.width - 1, self.y + i)
-        term.write(" ")
+        self.monitor.setCursorPos(self.x + self.width - 1, self.y + i)
+        self.monitor.write(" ")
     end
 
     if self.bgColor and self.width > 2 and self.height > 2 then
-        term.setBackgroundColor(self.bgColor)
+        self.monitor.setBackgroundColor(self.bgColor)
         for row = 1, self.height - 2 do
-            term.setCursorPos(self.x + 1, self.y + row)
-            term.write(string.rep(" ", self.width - 2))
+            self.monitor.setCursorPos(self.x + 1, self.y + row)
+            self.monitor.write(string.rep(" ", self.width - 2))
         end
     end
 end

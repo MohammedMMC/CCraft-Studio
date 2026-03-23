@@ -14,8 +14,8 @@ export interface ExportFile {
 }
 
 export function exportProject(project: CCProject, options: ExportOptions): ExportFile[] {
-  const startScreen = project.screens.find(s => s.isWorkingScreen) ?? project.screens[0];
-  if (!startScreen) return [];
+  const workingScreens = project.screens.filter(s => s.isWorkingScreen);
+  if (workingScreens.length === 0) return [];
 
   const files: ExportFile[] = [];
   const blocklyStore = useBlocklyStore.getState();

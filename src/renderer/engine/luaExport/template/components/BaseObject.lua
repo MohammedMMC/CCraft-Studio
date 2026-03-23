@@ -8,6 +8,7 @@ BaseObject.__index = BaseObject
 function BaseObject:new(name, props)
     local obj = setmetatable({}, self)
     obj.name = name
+    obj.monitor = nil
 
     for pn, pi in pairs(props) do
         obj[pn] = pi
@@ -24,6 +25,14 @@ function BaseObject:setVisible(visible)
     self.visible = visible
 end
 
+function BaseObject:getScreen()
+    return getScreen(self.screenName)
+end
+
+function BaseObject:getMonitor()
+    local scn = self:getScreen()
+    return scn and scn.monitor or nil
+end
 
 function BaseObject:alignText(text, width, align)
     local len = #text
@@ -38,19 +47,20 @@ function BaseObject:alignText(text, width, align)
     end
 end
 
-function BaseObject:checkTouch(checkBox, x, y)
+function BaseObject:checkTouch(x, y)
     if not self:isVisible() then return false end
     return x >= self.x and x < self.x + self.width and y >= self.y and y < self.y + self.height
 end
 
 -- function BaseObject:onEvent(event, p1, p2, p3, p4, p5)end
--- function BaseObject:onReleaseEvent(button,x,y)end
--- function BaseObject:onClickEvent(button,x,y)end
--- function BaseObject:onDragEvent(button,x,y)end
+-- function BaseObject:onReleaseEvent(x,y)end
+-- function BaseObject:onClickEvent(x,y)end
+-- function BaseObject:onDragEvent(x,y)end
 
 
 function BaseObject:draw()
     if not self:isVisible() then return end
+    self.monitor = self:getMonitor()
 
     self:drawElement()
 
