@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { CCProject, Screen, GlobalVariable, createDefaultProject, DeviceType } from '../models/Project';
+import { CCColor } from '@/models/CCColors';
 
 interface ProjectState {
   project: CCProject | null;
@@ -22,6 +23,7 @@ interface ProjectState {
   renameScreen: (screenId: string, name: string) => void;
   setStartScreen: (screenId: string) => void;
   getActiveScreen: () => Screen | null;
+  changeScreenBgColor: (screenId: string, color: CCColor) => void;
 
   addVariable: (variable: GlobalVariable) => void;
   removeVariable: (name: string) => void;
@@ -135,6 +137,17 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     if (!project || !activeScreenId) return null;
     return project.screens.find(s => s.id === activeScreenId) ?? null;
   },
+
+  changeScreenBgColor: (screenId, color) => set((state) => {
+    if (!state.project) return state;
+    return {
+      project: {
+        ...state.project,
+        screens: state.project.screens.map(s => s.id === screenId ? { ...s, bgColor: color } : s),
+      },
+      isDirty: true,
+    };
+  }),
 
   addVariable: (variable) => set((state) => {
     if (!state.project) return state;

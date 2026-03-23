@@ -273,7 +273,7 @@ export const UIEditorCanvas: React.FC = () => {
       rendererRef.current.setBuffer(buffer);
     }
 
-    buffer.clear('black');
+    buffer.clear(screen.bgColor || 'black');
 
     const sorted = [...screen.uiElements]
       .filter((e) => e.visible && e.parentId === null)

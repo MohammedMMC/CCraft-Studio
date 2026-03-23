@@ -5,6 +5,7 @@ import { useUIElementStore } from '../../stores/uiElementStore';
 import { useHistoryStore } from '../../stores/historyStore';
 import { UIElement, UI_ELEMENT_LABELS } from '../../models/UIElement';
 import { generateId } from '../../utils/idGenerator';
+import { MonitorIcon } from '../layout/Toolbar';
 
 interface DropIndicator {
   parentId: string | null;
@@ -244,9 +245,8 @@ export const ElementsPanel: React.FC = () => {
           onClick={() => selectElement(el.id)}
         >
           <span
-            className={`w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold flex-shrink-0 ${
-              isSelected ? 'bg-app-accent text-app-bg' : 'bg-app-bg-hover text-app-text-dim'
-            }`}
+            className={`w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold flex-shrink-0 ${isSelected ? 'bg-app-accent text-app-bg' : 'bg-app-bg-hover text-app-text-dim'
+              }`}
           >
             {meta.icon}
           </span>
@@ -277,20 +277,36 @@ export const ElementsPanel: React.FC = () => {
         </span>
       </div>
       <div
-        className="flex-1 overflow-auto"
+        className="overflow-auto flex flex-col gap-px p-1"
         onDragOver={handleDragOverRoot}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
+        {/* Screen element */}
+        <React.Fragment key={screen.id}>
+          <div
+            className={`flex items-center gap-2 px-2 py-1.5 rounded text-left text-xs transition-colors cursor-grab
+            ${screen.id === selectedElementId ? 'bg-app-accent/20 text-app-accent' : 'hover:bg-app-bg-hover text-app-text'}
+          `}
+            style={{ paddingLeft: 8 }}
+            onClick={() => selectElement(screen.id)}
+          >
+            <span
+              className={`w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold flex-shrink-0 ${screen.id === selectedElementId ? 'bg-app-accent text-app-bg' : 'bg-app-bg-hover text-app-text-dim'
+                }`}
+            >
+              <MonitorIcon />
+            </span>
+            <span className="truncate flex-1">{screen.name}</span>
+          </div>
+        </React.Fragment>
+
+        {/* Screen elements */}
         {elements.length === 0 ? (
-          <div className="p-3 text-xs text-app-text-dim text-center">
+          <div className="p-2 text-xs text-app-text-dim text-center">
             No elements on this screen
           </div>
-        ) : (
-          <div className="flex flex-col gap-px p-1">
-            {topLevel.map(el => renderRow(el, 0, topLevel))}
-          </div>
-        )}
+        ) : (<> {topLevel.map(el => renderRow(el, 1, topLevel))} </>)}
       </div>
     </div>
   );

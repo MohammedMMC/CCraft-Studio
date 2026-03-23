@@ -240,8 +240,8 @@ const GridIcon = () => (
   </svg>
 );
 
-const MonitorIcon = () => (
-  <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-app-text-dim mr-0.5">
+export const MonitorIcon = () => (
+  <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-app-text-dim">
     <rect x="1" y="2" width="14" height="10" rx="1" />
     <line x1="5" y1="14" x2="11" y2="14" />
     <line x1="8" y1="12" x2="8" y2="14" />

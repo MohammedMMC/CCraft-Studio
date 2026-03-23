@@ -1,3 +1,4 @@
+import { CCColor } from './CCColors';
 import { UIElement } from './UIElement';
 
 export type DeviceType =
@@ -67,6 +68,7 @@ export interface Screen {
   id: string;
   name: string;
   isStartScreen: boolean;
+  bgColor?: CCColor;
   uiElements: UIElement[];
   blocklyXml?: string;
 }
@@ -105,6 +107,7 @@ export function createDefaultProject(overrides: Partial<CCProject> = {}): CCProj
         id: screenId,
         name: 'Screen 1',
         isStartScreen: true,
+        bgColor: 'black',
         uiElements: [],
       },
     ],

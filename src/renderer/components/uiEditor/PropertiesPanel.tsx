@@ -30,6 +30,8 @@ export const PropertiesPanel: React.FC = () => {
   const removeElement = useUIElementStore((s) => s.removeElement);
   const duplicateElement = useUIElementStore((s) => s.duplicateElement);
   const selectElement = useEditorStore((s) => s.selectElement);
+  const renameScreen = useProjectStore((s) => s.renameScreen);
+  const changeScreenBgColor = useProjectStore((s) => s.changeScreenBgColor);
 
   const displayWidth = project?.displayWidth ?? 51;
   const displayHeight = project?.displayHeight ?? 19;
@@ -46,7 +48,8 @@ export const PropertiesPanel: React.FC = () => {
   }
 
   const element = getElementById(activeScreenId, selectedElementId);
-  if (!element) {
+  const screen = project?.screens.find(s => s.id === activeScreenId);
+  if (!element && !screen) {
     return (
       <div className="w-60 bg-app-panel border-l border-app-border flex flex-col">
         <div className="panel-header">Properties</div>
@@ -100,201 +103,232 @@ export const PropertiesPanel: React.FC = () => {
       <div className="panel-header flex items-center justify-between">
         <span>Properties</span>
         <span className="text-[10px] text-app-accent font-normal normal-case tracking-normal">
-          {element.type}
+          {element ? element.type : "screen"}
         </span>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-3 space-y-3">
-          {/* Name */}
-          <PropField label="Name">
-            <input
-              className="input-field text-xs"
-              value={element.name}
-              maxLength={30}
-              onChange={(e) => update({ name: e.target.value.slice(0, 30) })}
-            />
-          </PropField>
+      {screen && (
+        <>
+          <div className="flex-1 overflow-y-auto">
+            <div className="p-3 space-y-3">
+              {/* Name */}
+              <PropField label="Name">
+                <input
+                  className="input-field text-xs"
+                  value={screen.name}
+                  maxLength={30}
+                  onChange={(e) => renameScreen(screen.id, e.target.value.slice(0, 30))}
+                />
+              </PropField>
 
-          {/* Position */}
-          {element.parentId !== null && (
-            <div className="text-[10px] text-app-text-dim italic">
-              Position managed by container
+              <div className="h-px bg-app-border" />
+
+              {/* Colors */}
+              <ColorPicker
+                label="Background Color"
+                value={screen.bgColor || 'black'}
+                onChange={(bgColor) => changeScreenBgColor(screen.id, bgColor)}
+              />
             </div>
-          )}
-          <div className="grid grid-cols-2 gap-2">
-            <PropField label="X">
-              <input
-                type="number"
-                className="input-field text-xs"
-                value={element.x}
-                min={1}
-                max={MAX_POS}
-                disabled={element.parentId !== null}
-                onChange={(e) => update({ x: parseNum(e.target.value, 1, MAX_POS, 1) })}
-              />
-            </PropField>
-            <PropField label="Y">
-              <input
-                type="number"
-                className="input-field text-xs"
-                value={element.y}
-                min={1}
-                max={MAX_POS}
-                disabled={element.parentId !== null}
-                onChange={(e) => update({ y: parseNum(e.target.value, 1, MAX_POS, 1) })}
-              />
-            </PropField>
           </div>
+        </>
+      )}
 
-          {/* Size */}
-          <div className="grid grid-cols-2 gap-2">
-            <PropField label="Width">
-              <div className="flex gap-1">
+      {element && (
+        <>
+          <div className="flex-1 overflow-y-auto">
+            <div className="p-3 space-y-3">
+              {/* Name */}
+              <PropField label="Name">
                 <input
-                  type="number"
-                  className="input-field text-xs flex-1 min-w-0"
-                  value={element.widthUnit === 'fill' ? '' : element.width}
-                  placeholder={element.widthUnit === 'fill' ? 'Full' : undefined}
-                  disabled={element.widthUnit === 'fill'}
-                  min={1}
-                  max={element.widthUnit === '%' ? 100 : MAX_SIZE}
-                  onChange={(e) => {
-                    const newWidth = parseNum(e.target.value, 1, element.widthUnit === '%' ? 100 : MAX_SIZE, 1);
-                    const rw = resolveSize({ ...element, width: newWidth } as UIElement, displayWidth, displayHeight).width;
-                    const maxX = Math.max(1, displayWidth - rw + 1);
-                    const posUpdate = element.x > maxX ? { x: maxX } : {};
-                    update({ width: newWidth, ...posUpdate });
-                  }}
+                  className="input-field text-xs"
+                  value={element.name}
+                  maxLength={30}
+                  onChange={(e) => update({ name: e.target.value.slice(0, 30) })}
                 />
-                <UnitToggle
-                  value={element.widthUnit}
-                  onChange={(u) => {
-                    const resolved = resolveSize(element, displayWidth, displayHeight).width;
-                    let newVal = element.width;
-                    if (u === '%') newVal = clamp(Math.round((resolved / displayWidth) * 100), 1, 100);
-                    else if (u === 'px') newVal = resolved;
-                    const tempEl = { ...element, widthUnit: u, ...(u !== 'fill' ? { width: newVal } : {}) } as UIElement;
-                    const rw = resolveSize(tempEl, displayWidth, displayHeight).width;
-                    const maxX = Math.max(1, displayWidth - rw + 1);
-                    const posUpdate = element.x > maxX ? { x: maxX } : {};
-                    update({ widthUnit: u, ...(u !== 'fill' ? { width: newVal } : {}), ...posUpdate } as any);
-                  }}
-                />
-              </div>
-            </PropField>
-            <PropField label="Height">
-              <div className="flex gap-1">
-                <input
-                  type="number"
-                  className="input-field text-xs flex-1 min-w-0"
-                  value={element.heightUnit === 'fill' ? '' : element.height}
-                  placeholder={element.heightUnit === 'fill' ? 'Full' : undefined}
-                  disabled={element.heightUnit === 'fill'}
-                  min={1}
-                  max={element.heightUnit === '%' ? 100 : MAX_SIZE}
-                  onChange={(e) => {
-                    const newHeight = parseNum(e.target.value, 1, element.heightUnit === '%' ? 100 : MAX_SIZE, 1);
-                    const rh = resolveSize({ ...element, height: newHeight } as UIElement, displayWidth, displayHeight).height;
-                    const maxY = Math.max(1, displayHeight - rh + 1);
-                    const posUpdate = element.y > maxY ? { y: maxY } : {};
-                    update({ height: newHeight, ...posUpdate });
-                  }}
-                />
-                <UnitToggle
-                  value={element.heightUnit}
-                  onChange={(u) => {
-                    const resolved = resolveSize(element, displayWidth, displayHeight).height;
-                    let newVal = element.height;
-                    if (u === '%') newVal = clamp(Math.round((resolved / displayHeight) * 100), 1, 100);
-                    else if (u === 'px') newVal = resolved;
-                    const tempEl = { ...element, heightUnit: u, ...(u !== 'fill' ? { height: newVal } : {}) } as UIElement;
-                    const rh = resolveSize(tempEl, displayWidth, displayHeight).height;
-                    const maxY = Math.max(1, displayHeight - rh + 1);
-                    const posUpdate = element.y > maxY ? { y: maxY } : {};
-                    update({ heightUnit: u, ...(u !== 'fill' ? { height: newVal } : {}), ...posUpdate } as any);
-                  }}
-                />
-              </div>
-            </PropField>
-          </div>
+              </PropField>
 
-          <div className="h-px bg-app-border" />
-
-          {/* Colors */}
-          {element.type === 'panel' ? (
-            <>
-              <ColorPicker
-                label="Title Color"
-                value={element.fgColor}
-                onChange={(fgColor) => update({ fgColor })}
-              />
-              <ColorPicker
-                label="Title Background"
-                value={element.titleBgColor}
-                onChange={(titleBgColor) => update({ titleBgColor } as any)}
-              />
-              <ColorPicker
-                label="Border Color"
-                value={element.borderColor}
-                onChange={(borderColor) => update({ borderColor } as any)}
-              />
-              <ColorPicker
-                label="Background Color"
-                value={element.bgColor}
-                onChange={(bgColor) => update({ bgColor })}
-              />
-            </>
-          ) : (
-            <>
-              {(element.type !== 'container' && element.type !== 'slider' && element.type !== 'checkbox') && (
-                <ColorPicker
-                  label="Text Color"
-                  value={element.fgColor}
-                  onChange={(fgColor) => update({ fgColor })}
-                />
+              {/* Position */}
+              {element.parentId !== null && (
+                <div className="text-[10px] text-app-text-dim italic">
+                  Position managed by container
+                </div>
               )}
-              <ColorPicker
-                label="Background Color"
-                value={element.bgColor}
-                onChange={(bgColor) => update({ bgColor })}
-              />
-            </>
-          )}
+              <div className="grid grid-cols-2 gap-2">
+                <PropField label="X">
+                  <input
+                    type="number"
+                    className="input-field text-xs"
+                    value={element.x}
+                    min={1}
+                    max={MAX_POS}
+                    disabled={element.parentId !== null}
+                    onChange={(e) => update({ x: parseNum(e.target.value, 1, MAX_POS, 1) })}
+                  />
+                </PropField>
+                <PropField label="Y">
+                  <input
+                    type="number"
+                    className="input-field text-xs"
+                    value={element.y}
+                    min={1}
+                    max={MAX_POS}
+                    disabled={element.parentId !== null}
+                    onChange={(e) => update({ y: parseNum(e.target.value, 1, MAX_POS, 1) })}
+                  />
+                </PropField>
+              </div>
 
-          <div className="h-px bg-app-border" />
+              {/* Size */}
+              <div className="grid grid-cols-2 gap-2">
+                <PropField label="Width">
+                  <div className="flex gap-1">
+                    <input
+                      type="number"
+                      className="input-field text-xs flex-1 min-w-0"
+                      value={element.widthUnit === 'fill' ? '' : element.width}
+                      placeholder={element.widthUnit === 'fill' ? 'Full' : undefined}
+                      disabled={element.widthUnit === 'fill'}
+                      min={1}
+                      max={element.widthUnit === '%' ? 100 : MAX_SIZE}
+                      onChange={(e) => {
+                        const newWidth = parseNum(e.target.value, 1, element.widthUnit === '%' ? 100 : MAX_SIZE, 1);
+                        const rw = resolveSize({ ...element, width: newWidth } as UIElement, displayWidth, displayHeight).width;
+                        const maxX = Math.max(1, displayWidth - rw + 1);
+                        const posUpdate = element.x > maxX ? { x: maxX } : {};
+                        update({ width: newWidth, ...posUpdate });
+                      }}
+                    />
+                    <UnitToggle
+                      value={element.widthUnit}
+                      onChange={(u) => {
+                        const resolved = resolveSize(element, displayWidth, displayHeight).width;
+                        let newVal = element.width;
+                        if (u === '%') newVal = clamp(Math.round((resolved / displayWidth) * 100), 1, 100);
+                        else if (u === 'px') newVal = resolved;
+                        const tempEl = { ...element, widthUnit: u, ...(u !== 'fill' ? { width: newVal } : {}) } as UIElement;
+                        const rw = resolveSize(tempEl, displayWidth, displayHeight).width;
+                        const maxX = Math.max(1, displayWidth - rw + 1);
+                        const posUpdate = element.x > maxX ? { x: maxX } : {};
+                        update({ widthUnit: u, ...(u !== 'fill' ? { width: newVal } : {}), ...posUpdate } as any);
+                      }}
+                    />
+                  </div>
+                </PropField>
+                <PropField label="Height">
+                  <div className="flex gap-1">
+                    <input
+                      type="number"
+                      className="input-field text-xs flex-1 min-w-0"
+                      value={element.heightUnit === 'fill' ? '' : element.height}
+                      placeholder={element.heightUnit === 'fill' ? 'Full' : undefined}
+                      disabled={element.heightUnit === 'fill'}
+                      min={1}
+                      max={element.heightUnit === '%' ? 100 : MAX_SIZE}
+                      onChange={(e) => {
+                        const newHeight = parseNum(e.target.value, 1, element.heightUnit === '%' ? 100 : MAX_SIZE, 1);
+                        const rh = resolveSize({ ...element, height: newHeight } as UIElement, displayWidth, displayHeight).height;
+                        const maxY = Math.max(1, displayHeight - rh + 1);
+                        const posUpdate = element.y > maxY ? { y: maxY } : {};
+                        update({ height: newHeight, ...posUpdate });
+                      }}
+                    />
+                    <UnitToggle
+                      value={element.heightUnit}
+                      onChange={(u) => {
+                        const resolved = resolveSize(element, displayWidth, displayHeight).height;
+                        let newVal = element.height;
+                        if (u === '%') newVal = clamp(Math.round((resolved / displayHeight) * 100), 1, 100);
+                        else if (u === 'px') newVal = resolved;
+                        const tempEl = { ...element, heightUnit: u, ...(u !== 'fill' ? { height: newVal } : {}) } as UIElement;
+                        const rh = resolveSize(tempEl, displayWidth, displayHeight).height;
+                        const maxY = Math.max(1, displayHeight - rh + 1);
+                        const posUpdate = element.y > maxY ? { y: maxY } : {};
+                        update({ heightUnit: u, ...(u !== 'fill' ? { height: newVal } : {}), ...posUpdate } as any);
+                      }}
+                    />
+                  </div>
+                </PropField>
+              </div>
 
-          {/* Type-specific properties */}
-          {renderTypeSpecificProps(element, update)}
+              <div className="h-px bg-app-border" />
 
-          <div className="h-px bg-app-border" />
+              {/* Colors */}
+              {element.type === 'panel' ? (
+                <>
+                  <ColorPicker
+                    label="Title Color"
+                    value={element.fgColor}
+                    onChange={(fgColor) => update({ fgColor })}
+                  />
+                  <ColorPicker
+                    label="Title Background"
+                    value={element.titleBgColor}
+                    onChange={(titleBgColor) => update({ titleBgColor } as any)}
+                  />
+                  <ColorPicker
+                    label="Border Color"
+                    value={element.borderColor}
+                    onChange={(borderColor) => update({ borderColor } as any)}
+                  />
+                  <ColorPicker
+                    label="Background Color"
+                    value={element.bgColor}
+                    onChange={(bgColor) => update({ bgColor })}
+                  />
+                </>
+              ) : (
+                <>
+                  {(element.type !== 'container' && element.type !== 'slider' && element.type !== 'checkbox') && (
+                    <ColorPicker
+                      label="Text Color"
+                      value={element.fgColor}
+                      onChange={(fgColor) => update({ fgColor })}
+                    />
+                  )}
+                  <ColorPicker
+                    label="Background Color"
+                    value={element.bgColor}
+                    onChange={(bgColor) => update({ bgColor })}
+                  />
+                </>
+              )}
 
-          {/* Visibility */}
-          <PropField label="Visible">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={element.visible}
-                onChange={(e) => update({ visible: e.target.checked })}
-                className="accent-app-accent"
-              />
-              <span className="text-xs text-app-text">{element.visible ? 'Yes' : 'No'}</span>
-            </label>
-          </PropField>
+              <div className="h-px bg-app-border" />
+
+              {/* Type-specific properties */}
+              {renderTypeSpecificProps(element, update)}
+
+              <div className="h-px bg-app-border" />
+
+              {/* Visibility */}
+              <PropField label="Visible">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={element.visible}
+                    onChange={(e) => update({ visible: e.target.checked })}
+                    className="accent-app-accent"
+                  />
+                  <span className="text-xs text-app-text">{element.visible ? 'Yes' : 'No'}</span>
+                </label>
+              </PropField>
 
 
-        </div>
-      </div>
+            </div>
+          </div>
 
-      {/* Actions */}
-      <div className="p-2 border-t border-app-border space-y-1">
-        <button onClick={handleDuplicate} className="w-full btn-secondary text-xs py-1">
-          Duplicate
-        </button>
-        <button onClick={handleDelete} className="w-full text-xs py-1 px-4 bg-app-error/10 text-app-error rounded hover:bg-app-error/20 transition-colors">
-          Delete
-        </button>
-      </div>
+          {/* Actions */}
+          <div className="p-2 border-t border-app-border space-y-1">
+            <button onClick={handleDuplicate} className="w-full btn-secondary text-xs py-1">
+              Duplicate
+            </button>
+            <button onClick={handleDelete} className="w-full text-xs py-1 px-4 bg-app-error/10 text-app-error rounded hover:bg-app-error/20 transition-colors">
+              Delete
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
