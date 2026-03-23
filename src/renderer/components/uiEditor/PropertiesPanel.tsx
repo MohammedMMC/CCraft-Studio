@@ -3,7 +3,7 @@ import { useEditorStore } from '../../stores/editorStore';
 import { useProjectStore } from '../../stores/projectStore';
 import { useUIElementStore } from '../../stores/uiElementStore';
 import { useHistoryStore } from '../../stores/historyStore';
-import { UIElement, UIElementType, SizeUnit, resolveSize } from '../../models/UIElement';
+import { UIElement, UIElementType, SizeUnit, resolveSize, SizeConstraintUnit } from '../../models/UIElement';
 import { CCColor } from '../../models/CCColors';
 import { ColorPicker } from './ColorPicker';
 import { generateId } from '../../utils/idGenerator';
@@ -32,6 +32,10 @@ export const PropertiesPanel: React.FC = () => {
   const selectElement = useEditorStore((s) => s.selectElement);
   const renameScreen = useProjectStore((s) => s.renameScreen);
   const changeScreenBgColor = useProjectStore((s) => s.changeScreenBgColor);
+  const setWorkingScreen = useProjectStore((s) => s.setWorkingScreen);
+  const setScreenDisplayType = useProjectStore((s) => s.setScreenDisplayType);
+  const setMonitorsSize = useProjectStore((s) => s.setMonitorsSize);
+  const setMonitorsUnit = useProjectStore((s) => s.setMonitorsUnit);
 
   const displayWidth = project?.displayWidth ?? 51;
   const displayHeight = project?.displayHeight ?? 19;
@@ -107,7 +111,7 @@ export const PropertiesPanel: React.FC = () => {
         </span>
       </div>
 
-      {screen && (
+      {(screen && !element) && (
         <>
           <div className="flex-1 overflow-y-auto">
             <div className="p-3 space-y-3">
@@ -121,6 +125,82 @@ export const PropertiesPanel: React.FC = () => {
                 />
               </PropField>
 
+
+              <PropField label="Working Screen">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={screen.isWorkingScreen}
+                    onChange={(e) => setWorkingScreen(screen.id, e.target.checked)}
+                    className="accent-app-accent"
+                  />
+                  <span className="text-xs text-app-text">{screen.isWorkingScreen ? 'Yes' : 'No'}</span>
+                </label>
+              </PropField>
+
+              {screen.isWorkingScreen && (
+                <>
+                  <PropField label="Text Align">
+                    <select className="select-field text-xs" value={screen.displayType} onChange={(e) => setScreenDisplayType(screen.id, e.target.value as any)}>
+                      <option value="terminal">Terminal</option>
+                      <option value="monitor">Monitor</option>
+                      <option value="any">Any</option>
+                    </select>
+                  </PropField>
+
+                  {screen.displayType === 'monitor' && (
+                    <>
+                      <div className="grid grid-cols-2 gap-2">
+                        <PropField label="Width">
+                          <div className="flex gap-1">
+                            <input
+                              type="number"
+                              className="input-field text-xs flex-1 min-w-0"
+                              value={screen.monitorsWidthSize}
+                              placeholder="Monitor Width"
+                              min={1} max={20}
+                              onChange={(e) => {
+                                const newWidth = parseNum(e.target.value, 1, 20, 1);
+                                setMonitorsSize(screen.id, newWidth, null);
+                              }}
+                            />
+                            <UnitToggle
+                              unitsType='constraint'
+                              value={screen.monitorsWidthUnit}
+                              onChange={(u) => {
+                                setMonitorsUnit(screen.id, u as SizeConstraintUnit, null);
+                              }}
+                            />
+                          </div>
+                        </PropField>
+                        <PropField label="Height">
+                          <div className="flex gap-1">
+                            <input
+                              type="number"
+                              className="input-field text-xs flex-1 min-w-0"
+                              value={screen.monitorsHeightSize}
+                              placeholder="Monitor Height"
+                              min={1} max={20}
+                              onChange={(e) => {
+                                const newHeight = parseNum(e.target.value, 1, 20, 1);
+                                setMonitorsSize(screen.id, null, newHeight);
+                              }}
+                            />
+                            <UnitToggle
+                              unitsType='constraint'
+                              value={screen.monitorsHeightUnit}
+                              onChange={(u) => {
+                                setMonitorsUnit(screen.id, null, u as SizeConstraintUnit);
+                              }}
+                            />
+                          </div>
+                        </PropField>
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
+
               <div className="h-px bg-app-border" />
 
               {/* Colors */}
@@ -130,6 +210,7 @@ export const PropertiesPanel: React.FC = () => {
                 onChange={(bgColor) => changeScreenBgColor(screen.id, bgColor)}
               />
             </div>
+            <div className="h-px bg-app-border" />
           </div>
         </>
       )}
@@ -200,6 +281,7 @@ export const PropertiesPanel: React.FC = () => {
                       }}
                     />
                     <UnitToggle
+                      unitsType='size'
                       value={element.widthUnit}
                       onChange={(u) => {
                         const resolved = resolveSize(element, displayWidth, displayHeight).width;
@@ -234,6 +316,7 @@ export const PropertiesPanel: React.FC = () => {
                       }}
                     />
                     <UnitToggle
+                      unitsType='size'
                       value={element.heightUnit}
                       onChange={(u) => {
                         const resolved = resolveSize(element, displayWidth, displayHeight).height;
@@ -339,23 +422,28 @@ const PropField: React.FC<{ label: string; children: React.ReactNode }> = ({ lab
     {children}
   </div>
 );
+const SIZE_UNIT_CYCLE: SizeUnit[] = ['px', '%', 'fill'];
+const SIZE_UNIT_LABELS: Record<SizeUnit, string> = { px: 'px', '%': '%', fill: 'F' };
+const SIZE_CONSTRAINT_UNIT_CYCLE: SizeConstraintUnit[] = ['=', '>', '<'];
+const SIZE_CONSTRAINT_UNIT_LABELS: Record<SizeConstraintUnit, string> = { '=': '=', '>': '>', '<': '<' };
 
-const UNIT_CYCLE: SizeUnit[] = ['px', '%', 'fill'];
-const UNIT_LABELS: Record<SizeUnit, string> = { px: 'px', '%': '%', fill: 'F' };
-
-const UnitToggle: React.FC<{ value: SizeUnit; onChange: (u: SizeUnit) => void }> = ({ value, onChange }) => {
+const UnitToggle: React.FC<{
+  unitsType: 'size' | 'constraint';
+  value: SizeUnit | SizeConstraintUnit;
+  onChange: (u: SizeUnit | SizeConstraintUnit) => void
+}> = ({ unitsType, value, onChange }) => {
   const cycle = () => {
-    const idx = UNIT_CYCLE.indexOf(value);
-    onChange(UNIT_CYCLE[(idx + 1) % UNIT_CYCLE.length]);
+    const idx = unitsType === 'size' ? SIZE_UNIT_CYCLE.indexOf(value as SizeUnit) : SIZE_CONSTRAINT_UNIT_CYCLE.indexOf(value as SizeConstraintUnit);
+    onChange(unitsType === 'size' ? SIZE_UNIT_CYCLE[(idx + 1) % SIZE_UNIT_CYCLE.length] : SIZE_CONSTRAINT_UNIT_CYCLE[(idx + 1) % SIZE_CONSTRAINT_UNIT_CYCLE.length]);
   };
 
   return (
     <button
       className="w-7 h-auto flex items-center justify-center rounded text-[10px] font-bold border border-app-border bg-app-bg-hover text-app-text-dim hover:text-app-accent hover:border-app-accent/50 transition-colors flex-shrink-0"
       onClick={cycle}
-      title={`Unit: ${value} (click to cycle)`}
+      title={`Unit: "${value}" (click to cycle)`}
     >
-      {UNIT_LABELS[value]}
+      {unitsType === 'size' ? SIZE_UNIT_LABELS[value as SizeUnit] : SIZE_CONSTRAINT_UNIT_LABELS[value as SizeConstraintUnit]}
     </button>
   );
 };

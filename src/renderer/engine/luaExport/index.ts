@@ -14,7 +14,7 @@ export interface ExportFile {
 }
 
 export function exportProject(project: CCProject, options: ExportOptions): ExportFile[] {
-  const startScreen = project.screens.find(s => s.isStartScreen) ?? project.screens[0];
+  const startScreen = project.screens.find(s => s.isWorkingScreen) ?? project.screens[0];
   if (!startScreen) return [];
 
   const files: ExportFile[] = [];

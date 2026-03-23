@@ -21,9 +21,12 @@ interface ProjectState {
   addScreen: (name: string) => string;
   removeScreen: (screenId: string) => void;
   renameScreen: (screenId: string, name: string) => void;
-  setStartScreen: (screenId: string) => void;
+  setWorkingScreen: (screenId: string, isActivated: boolean) => void;
   getActiveScreen: () => Screen | null;
   changeScreenBgColor: (screenId: string, color: CCColor) => void;
+  setScreenDisplayType: (screenId: string, displayType: Screen['displayType']) => void;
+  setMonitorsSize: (screenId: string, widthSize: number | null, heightSize: number | null) => void;
+  setMonitorsUnit: (screenId: string, widthUnit: Screen['monitorsWidthUnit'] | null, heightUnit: Screen['monitorsHeightUnit'] | null) => void;
 
   addVariable: (variable: GlobalVariable) => void;
   removeVariable: (name: string) => void;
@@ -51,7 +54,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       project,
       filePath,
       isDirty: false,
-      activeScreenId: project.screens.find(s => s.isStartScreen)?.id ?? project.screens[0]?.id ?? null,
+      activeScreenId: project.screens.find(s => s.isWorkingScreen)?.id ?? project.screens[0]?.id ?? null,
     });
   },
 
@@ -83,7 +86,12 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
           screens: [...state.project.screens, {
             id,
             name,
-            isStartScreen: false,
+            isWorkingScreen: false,
+            displayType: 'any',
+            monitorsWidthSize: 5,
+            monitorsHeightSize: 3,
+            monitorsWidthUnit: '=',
+            monitorsHeightUnit: '=',
             uiElements: [],
           }],
         },
@@ -97,8 +105,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   removeScreen: (screenId) => set((state) => {
     if (!state.project || state.project.screens.length <= 1) return state;
     const screens = state.project.screens.filter(s => s.id !== screenId);
-    if (!screens.some(s => s.isStartScreen) && screens.length > 0) {
-      screens[0].isStartScreen = true;
+    if (!screens.some(s => s.isWorkingScreen) && screens.length > 0) {
+      screens[0].isWorkingScreen = true;
     }
     const newActiveId = state.activeScreenId === screenId
       ? screens[0]?.id ?? null
@@ -121,12 +129,45 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     };
   }),
 
-  setStartScreen: (screenId) => set((state) => {
+  setWorkingScreen: (screenId, isActivated) => set((state) => {
     if (!state.project) return state;
     return {
       project: {
         ...state.project,
-        screens: state.project.screens.map(s => ({ ...s, isStartScreen: s.id === screenId })),
+        screens: state.project.screens.map(s => ({ ...s, isWorkingScreen: s.id === screenId ? isActivated : s.isWorkingScreen })),
+      },
+      isDirty: true,
+    };
+  }),
+
+  setScreenDisplayType: (screenId, displayType) => set((state) => {
+    if (!state.project) return state;
+    return {
+      project: {
+        ...state.project,
+        screens: state.project.screens.map(s => s.id === screenId ? { ...s, displayType } : s),
+      },
+      isDirty: true,
+    };
+  }),
+
+  setMonitorsSize: (screenId, widthSize, heightSize) => set((state) => {
+    if (!state.project) return state;
+    return {
+      project: {
+        ...state.project,
+        screens: state.project.screens.map(s => s.id === screenId ? { ...s, monitorsWidthSize: widthSize ?? s.monitorsWidthSize, monitorsHeightSize: heightSize ?? s.monitorsHeightSize } : s),
+      },
+      isDirty: true,
+    };
+  }),
+
+  setMonitorsUnit: (screenId, widthUnit, heightUnit) => set((state) => {
+    if (!state.project) return state;
+    return {
+      project: {
+        ...state.project,
+        screens: state.project.screens.map(s => s.id === screenId ? { ...s, monitorsWidthUnit: widthUnit ?? s.monitorsWidthUnit, monitorsHeightUnit: heightUnit ?? s.monitorsHeightUnit } : s),
       },
       isDirty: true,
     };

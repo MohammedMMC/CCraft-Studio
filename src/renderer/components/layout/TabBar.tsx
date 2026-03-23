@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useProjectStore } from '../../stores/projectStore';
+import { useEditorStore } from '@/stores/editorStore';
 
 export const TabBar: React.FC = () => {
   const project = useProjectStore((s) => s.project);
@@ -8,7 +9,8 @@ export const TabBar: React.FC = () => {
   const addScreen = useProjectStore((s) => s.addScreen);
   const removeScreen = useProjectStore((s) => s.removeScreen);
   const renameScreen = useProjectStore((s) => s.renameScreen);
-  const setStartScreen = useProjectStore((s) => s.setStartScreen);
+  const setWorkingScreen = useProjectStore((s) => s.setWorkingScreen);
+  const selectElement = useEditorStore((s) => s.selectElement);
 
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState('');
@@ -45,17 +47,16 @@ export const TabBar: React.FC = () => {
         {project.screens.map((screen) => (
           <button
             key={screen.id}
-            onClick={() => setActiveScreen(screen.id)}
+            onClick={() => { setActiveScreen(screen.id); selectElement(screen.id); }}
             onDoubleClick={() => handleStartRename(screen.id, screen.name)}
             onContextMenu={(e) => handleContextMenu(e, screen.id)}
-            className={`flex items-center gap-1.5 px-3 py-1 text-xs rounded-t transition-all whitespace-nowrap ${
-              screen.id === activeScreenId
+            className={`flex items-center gap-1.5 px-3 py-1 text-xs rounded-t transition-all whitespace-nowrap ${screen.id === activeScreenId
                 ? 'bg-app-bg text-app-text-bright border-t-2 border-t-app-accent'
                 : 'text-app-text-dim hover:text-app-text hover:bg-app-hover'
-            }`}
+              }`}
           >
-            {screen.isStartScreen && (
-              <span className="text-app-success text-[10px]" title="Start Screen">&#9654;</span>
+            {screen.isWorkingScreen && (
+              <span className="text-app-success text-[10px]" title="Working Screen">&#9654;</span>
             )}
             {renamingId === screen.id ? (
               <input
@@ -105,11 +106,11 @@ export const TabBar: React.FC = () => {
             <button
               className="w-full px-3 py-1.5 text-xs text-left text-app-text hover:bg-app-hover"
               onClick={() => {
-                setStartScreen(contextMenu.screenId);
+                setWorkingScreen(contextMenu.screenId, project.screens.find(s => s.id === contextMenu.screenId)?.isWorkingScreen ? false : true);
                 setContextMenu(null);
               }}
             >
-              Set as Start Screen
+              {project.screens.find(s => s.id === contextMenu.screenId)?.isWorkingScreen ? 'Set as Non-Working Screen' : 'Set as Working Screen'}
             </button>
             {project.screens.length > 1 && (
               <>

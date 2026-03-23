@@ -32,7 +32,7 @@ export function generateFunctionsFile(projectName: string, author: string): stri
 }
 
 export function generateVarsFile(project: CCProject): string {
-  const startScreen = project.screens.find(s => s.isStartScreen) ?? project.screens[0];
+  const startScreen = project.screens.find(s => s.isWorkingScreen) ?? project.screens[0];
   let lines = `${generateHeader(project.name, project.author)}${TEMPLATE_DATA["./template/utils/vars.lua"]}`.split('\n');
 
   for (const v of project.variables) {
@@ -87,7 +87,7 @@ export function generateLogicFile(project: CCProject, screenName: string, blockC
 }
 
 export function generateStartupFile(project: CCProject, onlyUI: boolean = false): string {
-  const startScreen = project.screens.find(s => s.isStartScreen) ?? project.screens[0];
+  const startScreen = project.screens.find(s => s.isWorkingScreen) ?? project.screens[0];
   const safeName = sanitize(startScreen?.name ?? 'Screen 1');
 
   let lines = `${generateHeader(project.name, project.author)}${TEMPLATE_DATA["./template/startup.lua"]}`;

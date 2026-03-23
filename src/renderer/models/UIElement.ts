@@ -1,6 +1,7 @@
 import { CCColor } from './CCColors';
 
 export type SizeUnit = 'px' | '%' | 'fill';
+export type SizeConstraintUnit = '=' | '>' | '<';
 export type ContainerDisplay = 'flex' | 'grid';
 export type FlexDirection = 'row' | 'column';
 export type AlignItems = 'start' | 'center' | 'end';

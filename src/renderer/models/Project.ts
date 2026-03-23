@@ -67,7 +67,12 @@ export interface GlobalVariable {
 export interface Screen {
   id: string;
   name: string;
-  isStartScreen: boolean;
+  isWorkingScreen: boolean;
+  displayType: 'terminal' | 'monitor' | 'any';
+  monitorsWidthSize: number;
+  monitorsHeightSize: number;
+  monitorsWidthUnit: '=' | '>' | '<';
+  monitorsHeightUnit: '=' | '>' | '<';
   bgColor?: CCColor;
   uiElements: UIElement[];
   blocklyXml?: string;
@@ -106,7 +111,12 @@ export function createDefaultProject(overrides: Partial<CCProject> = {}): CCProj
       {
         id: screenId,
         name: 'Screen 1',
-        isStartScreen: true,
+        isWorkingScreen: true,
+        displayType: 'any',
+        monitorsWidthSize: 5,
+        monitorsHeightSize: 3,
+        monitorsWidthUnit: '=',
+        monitorsHeightUnit: '=',
         bgColor: 'black',
         uiElements: [],
       },
