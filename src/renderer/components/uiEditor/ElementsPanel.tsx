@@ -5,7 +5,7 @@ import { useUIElementStore } from '../../stores/uiElementStore';
 import { useHistoryStore } from '../../stores/historyStore';
 import { UIElement, UI_ELEMENT_LABELS } from '../../models/UIElement';
 import { generateId } from '../../utils/idGenerator';
-import { MonitorIcon } from '../layout/Toolbar';
+import { MonitorIcon, ElementIcons } from '../shared/Icons';
 
 interface DropIndicator {
   parentId: string | null;
@@ -245,10 +245,10 @@ export const ElementsPanel: React.FC = () => {
           onClick={() => selectElement(el.id)}
         >
           <span
-            className={`w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold flex-shrink-0 ${isSelected ? 'bg-app-accent text-app-bg' : 'bg-app-bg-hover text-app-text-dim'
-              }`}
+            className={`w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold flex-shrink-0 ${isSelected ? 'bg-app-accent text-app-bg' : 'bg-app-bg-hover text-app-text-dim'}`}
           >
-            {meta.icon}
+            {/* {meta.icon} */}
+            <ElementIcons name={el.type} />
           </span>
           <span className="truncate flex-1">{el.name}</span>
           {!el.visible && (

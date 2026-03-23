@@ -5,6 +5,7 @@ import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { useHistoryStore } from '../../stores/historyStore';
 import { generateId } from '../../utils/idGenerator';
+import { ElementIcons } from '../shared/Icons';
 
 const ELEMENT_TYPES: UIElementType[] = [
   'label', 'button', 'container', 'panel', 'progressbar', 'slider', 'checkbox',
@@ -59,7 +60,8 @@ export const ElementToolkit: React.FC = () => {
               <span className="min-w-7 min-h-7 rounded bg-app-bg border border-app-border
                                flex items-center justify-center text-xs font-mono
                                text-app-accent group-hover:border-app-accent/50">
-                {meta.icon}
+                {/* {meta.icon} */}
+                <ElementIcons name={type} />
               </span>
               <div>
                 <div className="text-xs font-medium text-app-text group-hover:text-app-text-bright">

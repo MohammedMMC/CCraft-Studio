@@ -5,6 +5,7 @@ import { useHistoryStore } from '../../stores/historyStore';
 import { useBlocklyStore } from '../../stores/blocklyStore';
 import { DEVICE_PRESETS, MONITOR_SIZES, DeviceType, getMonitorSize } from '../../models/Project';
 import { CustomMonitor } from '../shared/CustomMonitor';
+import { GridIcon, MonitorIcon, RedoIcon, UndoIcon } from '../shared/Icons';
 
 export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
   const project = useProjectStore((s) => s.project);
@@ -217,33 +218,3 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
     </div>
   );
 };
-
-const UndoIcon = () => (
-  <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
-    <path d="M4.5 3L1 6.5l3.5 3.5v-2.5c3 0 5.5 1 7 4-.5-4-3-7-7-7V3z" />
-  </svg>
-);
-
-const RedoIcon = () => (
-  <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
-    <path d="M11.5 3l3.5 3.5-3.5 3.5v-2.5c-3 0-5.5 1-7 4 .5-4 3-7 7-7V3z" />
-  </svg>
-);
-
-const GridIcon = () => (
-  <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <rect x="1" y="1" width="14" height="14" rx="1" />
-    <line x1="5.5" y1="1" x2="5.5" y2="15" />
-    <line x1="10.5" y1="1" x2="10.5" y2="15" />
-    <line x1="1" y1="5.5" x2="15" y2="5.5" />
-    <line x1="1" y1="10.5" x2="15" y2="10.5" />
-  </svg>
-);
-
-export const MonitorIcon = () => (
-  <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-app-text-dim">
-    <rect x="1" y="2" width="14" height="10" rx="1" />
-    <line x1="5" y1="14" x2="11" y2="14" />
-    <line x1="8" y1="12" x2="8" y2="14" />
-  </svg>
-);
