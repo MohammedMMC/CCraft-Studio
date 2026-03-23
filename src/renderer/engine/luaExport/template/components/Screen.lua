@@ -21,10 +21,14 @@ function Screen:new(name, props)
     obj.monitorsWidthUnit = props.monitorsWidthUnit
     obj.monitorsHeightUnit = props.monitorsHeightUnit
 
+    obj.width, obj.height = 0, 0
+
     obj.monitor = props.displayType == 'terminal' and term or nil
 
-    obj.width, obj.height = nil, nil
-
+    if props.displayType == 'terminal' then
+        obj.width, obj.height = term.getSize()
+    end
+    
     return obj
 end
 

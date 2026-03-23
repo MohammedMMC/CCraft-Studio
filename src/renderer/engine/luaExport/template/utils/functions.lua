@@ -3,11 +3,11 @@
 -- =============================================
 
 function drawScreens()
+    resolveLayout()
     for _, screen in ipairs(screens) do
-        if screen.isWorkingScreen then
+        if screen.isWorkingScreen and screen.monitor then
             screen.monitor.setBackgroundColor(colors.black)
             screen.monitor.clear()
-            resolveLayout(screen.width, screen.height)
             screen:draw()
         end
     end
@@ -41,6 +41,8 @@ function getScreen(name)
 end
 
 function updateMonitors()
+    for i = #monitors, 1, -1 do monitors[i] = nil end
+
     local peropheralNames = peripheral.getNames()
     for _, name in ipairs(peropheralNames) do
         if peripheral.getType(name) == "monitor" then
@@ -53,9 +55,6 @@ end
 
 function setupMonitorsToScreens(oldMon, newMon)
     updateMonitors()
-    -- for _, monitor in pairs(monitors) do
-    --     monitor.assigned = false
-    -- end
     local scns = screens
     table.sort(scns, function(a, b)
         if a.displayType == "monitor" and b.displayType ~= "monitor" then
@@ -67,6 +66,9 @@ function setupMonitorsToScreens(oldMon, newMon)
         end
     end)
     for _, scn in pairs(scns) do
+        scn.monitor = nil
+        scn.width, scn.height = 0, 0
+
         if (scn.isWorkingScreen and scn.displayType ~= 'terminal' and scn.name ~= oldMon) or (scn.name == newMon) then
             for _, monitor in pairs(monitors) do
                 if not monitor.assigned then
@@ -75,6 +77,10 @@ function setupMonitorsToScreens(oldMon, newMon)
                     monitor.assigned = true
                     break
                 end
+            end
+            if scn.displayType == 'any' and not scn.monitor then
+                scn.monitor = term
+                scn.width, scn.height = term.getSize()
             end
         end
     end

@@ -70,7 +70,7 @@ function BaseObject:draw()
 end
 
 -- Resolve responsive layout based on actual screen size
-function resolveLayout(screenW, screenH)
+function resolveLayout()
     -- Helper: resolve a single component's size against a reference area
     local function resolveSize(comp, refW, refH)
         local w = comp.width
@@ -243,7 +243,7 @@ function resolveLayout(screenW, screenH)
         -- Resolve top-level component sizes
         for key, comp in pairs(screen.children) do
             if type(comp) == "table" and comp.name and not comp.parentName then
-                comp.width, comp.height = resolveSize(comp, screenW, screenH)
+                comp.width, comp.height = resolveSize(comp, screen.width, screen.height)
             end
         end
 

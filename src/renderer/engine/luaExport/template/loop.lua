@@ -15,10 +15,12 @@ while running do
             isTouching = event ~= "monitor_touch"
 
             for _, comp in pairs(screen.children) do
-                if comp.checkTouch and comp.onClickEvent then
+                if comp.checkTouch then
                     if comp:checkTouch(p2, p3) then
-                        comp:onClickEvent(p2, p3)
-                        drawScreens()
+                        if comp.onClickEvent then
+                            comp:onClickEvent(p2, p3)
+                            drawScreens()
+                        end
                         if isMonitor and comp.onDragEvent then
                             comp:onDragEvent(p2, p3)
                             drawScreens()
