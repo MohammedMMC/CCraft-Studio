@@ -70,7 +70,7 @@ export const PropertiesPanel: React.FC = () => {
     updateElement(sid, eid, updates);
     useHistoryStore.getState().push({
       id: generateId(),
-      description: `Edit ${element.name}`,
+      description: `Edit ${element?.name}`,
       execute: () => updateElement(sid, eid, updates),
       undo: () => updateElement(sid, eid, prevValues),
     });
@@ -84,7 +84,7 @@ export const PropertiesPanel: React.FC = () => {
     selectElement(null);
     useHistoryStore.getState().push({
       id: generateId(),
-      description: `Delete ${element.name}`,
+      description: `Delete ${element?.name}`,
       execute: () => { removeElement(sid, eid); selectElement(null); },
       undo: () => {
         useUIElementStore.getState().addElement(sid, deletedElement.type, deletedElement);

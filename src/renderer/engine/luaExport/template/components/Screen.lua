@@ -5,13 +5,16 @@
 Screen = {}
 Screen.__index = Screen
 
-function Screen:new(name)
+function Screen:new(name, props)
     local obj = setmetatable({}, self)
 
     obj.name = name
     obj.autoMonitor = false
     obj.drawOrder = {}
     obj.children = {}
+    obj.bgColor = props.bgColor or colors.black
+
+    obj.width, obj.height = term.getSize()
 
     return obj
 end
@@ -34,6 +37,12 @@ function Screen:addDrawOrder(child)
 end
 
 function Screen:draw()
+    term.setBackgroundColor(self.bgColor)
+    for j = 0, self.height - 1 do
+        term.setCursorPos(1, 1 + j)
+        term.write(string.rep(" ", self.width))
+    end
+
     for _, name in ipairs(self.drawOrder) do
         self:getChild(name):draw()
     end

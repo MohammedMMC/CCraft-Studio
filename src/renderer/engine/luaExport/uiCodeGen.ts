@@ -1,6 +1,7 @@
 import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContainerLayout, isContainerLike } from '../../models/UIElement';
 import { escapeLuaString, indent, luaColor, sanitize } from '../../utils/luaHelpers';
 import { CC_COLOR_NAMES, CC_COLORS } from '../../models/CCColors';
+import { CCProject } from '@/models/Project';
 
 const CLASSES_NAMES = {
   "progressbar": "ProgressBar",
@@ -55,17 +56,19 @@ export function buildPositionMap(
 }
 
 export function generateUICode(
+  project: CCProject,
   elements: UIElement[],
   screenName: string,
   displayWidth: number,
   displayHeight: number,
 ): string {
+  const screen = project.screens.find(s => s.name === screenName);
   const safeName = sanitize(screenName);
   const posMap = buildPositionMap(elements, displayWidth, displayHeight);
   const lines: string[] = [];
   const i = indent(1);
 
-  lines.push(`local screen = Screen:new("${safeName}")`);
+  lines.push(`local screen = Screen:new("${safeName}", { bgColor = ${luaColor(screen?.bgColor || 'black')} })`);
   lines.push('');
 
   const allVisible = elements.filter(e => e.visible && posMap.has(e.id));

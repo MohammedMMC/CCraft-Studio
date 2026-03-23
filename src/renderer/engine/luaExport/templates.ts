@@ -71,7 +71,7 @@ export function generateScreenFile(project: CCProject, screenName: string, uiEle
     '-- =============================================',
   ];
   lines.push('');
-  lines.push(generateUICode(uiElements, screenName, project.displayWidth, project.displayHeight));
+  lines.push(generateUICode(project, uiElements, screenName, project.displayWidth, project.displayHeight));
   return generateHeader(project.name, project.author) + lines.join('\n');
 }
 
