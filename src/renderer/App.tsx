@@ -11,6 +11,7 @@ import { AppShell } from './components/layout/AppShell';
 import { ExportDialog } from './components/shared/ExportDialog';
 import { PromptDialog } from './components/shared/PromptDialog';
 import { SettingsDialog } from './components/shared/SettingsDialog';
+import { useAppStore } from './stores/appStore';
 
 const flushBlocklyWorkspace = () => {
   try {
@@ -77,6 +78,12 @@ const App: React.FC = () => {
   const [showNewProject, setShowNewProject] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+
+  // Load App Data on Startup
+  const loadApp = useAppStore(s => s.loadApp);
+  useEffect(() => {
+    window.electronAPI.getAppData().then(c => loadApp(c))
+  }, [loadApp]);
 
   useEffect(() => {
     if (!window.electronAPI) return;

@@ -1,6 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 const electronAPI = {
+  getAppData: () => ipcRenderer.invoke('app:getAppData'),
+  saveAppData: (data: {}) => ipcRenderer.invoke('app:saveAppData', data),
   openProject: () => ipcRenderer.invoke('dialog:openProject'),
   openProjectByPath: (filePath: string) => ipcRenderer.invoke('fs:openProjectByPath', filePath),
   saveProject: (data: { content: string; filePath?: string }) => ipcRenderer.invoke('dialog:saveProject', data),
@@ -11,7 +13,7 @@ const electronAPI = {
 
   onMenuAction: (callback: (action: string) => void) => {
     const actions = [
-      'menu:newProject', 'menu:openProject', 'menu:save', 'menu:saveAs',
+      'app:saveAppData', 'app:getAppData', 'menu:newProject', 'menu:openProject', 'menu:save', 'menu:saveAs',
       'menu:export', 'menu:settings', 'menu:undo', 'menu:redo', 'menu:delete', 'menu:selectAll',
       'menu:zoomIn', 'menu:zoomOut', 'menu:zoomReset', 'menu:about',
     ];

@@ -11,6 +11,8 @@ interface RecentProject {
 declare global {
   interface Window {
     electronAPI: {
+      getAppData: () => Promise<{ content: any }>;
+      saveAppData: (data: Object) => Promise<void>;
       openProject: () => Promise<{ filePath: string; content: any } | null>;
       openProjectByPath: (filePath: string) => Promise<{ filePath: string; content: any } | null>;
       saveProject: (data: { content: string; filePath?: string }) => Promise<string | null>;
@@ -33,7 +35,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNewProject }) =>
 
   useEffect(() => {
     if (window.electronAPI) {
-      window.electronAPI.getRecentProjects().then(setRecentProjects).catch(() => {});
+      window.electronAPI.getRecentProjects().then(setRecentProjects).catch(() => { });
     }
   }, []);
 

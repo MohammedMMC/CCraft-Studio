@@ -1,12 +1,29 @@
-import { ipcMain, dialog, BrowserWindow } from 'electron';
+import { ipcMain, dialog } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 
 export const DEFAULT_DOCS_DIR = path.join(os.homedir(), 'Documents', 'CCraft-Studio');
+export const APP_DATA_DIR = path.join(process.env.APPDATA || process.env.HOME || '', '.ccraft-studio');
+export const APP_DATA_FILE = path.join(APP_DATA_DIR, 'appdata.json');
+export const APP_RECENT_FILE = path.join(APP_DATA_DIR, 'recent.json');
 
 export function setupIPC(): void {
   fs.mkdirSync(DEFAULT_DOCS_DIR, { recursive: true });
+  fs.mkdirSync(APP_DATA_DIR, { recursive: true });
+
+  ipcMain.handle('app:getAppData', async () => {
+    if (!fs.existsSync(APP_DATA_FILE)) {
+      return {};
+    }
+
+    const content = fs.readFileSync(APP_DATA_FILE, 'utf-8');
+    return JSON.parse(content);
+  });
+
+  ipcMain.handle('app:saveAppData', async (_event, data: {}) => {
+    fs.writeFileSync(APP_DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
+  });
 
   ipcMain.handle('dialog:openProject', async () => {
     const result = await dialog.showOpenDialog({
@@ -73,34 +90,23 @@ export function setupIPC(): void {
   });
 
   ipcMain.handle('fs:getRecentProjects', async () => {
-    const configDir = path.join(
-      process.env.APPDATA || process.env.HOME || '',
-      '.ccraft-studio'
-    );
-    const recentFile = path.join(configDir, 'recent.json');
-    if (!fs.existsSync(recentFile)) return [];
+    if (!fs.existsSync(APP_RECENT_FILE)) return [];
     try {
-      return JSON.parse(fs.readFileSync(recentFile, 'utf-8'));
+      return JSON.parse(fs.readFileSync(APP_RECENT_FILE, 'utf-8'));
     } catch {
       return [];
     }
   });
 
   ipcMain.handle('fs:addRecentProject', async (_event, entry: { name: string; path: string }) => {
-    const configDir = path.join(
-      process.env.APPDATA || process.env.HOME || '',
-      '.ccraft-studio'
-    );
-    if (!fs.existsSync(configDir)) fs.mkdirSync(configDir, { recursive: true });
-    const recentFile = path.join(configDir, 'recent.json');
     let recent: { name: string; path: string; openedAt: string }[] = [];
-    if (fs.existsSync(recentFile)) {
-      try { recent = JSON.parse(fs.readFileSync(recentFile, 'utf-8')); } catch { }
+    if (fs.existsSync(APP_RECENT_FILE)) {
+      try { recent = JSON.parse(fs.readFileSync(APP_RECENT_FILE, 'utf-8')); } catch { }
     }
     recent = recent.filter(r => r.path !== entry.path);
     recent.unshift({ ...entry, openedAt: new Date().toISOString() });
     recent = recent.slice(0, 10);
-    fs.writeFileSync(recentFile, JSON.stringify(recent, null, 2), 'utf-8');
+    fs.writeFileSync(APP_RECENT_FILE, JSON.stringify(recent, null, 2), 'utf-8');
     return recent;
   });
 }

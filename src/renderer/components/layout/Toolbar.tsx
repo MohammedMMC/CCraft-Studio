@@ -4,26 +4,27 @@ import { useEditorStore } from '../../stores/editorStore';
 import { useHistoryStore } from '../../stores/historyStore';
 import { useBlocklyStore } from '../../stores/blocklyStore';
 import { DEVICE_PRESETS, MONITOR_SIZES, DeviceType, getMonitorSize } from '../../models/Project';
-import { CustomMonitor } from '../shared/CustomMonitor';
+import { CustomMonitorDialog } from '../shared/CustomMonitorDialog';
 import { CraftOSPCIcon, GridIcon, MonitorIcon, RedoIcon, UndoIcon } from '../shared/Icons';
+import { useAppStore } from '@/stores/appStore';
 
 export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
-  const project = useProjectStore((s) => s.project);
-  const isDirty = useProjectStore((s) => s.isDirty);
-  const mode = useEditorStore((s) => s.mode);
-  const setMode = useEditorStore((s) => s.setMode);
-  const showGrid = useEditorStore((s) => s.showGrid);
-  const toggleGrid = useEditorStore((s) => s.toggleGrid);
-  const zoom = useEditorStore((s) => s.zoom);
-  const zoomIn = useEditorStore((s) => s.zoomIn);
-  const zoomOut = useEditorStore((s) => s.zoomOut);
-  const resetZoom = useEditorStore((s) => s.resetZoom);
-  const useCraftOSPC = useEditorStore((s) => s.useCraftOSPC);
-  const canUndo = useHistoryStore((s) => s.undoStack.length > 0);
-  const canRedo = useHistoryStore((s) => s.redoStack.length > 0);
-  const undo = useHistoryStore((s) => s.undo);
-  const redo = useHistoryStore((s) => s.redo);
-  const updateProjectInfo = useProjectStore((s) => s.updateProjectInfo);
+  const project = useProjectStore(s => s.project);
+  const isDirty = useProjectStore(s => s.isDirty);
+  const mode = useEditorStore(s => s.mode);
+  const setMode = useEditorStore(s => s.setMode);
+  const showGrid = useEditorStore(s => s.showGrid);
+  const toggleGrid = useEditorStore(s => s.toggleGrid);
+  const zoom = useEditorStore(s => s.zoom);
+  const zoomIn = useEditorStore(s => s.zoomIn);
+  const zoomOut = useEditorStore(s => s.zoomOut);
+  const resetZoom = useEditorStore(s => s.resetZoom);
+  const useCraftOSPC = useAppStore(s => s.useCraftOSPC);
+  const canUndo = useHistoryStore(s => s.undoStack.length > 0);
+  const canRedo = useHistoryStore(s => s.redoStack.length > 0);
+  const undo = useHistoryStore(s => s.undo);
+  const redo = useHistoryStore(s => s.redo);
+  const updateProjectInfo = useProjectStore(s => s.updateProjectInfo);
   const [showCustomMonitor, setShowCustomMonitor] = useState<boolean>(false);
 
   const screenSizeValue = useMemo(() => {
@@ -182,7 +183,7 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
           <select
             value={screenSizeValue}
             onChange={(e) => handleScreenSizeChange(e.target.value)}
-            className="bg-app-bg border border-app-border rounded text-xs text-app-text px-1.5 py-1 cursor-pointer focus:outline-none focus:border-app-accent"
+            className="ml-1 bg-app-bg border border-app-border rounded text-xs text-app-text px-1.5 py-1 cursor-pointer focus:outline-none focus:border-app-accent"
             title="Preview screen size"
           >
             <optgroup label="Devices">
@@ -214,7 +215,7 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
       )}
 
       {/* Custom Monitor Modal */}
-      <CustomMonitor isOpen={showCustomMonitor} onClose={() => setShowCustomMonitor(false)} onCreate={(s) => handleScreenSizeChange(`custom:${s.blocks}`)} />
+      <CustomMonitorDialog isOpen={showCustomMonitor} onClose={() => setShowCustomMonitor(false)} onCreate={(s) => handleScreenSizeChange(`custom:${s.blocks}`)} />
 
       {/* Spacer */}
       <div className="flex-1" />

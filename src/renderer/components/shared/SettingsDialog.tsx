@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import * as Blockly from 'blockly';
 import { Modal } from '../shared/Modal';
 import { useProjectStore } from '../../stores/projectStore';
-import { useBlocklyStore } from '../../stores/blocklyStore';
-import { luaGenerator } from '../../engine/blockly/luaGenerator';
-import { exportProject, ExportOptions, ExportFile } from '../../engine/luaExport/index';
-import { useEditorStore } from '@/stores/editorStore';
 import { CraftOSPCIcon } from './Icons';
+import { useAppStore } from '@/stores/appStore';
 
 interface SettingsDialogProps {
     isOpen: boolean;
@@ -23,8 +19,9 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
     const [projectAuthor, setProjectAuthor] = useState(project?.author);
     const [projectDescription, setProjectDescription] = useState(project?.description);
 
-    const useCraftOSPC = useEditorStore(e => e.useCraftOSPC);
-    const setCraftOSPC = useEditorStore(e => e.setCraftOSPC);
+    const useCraftOSPC = useAppStore(e => e.useCraftOSPC);
+    const setCraftOSPC = useAppStore(e => e.setCraftOSPC);
+    const saveApp = useAppStore(e => e.saveApp);
 
     const [editorCraftOSPC, setEditorCraftOSPC] = useState(useCraftOSPC);
 
@@ -47,6 +44,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
         }
         if (useCraftOSPC !== editorCraftOSPC) {
             setCraftOSPC(editorCraftOSPC);
+            saveApp();
         }
 
         setNewChanges(false);
@@ -141,6 +139,6 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
                     </div>
                 </div>
             </div>
-        </Modal >
+        </Modal>
     );
 };

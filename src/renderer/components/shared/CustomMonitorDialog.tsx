@@ -3,13 +3,13 @@ import { getMonitorSize, MONITOR_SIZES } from '@/models/Project';
 import React, { useState } from 'react';
 import { Modal } from './Modal';
 
-interface CustomMonitorProps {
+interface CustomMonitorDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onCreate: (value: { blocks: string; width: number; height: number }) => void;
 }
 
-export const CustomMonitor: React.FC<CustomMonitorProps> = ({ isOpen, onClose, onCreate }) => {
+export const CustomMonitorDialog: React.FC<CustomMonitorDialogProps> = ({ isOpen, onClose, onCreate }) => {
   if (!isOpen) return null;
 
   const [monitorSize, setMonitorSize] = useState<string>('5x3');
