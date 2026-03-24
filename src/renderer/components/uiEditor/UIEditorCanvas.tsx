@@ -83,12 +83,20 @@ function renderElementToBuffer(
     case 'progressbar': {
       buffer.fillRect(x, y, width, height, ' ', el.fgColor, el.bgColor);
       const progressWidth = Math.round(width / 100 * el.progress);
+      const progressHeight = Math.round(height / 100 * el.progress);
 
-      buffer.fillRect(x, y, progressWidth, height, ' ', el.progressColor, el.progressColor);
-      const text = alignText(el.text, width, el.textAlign);
-      text.slice(0, width).split('').forEach((char, i) => {
-        buffer.writeText(x + i, y + Math.floor(height / 2), char, el.fgColor, i < progressWidth ? el.progressColor : el.bgColor);
-      });
+      if (el.orientation.startsWith("v")) {
+        buffer.fillRect(x, y + (el.orientation == "vbtt" ? height - progressHeight : 0), width, progressHeight, ' ', el.progressColor, el.progressColor);
+        const text = alignText(el.text, width, el.textAlign);
+        buffer.writeText(x, y + Math.floor(height / 2), text, el.fgColor, 50 <= el.progress ? el.progressColor : el.bgColor);
+      } else {
+        buffer.fillRect(x + (el.orientation == "hrtl" ? width - progressWidth : 0), y, progressWidth, height, ' ', el.progressColor, el.progressColor);
+        const text = alignText(el.text, width, el.textAlign);
+        text.slice(0, width).split('').forEach((char, i) => {
+          buffer.writeText(x + i, y + Math.floor(height / 2), char, el.fgColor, (el.orientation == "hrtl" ? (i >= width - progressWidth) : (i < progressWidth)) ? el.progressColor : el.bgColor);
+        });
+      }
+
       break;
     }
     case 'slider': {

@@ -86,6 +86,7 @@ export interface ProgressBarElement extends BaseElement {
   type: 'progressbar';
   text: string;
   textAlign: 'left' | 'center' | 'right';
+  orientation: 'hltr' | 'hrtl' | 'vttb' | 'vbtt',
   progressColor: CCColor;
   progress: number;
   fgColor: CCColor;
@@ -186,6 +187,7 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     textAlign: 'center',
     progressColor: 'lightGray',
     progress: 50,
+    orientation: 'hltr',
     parentId: null,
   },
   slider: {

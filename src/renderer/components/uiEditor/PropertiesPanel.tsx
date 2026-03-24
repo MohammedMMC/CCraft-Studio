@@ -593,6 +593,14 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
           <PropField label="Text">
             <input className="input-field text-xs" value={element.text} maxLength={200} onChange={(e) => update({ text: e.target.value.slice(0, 200) } as any)} />
           </PropField>
+          <PropField label="Orientation">
+            <select className="select-field text-xs" value={element.orientation} onChange={(e) => update({ orientation: e.target.value } as any)}>
+              <option value="hltr">Horizontal - Left To Right</option>
+              <option value="hrtl">Horizontal - Right To Left</option>
+              <option value="vttb">Vertical - Top To Bottom</option>
+              <option value="vbtt">Vertical - Bottom To Top</option>
+            </select>
+          </PropField>
           <PropField label="Text Align">
             <select className="select-field text-xs" value={element.textAlign} onChange={(e) => update({ textAlign: e.target.value as any } as any)}>
               <option value="left">Left</option>

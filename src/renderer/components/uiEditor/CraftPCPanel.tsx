@@ -10,11 +10,11 @@ export const CraftPCPanel: React.FC = () => {
       <div className="panel-header flex items-center justify-between">
         <span>CraftOS-PC</span>
       </div>
-      <div className="flex-1 flex items-center justify-center text-app-text-dim">
-        <div>
-          <CraftOSPCIcons name="monitor" size={64} />
-          <CraftOSPCIcons name="computer" size={64} />
-        </div>
+      <div className="h-full flex flex-col items-center justify-center text-app-text-dim">
+        {/* <div className="w-full flex p-4 justify-between">
+          <CraftOSPCIcons name="monitor" size={36} />
+          <CraftOSPCIcons name="computer" size={36} />
+        </div> */}
         <div className="bg-app-bg w-full aspect-video">
 
         </div>
