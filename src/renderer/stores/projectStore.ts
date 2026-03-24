@@ -21,6 +21,7 @@ interface ProjectState {
   addScreen: (name: string) => string;
   removeScreen: (screenId: string) => void;
   renameScreen: (screenId: string, name: string) => void;
+  changeProjectInfo: (newName: string | undefined, newAuthor: string | undefined, newDescription: string | undefined) => void;
   setWorkingScreen: (screenId: string, isActivated: boolean) => void;
   getActiveScreen: () => Screen | null;
   changeScreenBgColor: (screenId: string, color: CCColor) => void;
@@ -125,6 +126,14 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         ...state.project,
         screens: state.project.screens.map(s => s.id === screenId ? { ...s, name } : s),
       },
+      isDirty: true,
+    };
+  }),
+
+  changeProjectInfo: (newName, newAuthor, newDescription) => set((state) => {
+    if (!state.project) return state;
+    return {
+      project: { ...state.project, name: newName ?? state.project.name, author: newAuthor ?? state.project.author, description: newDescription ?? state.project.description },
       isDirty: true,
     };
   }),

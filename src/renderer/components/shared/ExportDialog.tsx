@@ -115,7 +115,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
               type="checkbox"
               checked={minify}
               onChange={(e) => setMinify(e.target.checked)}
-              className="accent-app-accent"
+              className="checkbox-field"
             />
             <span className="text-xs text-app-text">Minify output</span>
             <span className="text-[10px] text-app-text-dim">(remove comments and extra whitespace)</span>

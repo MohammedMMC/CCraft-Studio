@@ -69,6 +69,10 @@
            placeholder-app-text-dim;
   }
 
+  .checkbox-field {
+    @apply flex items-center space-x-2 text-sm accent-app-accent;
+  }
+
   .select-field {
     @apply w-full px-3 py-1.5 bg-app-bg border border-app-border rounded text-sm text-app-text
            focus:outline-none focus:border-app-accent appearance-none cursor-pointer;

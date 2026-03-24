@@ -132,7 +132,7 @@ export const PropertiesPanel: React.FC = () => {
                     type="checkbox"
                     checked={screen.isWorkingScreen}
                     onChange={(e) => setWorkingScreen(screen.id, e.target.checked)}
-                    className="accent-app-accent"
+                    className="checkbox-field"
                   />
                   <span className="text-xs text-app-text">{screen.isWorkingScreen ? 'Yes' : 'No'}</span>
                 </label>
@@ -391,7 +391,7 @@ export const PropertiesPanel: React.FC = () => {
                     type="checkbox"
                     checked={element.visible}
                     onChange={(e) => update({ visible: e.target.checked })}
-                    className="accent-app-accent"
+                    className="checkbox-field"
                   />
                   <span className="text-xs text-app-text">{element.visible ? 'Yes' : 'No'}</span>
                 </label>

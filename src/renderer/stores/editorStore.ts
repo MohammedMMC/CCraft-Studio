@@ -13,6 +13,7 @@ interface EditorState {
   showGrid: boolean;
   snapToGrid: boolean;
   clipboard: string | null;
+  useCraftOSPC: boolean;
 
   setMode: (mode: EditorMode) => void;
   setTool: (tool: EditorTool) => void;
@@ -26,6 +27,7 @@ interface EditorState {
   toggleGrid: () => void;
   toggleSnap: () => void;
   setClipboard: (data: string | null) => void;
+  setCraftOSPC: (value: boolean) => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -38,6 +40,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   showGrid: true,
   snapToGrid: true,
   clipboard: null,
+  useCraftOSPC: false,
 
   setMode: (mode) => set({ mode, selectedElementId: null, selectedBlockId: null }),
   setTool: (tool) => set({ tool }),
@@ -51,4 +54,5 @@ export const useEditorStore = create<EditorState>((set) => ({
   toggleGrid: () => set((s) => ({ showGrid: !s.showGrid })),
   toggleSnap: () => set((s) => ({ snapToGrid: !s.snapToGrid })),
   setClipboard: (data) => set({ clipboard: data }),
+  setCraftOSPC: (value) => set({ useCraftOSPC: value }),
 }));

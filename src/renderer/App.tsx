@@ -10,6 +10,7 @@ import { NewProjectWizard } from './components/welcome/NewProjectWizard';
 import { AppShell } from './components/layout/AppShell';
 import { ExportDialog } from './components/shared/ExportDialog';
 import { PromptDialog } from './components/shared/PromptDialog';
+import { SettingsDialog } from './components/shared/SettingsDialog';
 
 const flushBlocklyWorkspace = () => {
   try {
@@ -75,6 +76,7 @@ const App: React.FC = () => {
   const project = useProjectStore((s) => s.project);
   const [showNewProject, setShowNewProject] = useState(false);
   const [showExport, setShowExport] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if (!window.electronAPI) return;
@@ -88,6 +90,9 @@ const App: React.FC = () => {
           break;
         case 'menu:export':
           if (project) setShowExport(true);
+          break;
+        case 'menu:settings':
+          setShowSettings(true);
           break;
         case 'menu:save':
           handleSave();
@@ -213,6 +218,10 @@ const App: React.FC = () => {
           isOpen={showNewProject}
           onClose={() => setShowNewProject(false)}
         />
+        <SettingsDialog
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+        />
       </>
     );
   }
@@ -227,6 +236,10 @@ const App: React.FC = () => {
       <ExportDialog
         isOpen={showExport}
         onClose={() => setShowExport(false)}
+      />
+      <SettingsDialog
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
       />
       <PromptDialog />
     </>

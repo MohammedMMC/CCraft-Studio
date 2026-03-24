@@ -13,6 +13,8 @@ export function buildMenu(win: BrowserWindow): Menu {
         { type: 'separator' },
         { label: 'Export Lua...', accelerator: 'CmdOrCtrl+E', click: () => win.webContents.send('menu:export') },
         { type: 'separator' },
+        { label: 'Settings', click: () => win.webContents.send('menu:settings') },
+        { type: 'separator' },
         { role: 'quit' },
       ],
     },
@@ -44,18 +46,26 @@ export function buildMenu(win: BrowserWindow): Menu {
       label: 'Help',
       submenu: [
         { label: 'About CCraft Studio', click: () => win.webContents.send('menu:about') },
-        { label: 'CC:Tweaked Documentation', click: () => {
-          require('electron').shell.openExternal('https://tweaked.cc/');
-        }},
-        { label: 'Have a question?', click: () => {
-          require('electron').shell.openExternal('https://github.com/MohammedMMC/CCraft-Studio/discussions');
-        }},
-        { label: 'Report an Issue', click: () => {
-          require('electron').shell.openExternal('https://github.com/MohammedMMC/CCraft-Studio/issues');
-        }},
-        { label: 'Releases', click: () => {
-          require('electron').shell.openExternal('https://github.com/MohammedMMC/CCraft-Studio/releases');
-        }},
+        {
+          label: 'CC:Tweaked Documentation', click: () => {
+            require('electron').shell.openExternal('https://tweaked.cc/');
+          }
+        },
+        {
+          label: 'Have a question?', click: () => {
+            require('electron').shell.openExternal('https://github.com/MohammedMMC/CCraft-Studio/discussions');
+          }
+        },
+        {
+          label: 'Report an Issue', click: () => {
+            require('electron').shell.openExternal('https://github.com/MohammedMMC/CCraft-Studio/issues');
+          }
+        },
+        {
+          label: 'Releases', click: () => {
+            require('electron').shell.openExternal('https://github.com/MohammedMMC/CCraft-Studio/releases');
+          }
+        },
       ],
     },
   ];

@@ -5,7 +5,7 @@ import { useHistoryStore } from '../../stores/historyStore';
 import { useBlocklyStore } from '../../stores/blocklyStore';
 import { DEVICE_PRESETS, MONITOR_SIZES, DeviceType, getMonitorSize } from '../../models/Project';
 import { CustomMonitor } from '../shared/CustomMonitor';
-import { GridIcon, MonitorIcon, RedoIcon, UndoIcon } from '../shared/Icons';
+import { CraftOSPCIcon, GridIcon, MonitorIcon, RedoIcon, UndoIcon } from '../shared/Icons';
 
 export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
   const project = useProjectStore((s) => s.project);
@@ -18,6 +18,7 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
   const zoomIn = useEditorStore((s) => s.zoomIn);
   const zoomOut = useEditorStore((s) => s.zoomOut);
   const resetZoom = useEditorStore((s) => s.resetZoom);
+  const useCraftOSPC = useEditorStore((s) => s.useCraftOSPC);
   const canUndo = useHistoryStore((s) => s.undoStack.length > 0);
   const canRedo = useHistoryStore((s) => s.redoStack.length > 0);
   const undo = useHistoryStore((s) => s.undo);
@@ -151,6 +152,16 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
           title="Toggle Grid"
         >
           <GridIcon />
+        </button>
+      )}
+
+      {useCraftOSPC && (
+        <button
+          onClick={toggleGrid}
+          className={`toolbar-btn ${showGrid ? 'text-app-accent' : ''}`}
+          title="Toggle CraftOS-PC App Preview"
+        >
+          <CraftOSPCIcon className={showGrid ? 'fill-app-accent' : ''} />
         </button>
       )}
 
