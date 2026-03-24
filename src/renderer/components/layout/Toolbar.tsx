@@ -14,6 +14,8 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
   const mode = useEditorStore(s => s.mode);
   const setMode = useEditorStore(s => s.setMode);
   const showGrid = useEditorStore(s => s.showGrid);
+  const showCraftPC = useEditorStore(s => s.showCraftPC);
+  const toggleCraftPC = useEditorStore(s => s.toggleCraftPC);
   const toggleGrid = useEditorStore(s => s.toggleGrid);
   const zoom = useEditorStore(s => s.zoom);
   const zoomIn = useEditorStore(s => s.zoomIn);
@@ -158,11 +160,11 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
 
       {useCraftOSPC && (
         <button
-          onClick={toggleGrid}
-          className={`toolbar-btn ${showGrid ? 'text-app-accent' : ''}`}
+          onClick={toggleCraftPC}
+          className={`toolbar-btn ${showCraftPC ? 'text-app-accent' : ''}`}
           title="Toggle CraftOS-PC App Preview"
         >
-          <CraftOSPCIcon className={showGrid ? 'fill-app-accent' : ''} />
+          <CraftOSPCIcon className={showCraftPC ? 'fill-app-accent' : ''} />
         </button>
       )}
 

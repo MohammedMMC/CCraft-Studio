@@ -10,6 +10,7 @@ interface EditorState {
   selectedBlockId: string | null;
   zoom: number;
   panOffset: { x: number; y: number };
+  showCraftPC: boolean;
   showGrid: boolean;
   snapToGrid: boolean;
   clipboard: string | null;
@@ -23,6 +24,7 @@ interface EditorState {
   zoomOut: () => void;
   resetZoom: () => void;
   setPanOffset: (offset: { x: number; y: number }) => void;
+  toggleCraftPC: () => void;
   toggleGrid: () => void;
   toggleSnap: () => void;
   setClipboard: (data: string | null) => void;
@@ -38,6 +40,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   showGrid: true,
   snapToGrid: true,
   clipboard: null,
+  showCraftPC: false,
 
   setMode: (mode) => set({ mode, selectedElementId: null, selectedBlockId: null }),
   setTool: (tool) => set({ tool }),
@@ -50,5 +53,6 @@ export const useEditorStore = create<EditorState>((set) => ({
   setPanOffset: (offset) => set({ panOffset: offset }),
   toggleGrid: () => set((s) => ({ showGrid: !s.showGrid })),
   toggleSnap: () => set((s) => ({ snapToGrid: !s.snapToGrid })),
+  toggleCraftPC: () => set((s) => ({ showCraftPC: !s.showCraftPC })),
   setClipboard: (data) => set({ clipboard: data }),
 }));
