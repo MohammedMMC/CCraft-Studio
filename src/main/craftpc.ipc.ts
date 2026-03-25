@@ -21,10 +21,10 @@ export const CRAFTPC_EXEC_PATH =
 
 export function setupCraftPCIPC(): void {
 
-    ipcMain.handle('craftpc:getDataDir', async () => {
-        return fs.existsSync(CRAFTPC_DATA_DIR) ? CRAFTPC_DATA_DIR : null;
-    });
-    ipcMain.handle('craftpc:getExecPath', async () => {
-        return fs.existsSync(CRAFTPC_EXEC_PATH) ? CRAFTPC_EXEC_PATH : null;
+    ipcMain.handle('craftpc:getDirs', async () => {
+        return {
+            exec: fs.existsSync(CRAFTPC_EXEC_PATH) ? CRAFTPC_EXEC_PATH : null,
+            data: fs.existsSync(CRAFTPC_DATA_DIR) ? CRAFTPC_DATA_DIR : null
+        };
     });
 }

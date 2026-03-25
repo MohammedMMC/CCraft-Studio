@@ -1,10 +1,12 @@
 import React from 'react';
 import { useProjectStore } from '../../stores/projectStore';
 import { CraftOSPCIcons } from '../shared/Icons';
+import { useAppStore } from '@/stores/appStore';
 
 export const CraftPCPanel: React.FC = () => {
   const project = useProjectStore(s => s.project);
-
+  const craftPCDataPath = useAppStore(s => s.craftPCDataPath);
+  const craftPCExecPath = useAppStore(s => s.craftPCExecPath);
 
 
   return (
@@ -17,10 +19,15 @@ export const CraftPCPanel: React.FC = () => {
           <CraftOSPCIcons name="monitor" size={36} />
           <CraftOSPCIcons name="computer" size={36} />
         </div> */}
-        <div id="craftpc-canvas" className="grid bg-app-bg w-full aspect-[62/35]">
-          <div className="border-top-left bg-no-repeat"></div><div className="border-top row-[2/3] bg-repeat-x"></div><div className="border-top-right bg-no-repeat"></div>
-          <div className="border-left row-[2/3] bg-repeat-y"></div><canvas className="w-full row-[2/3] col-[2/3]" width={620} height={350}></canvas><div className="border-right row-[2/3] bg-repeat-y"></div>
-          <div className="border-bottom-left bg-no-repeat"></div><div className="border-bottom row-[2/3] bg-repeat-x"></div><div className="border-bottom-right bg-no-repeat"></div>
+        <div id="craftpc-canvas" className="relative grid bg-app-bg w-full aspect-[62/35]">
+          {(!craftPCDataPath || !craftPCExecPath) && (
+            <div className="absolute flex items-center justify-center h-full w-full">
+              <p className="text-center font-[MinecraftFont] tracking-wider text-app-text-dim">CraftOS-PC not detected.</p>
+            </div>
+          )}
+          <div className="CraftOSPC-corners bg-no-repeat w-[12px] h-[12px] bg-[position:0px_0px]"></div><div className="CraftOSPC-ysides col-[2/3] row-[1/2] bg-repeat-x w-auto h-[12px] bg-[position:0px_0px]"></div><div className="CraftOSPC-corners bg-no-repeat w-[12px] h-[12px] bg-[position:-12px_0px]"></div>
+          <div className="CraftOSPC-xsides row-[2/3] col-[1/2] bg-repeat-y w-[12px] h-auto bg-[position:0px_0px]"></div><canvas className="w-full row-[2/3] col-[2/3]" width={620} height={350}></canvas><div className="CraftOSPC-xsides row-[2/3] col-[3/4] bg-repeat-y w-[12px] h-auto bg-[position:-12px_0px]"></div>
+          <div className="CraftOSPC-corners bg-no-repeat w-[12px] h-[12px] bg-[position:0px_-12px]"></div><div className="CraftOSPC-ysides col-[2/3] row-[3/4] bg-repeat-x w-auto h-[12px] bg-[position:0px_-12px]"></div><div className="CraftOSPC-corners bg-no-repeat w-[12px] h-[12px] bg-[position:-12px_-12px]"></div>
         </div>
 
       </div>

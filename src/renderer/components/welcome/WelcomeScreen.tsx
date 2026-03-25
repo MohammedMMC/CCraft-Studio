@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useProjectStore } from '../../stores/projectStore';
 import { useBlocklyStore } from '../../stores/blocklyStore';
+import { ElectronAPI } from 'src/preload/preload';
 
 interface RecentProject {
   name: string;
@@ -10,18 +11,7 @@ interface RecentProject {
 
 declare global {
   interface Window {
-    electronAPI: {
-      getAppData: () => Promise<{ content: any }>;
-      saveAppData: (data: Object) => Promise<void>;
-      openProject: () => Promise<{ filePath: string; content: any } | null>;
-      openProjectByPath: (filePath: string) => Promise<{ filePath: string; content: any } | null>;
-      saveProject: (data: { content: string; filePath?: string }) => Promise<string | null>;
-      exportLua: (data: { content: string; defaultName: string }) => Promise<string | null>;
-      exportMultiFile: (data: { files: { path: string; content: string }[] }) => Promise<string | null>;
-      getRecentProjects: () => Promise<RecentProject[]>;
-      addRecentProject: (entry: { name: string; path: string }) => Promise<RecentProject[]>;
-      onMenuAction: (callback: (action: string) => void) => () => void;
-    };
+    electronAPI: ElectronAPI;
   }
 }
 

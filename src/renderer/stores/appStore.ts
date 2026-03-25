@@ -16,7 +16,19 @@ export const useAppStore = create<AppStore>((set, get) => ({
     craftPCExecPath: null,
     useCraftOSPC: false,
 
-    loadApp: (data) => set(data),
+    loadApp: (data) => {
+        if (get().useCraftOSPC) {
+            window.electronAPI.craftpc.getDirs().then((dirs) => {
+                set({
+                    craftPCDataPath: dirs.data,
+                    craftPCExecPath: dirs.exec,
+                });
+                get().saveApp();
+            });
+        }
+
+        set(data);
+    },
 
     saveApp: () => {
         window.electronAPI.saveAppData({

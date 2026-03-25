@@ -26,6 +26,10 @@ const electronAPI = {
       handlers.forEach(({ action, handler }) => ipcRenderer.removeListener(action, handler));
     };
   },
+  
+  craftpc: {
+    getDirs: () => ipcRenderer.invoke('craftpc:getDirs'),
+  },
 };
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI);
