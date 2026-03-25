@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { setupIPC } from './ipc';
 import { buildMenu } from './menu';
+import { setupCraftPCIPC } from './craftpc.ipc';
 
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('disable-gpu-rasterization');
@@ -56,6 +57,7 @@ function createWindow(): void {
 app.whenReady().then(() => {
   createWindow();
   setupIPC();
+  setupCraftPCIPC();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

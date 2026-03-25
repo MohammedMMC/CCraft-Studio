@@ -3,7 +3,9 @@ import { useProjectStore } from '../../stores/projectStore';
 import { CraftOSPCIcons } from '../shared/Icons';
 
 export const CraftPCPanel: React.FC = () => {
-  const project = useProjectStore((s) => s.project);
+  const project = useProjectStore(s => s.project);
+
+
 
   return (
     <div className="flex flex-col h-full">
@@ -15,8 +17,10 @@ export const CraftPCPanel: React.FC = () => {
           <CraftOSPCIcons name="monitor" size={36} />
           <CraftOSPCIcons name="computer" size={36} />
         </div> */}
-        <div className="bg-app-bg w-full aspect-video">
-
+        <div id="craftpc-canvas" className="grid bg-app-bg w-full aspect-[62/35]">
+          <div className="border-top-left bg-no-repeat"></div><div className="border-top row-[2/3] bg-repeat-x"></div><div className="border-top-right bg-no-repeat"></div>
+          <div className="border-left row-[2/3] bg-repeat-y"></div><canvas className="w-full row-[2/3] col-[2/3]" width={620} height={350}></canvas><div className="border-right row-[2/3] bg-repeat-y"></div>
+          <div className="border-bottom-left bg-no-repeat"></div><div className="border-bottom row-[2/3] bg-repeat-x"></div><div className="border-bottom-right bg-no-repeat"></div>
         </div>
 
       </div>

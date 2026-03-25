@@ -1,24 +1,28 @@
 import { create } from 'zustand';
 
 interface AppStore {
-    filePath: string | null;
+    craftPCDataPath: string | null;
+    craftPCExecPath: string | null;
     useCraftOSPC: boolean;
-
-    setCraftOSPC: (value: boolean) => void;
 
     loadApp: (data: Object) => void;
     saveApp: () => void;
+
+    setCraftOSPC: (value: boolean) => void;
 }
 
 export const useAppStore = create<AppStore>((set, get) => ({
-    filePath: null,
+    craftPCDataPath: null,
+    craftPCExecPath: null,
     useCraftOSPC: false,
 
     loadApp: (data) => set(data),
 
     saveApp: () => {
         window.electronAPI.saveAppData({
-            useCraftOSPC: get().useCraftOSPC
+            useCraftOSPC: get().useCraftOSPC,
+            craftPCDataPath: get().craftPCDataPath,
+            craftPCExecPath: get().craftPCExecPath,
         });
     },
 

@@ -13,7 +13,7 @@ const electronAPI = {
 
   onMenuAction: (callback: (action: string) => void) => {
     const actions = [
-      'app:saveAppData', 'app:getAppData', 'menu:newProject', 'menu:openProject', 'menu:save', 'menu:saveAs',
+      'menu:newProject', 'menu:openProject', 'menu:save', 'menu:saveAs',
       'menu:export', 'menu:settings', 'menu:undo', 'menu:redo', 'menu:delete', 'menu:selectAll',
       'menu:zoomIn', 'menu:zoomOut', 'menu:zoomReset', 'menu:about',
     ];
