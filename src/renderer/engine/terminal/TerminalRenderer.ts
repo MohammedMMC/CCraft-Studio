@@ -16,6 +16,7 @@ export class TerminalRenderer {
   private buffer: TerminalBuffer;
   private charWidth: number;
   private charHeight: number;
+  private blinkingData: { x: number; y: number; blinkingInterval: NodeJS.Timeout | null };
 
   constructor(canvas: HTMLCanvasElement, buffer: TerminalBuffer) {
     this.canvas = canvas;
@@ -23,6 +24,10 @@ export class TerminalRenderer {
     this.buffer = buffer;
     this.charWidth = CC_CHAR_WIDTH * SCALE;
     this.charHeight = CC_CHAR_HEIGHT * SCALE;
+    this.blinkingData = {
+      x: 0, y: 0,
+      blinkingInterval: null
+    }
 
     this.updateCanvasSize();
 
@@ -32,6 +37,22 @@ export class TerminalRenderer {
 
     setTimeout(() => this.render(), 100);
     setTimeout(() => this.render(), 150);
+  }
+
+  setBlinkingCursor(blink: boolean, x: number, y: number) {
+    if (this.blinkingData.blinkingInterval) {
+      clearInterval(this.blinkingData.blinkingInterval);
+    }
+
+    if (!blink) return;
+
+    this.blinkingData = { x, y, blinkingInterval: null };
+
+    this.blinkingData.blinkingInterval = setInterval(() => {
+      const cell = this.buffer.cells[this.blinkingData.y]?.[this.blinkingData.x];
+      cell.char = cell.char === '_' ? ' ' : '_';
+      this.render();
+    }, 500);
   }
 
   updateCanvasSize() {
@@ -55,9 +76,9 @@ export class TerminalRenderer {
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     ctx.imageSmoothingEnabled = false;
-    ctx.textBaseline = 'top';
-    ctx.textAlign = "left";
-    ctx.font = `${ch}px ${MAIN_FONT_FAMILY}, monospace`;
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    ctx.font = `${ch/1.1}px ${MAIN_FONT_FAMILY}, monospace`;
 
     // Render cells
     for (let y = 0; y < height; y++) {
@@ -73,7 +94,7 @@ export class TerminalRenderer {
         // Character
         if (cell.char !== ' ') {
           ctx.fillStyle = !CC_COLOR_NAMES.includes(cell.fg as CCColor) ? cell.fg : CC_COLORS[cell.fg as CCColor].hex;
-          ctx.fillText(cell.char, px + 1, py + 1);
+          ctx.fillText(cell.char, px + 1 + cw / 2, py + 1 + ch / 2);
         }
       }
     }

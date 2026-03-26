@@ -14,8 +14,6 @@ export const CraftPCPanel: React.FC = () => {
   const craftPCExecPath = useAppStore(s => s.craftPCExecPath);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [monitorWidth, setMonitorWidth] = useState(0);
-  const [monitorHeight, setMonitorHeight] = useState(0);
 
   const startedRef = useRef(false);
   useEffect(() => {
@@ -29,34 +27,24 @@ export const CraftPCPanel: React.FC = () => {
 
           const buffer = new TerminalBuffer(packet.width, packet.height);
           const terminalRenderer = new TerminalRenderer(canvas, buffer);
-          terminalRenderer.render();
 
           buffer.clear();
+
+          terminalRenderer.setBlinkingCursor(packet.blink, packet.cursorX, packet.cursorY);
 
           for (let y = 0; y < packet.height; y++) {
             for (let x = 0; x < packet.width; x++) {
               const charCode = packet.screen?.[y]?.[x] ?? 32;
               const char = String.fromCharCode(charCode);
 
-              const color = packet.colors?.[y]?.[x] ?? 0;
-              console.log(color);
-              const high = color >> 4;
-              const low = color & 0xF;
-
-              console.log(`rgb(${packet.palette?.[low].r},${packet.palette?.[low].g},${packet.palette?.[low].b})`);
-
-
               if (charCode !== 32 && charCode !== 0) {
-                buffer.setCell(x, y, char, `rgb(${packet.palette?.[low].r},${packet.palette?.[low].g},${packet.palette?.[low].b})`, "black");
+                buffer.setCell(x, y, char, ...cosCH.rgbColorFromPalette(packet.palette, packet.colors, x, y));
               }
             }
           }
           break;
         case 4:
-          setMonitorHeight(packet.height);
-          setMonitorWidth(packet.width);
           break;
-
         default:
           break;
       }

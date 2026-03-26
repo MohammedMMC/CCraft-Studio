@@ -1,5 +1,15 @@
 import type * as craftpcHelpers from 'src/main/craftospcHelpers';
 
-export function rgbColorFromPalette(palette: craftpcHelpers.PacketTerminal['palette'], colors: craftpcHelpers.PacketTerminal['colors'], x:number, y:number) {
-    
+export function rgbColorFromPalette(
+    palette: craftpcHelpers.PacketTerminal['palette'],
+    colors: craftpcHelpers.PacketTerminal['colors'],
+    x: number, y: number): [string, string] {
+    const color = colors?.[y]?.[x] ?? 0;
+    const colorPaletteBG = palette?.[color >> 4];
+    const colorPaletteFG = palette?.[color & 0xF];
+
+    return [
+        colorPaletteFG ? `rgb(${colorPaletteFG.r},${colorPaletteFG.g},${colorPaletteFG.b})` : 'white',
+        colorPaletteBG ? `rgb(${colorPaletteBG.r},${colorPaletteBG.g},${colorPaletteBG.b})` : 'black'
+    ]
 }
