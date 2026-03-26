@@ -8,7 +8,7 @@ import { ElementToolkit } from '../uiEditor/ElementToolkit';
 import { PropertiesPanel } from '../uiEditor/PropertiesPanel';
 import { BlocklyWorkspace } from '../blockEditor/BlocklyWorkspace';
 import { ElementsPanel } from '../uiEditor/ElementsPanel';
-import { CraftPCPanel } from '../uiEditor/CraftPcPanel';
+import { CraftPCPanel } from '../uiEditor/CraftPCPanel';
 import { useAppStore } from '@/stores/appStore';
 import { PanelDiv } from '../shared/PanelDiv';
 

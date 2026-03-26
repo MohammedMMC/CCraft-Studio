@@ -2,8 +2,8 @@ import { CCColor, CC_COLORS } from '../../models/CCColors';
 
 export interface TerminalCell {
   char: string;
-  fg: CCColor;
-  bg: CCColor;
+  fg: CCColor | string;
+  bg: CCColor | string;
 }
 
 export class TerminalBuffer {
@@ -28,7 +28,7 @@ export class TerminalBuffer {
     );
   }
 
-  setCell(x: number, y: number, char: string, fg: CCColor, bg: CCColor) {
+  setCell(x: number, y: number, char: string, fg: CCColor | string, bg: CCColor | string) {
     if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
       const existing = this.cells[y][x];
       this.cells[y][x] = {
