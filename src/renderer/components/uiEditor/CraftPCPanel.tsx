@@ -1,6 +1,5 @@
 import React from 'react';
 import { useProjectStore } from '../../stores/projectStore';
-import { CraftOSPCIcons } from '../shared/Icons';
 import { useAppStore } from '@/stores/appStore';
 
 export const CraftPCPanel: React.FC = () => {
@@ -8,6 +7,16 @@ export const CraftPCPanel: React.FC = () => {
   const craftPCDataPath = useAppStore(s => s.craftPCDataPath);
   const craftPCExecPath = useAppStore(s => s.craftPCExecPath);
 
+
+  
+  window.electronAPI.craftpc.start(craftPCExecPath || '', false).then(() => {
+    console.log('CraftOS-PC process exited');
+    // window.electronAPI.craftpc.onOutput((data: any) => {
+      
+    // });
+  }).catch((err) => {
+    console.error('Failed to start CraftOS-PC:', err);
+  });
 
   return (
     <div className="flex flex-col h-full">

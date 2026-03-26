@@ -26,9 +26,16 @@ const electronAPI = {
       handlers.forEach(({ action, handler }) => ipcRenderer.removeListener(action, handler));
     };
   },
-  
+
   craftpc: {
     getDirs: () => ipcRenderer.invoke('craftpc:getDirs'),
+    start: (execPath: string, isRemote: boolean = false) => ipcRenderer.invoke('craftpc:start', execPath, isRemote),
+    onExit: (cb: () => void) => ipcRenderer.on('craftpc:exit', cb),
+    onOutput: (cb: (data: any) => void) => ipcRenderer.on('craftpc:output', (_event, data) => cb(data)),
+    removeAllListeners: () => {
+      ipcRenderer.removeAllListeners('craftpc:term');
+      ipcRenderer.removeAllListeners('craftpc:exit');
+    }
   },
 };
 
