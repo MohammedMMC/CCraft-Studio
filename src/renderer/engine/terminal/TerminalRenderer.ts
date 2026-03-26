@@ -16,7 +16,7 @@ export class TerminalRenderer {
   private buffer: TerminalBuffer;
   private charWidth: number;
   private charHeight: number;
-  private blinkingData: { x: number; y: number; blinkingInterval: NodeJS.Timeout | null };
+  private blinkingData: { x: number; y: number; char: string; blinkingInterval: NodeJS.Timeout | null };
 
   constructor(canvas: HTMLCanvasElement, buffer: TerminalBuffer) {
     this.canvas = canvas;
@@ -25,7 +25,7 @@ export class TerminalRenderer {
     this.charWidth = CC_CHAR_WIDTH * SCALE;
     this.charHeight = CC_CHAR_HEIGHT * SCALE;
     this.blinkingData = {
-      x: 0, y: 0,
+      x: 0, y: 0, char: '_',
       blinkingInterval: null
     }
 
@@ -42,15 +42,15 @@ export class TerminalRenderer {
   setBlinkingCursor(blink: boolean, x: number, y: number) {
     if (this.blinkingData.blinkingInterval) {
       clearInterval(this.blinkingData.blinkingInterval);
+      this.blinkingData.blinkingInterval = null;
     }
 
     if (!blink) return;
 
-    this.blinkingData = { x, y, blinkingInterval: null };
+    this.blinkingData = { x, y, char: '_', blinkingInterval: null };
 
     this.blinkingData.blinkingInterval = setInterval(() => {
-      const cell = this.buffer.cells[this.blinkingData.y]?.[this.blinkingData.x];
-      cell.char = cell.char === '_' ? ' ' : '_';
+      this.blinkingData.char = this.blinkingData.char === '_' ? ' ' : '_';
       this.render();
     }, 500);
   }
@@ -78,7 +78,7 @@ export class TerminalRenderer {
     ctx.imageSmoothingEnabled = false;
     ctx.textBaseline = "middle";
     ctx.textAlign = "center";
-    ctx.font = `${ch/1.1}px ${MAIN_FONT_FAMILY}, monospace`;
+    ctx.font = `${ch / 1.1}px ${MAIN_FONT_FAMILY}, monospace`;
 
     // Render cells
     for (let y = 0; y < height; y++) {
@@ -97,6 +97,11 @@ export class TerminalRenderer {
           ctx.fillText(cell.char, px + 1 + cw / 2, py + 1 + ch / 2);
         }
       }
+    }
+
+    if (this.blinkingData.blinkingInterval) {
+      ctx.fillStyle = CC_COLORS["white"].hex;
+      ctx.fillText(this.blinkingData.char, this.blinkingData.x * cw + 1 + cw / 2, this.blinkingData.y * ch + 1 + ch / 2);
     }
   }
 }

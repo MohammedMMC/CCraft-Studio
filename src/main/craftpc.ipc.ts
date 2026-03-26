@@ -32,6 +32,13 @@ export function setupCraftPCIPC(): void {
         };
     });
 
+    ipcMain.on('craftpc:key', (_event, data: any) => {
+        if (data.key.length == 1 && data.type == "keydown") {
+            proc?.stdin?.write(craftpcHelpers.buildKeyPacket(0, data.key.charCodeAt(0), data.type == "keydown", true, data.repeat, data.ctrlKey));
+        }
+        proc?.stdin?.write(craftpcHelpers.buildKeyPacket(0, craftpcHelpers.KEY_MAP[data.code], data.type == "keydown", false, data.repeat, data.ctrlKey));
+    });
+
     ipcMain.handle('craftpc:start', async (_event, execPath: string, isRemote: boolean = false) => {
         if (proc) return;
         proc = spawn(execPath, [isRemote ? '--raw-websocket <id>' : '--raw'], { windowsHide: true });
@@ -45,7 +52,6 @@ export function setupCraftPCIPC(): void {
 
             for (const { packet } of packets) {
                 if (packet.type === 6) {
-                    // Update protocol state after capability exchange
                     protocolState.useBinaryChecksum = packet.binaryChecksum;
                     protocolState.isVersion11 = true;
                     craftpcHelpers.setBinaryChecksum(packet.binaryChecksum);
@@ -53,6 +59,7 @@ export function setupCraftPCIPC(): void {
                 _event.sender.send('craftpc:packet', packet);
             }
         });
+
         proc.stderr!.on('data', (d: Buffer) => console.error('[CraftOS-PC]', d.toString()));
         proc.on('error', () => { proc = null; _event.sender.send('craftpc:exit'); });
         proc.on('close', () => { proc = null; _event.sender.send('craftpc:exit'); });

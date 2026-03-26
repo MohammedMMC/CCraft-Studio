@@ -13,6 +13,9 @@ export const CraftPCPanel: React.FC = () => {
   const craftPCDataPath = useAppStore(s => s.craftPCDataPath);
   const craftPCExecPath = useAppStore(s => s.craftPCExecPath);
 
+  const [termWidth, setTermWidth] = useState(51);
+  const [termHeight, setTermHeight] = useState(19);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const startedRef = useRef(false);
@@ -20,14 +23,16 @@ export const CraftPCPanel: React.FC = () => {
     if (startedRef.current) return;
     startedRef.current = true;
 
+    const canvas = canvasRef.current as HTMLCanvasElement;
+    const buffer = new TerminalBuffer(termWidth, termHeight);
+    const terminalRenderer = new TerminalRenderer(canvas, buffer);
+    setInterval(() => terminalRenderer.render(), 100);
+
     window.electronAPI.craftpc.onPacket((packet: craftpcHelpers.CraftOSPacket) => {
       switch (packet.type) {
         case 0:
-          const canvas = canvasRef.current as HTMLCanvasElement;
-
-          const buffer = new TerminalBuffer(packet.width, packet.height);
-          const terminalRenderer = new TerminalRenderer(canvas, buffer);
-
+          setTermWidth(packet.width);
+          setTermHeight(packet.height);
           buffer.clear();
 
           terminalRenderer.setBlinkingCursor(packet.blink, packet.cursorX, packet.cursorY);
@@ -37,13 +42,15 @@ export const CraftPCPanel: React.FC = () => {
               const charCode = packet.screen?.[y]?.[x] ?? 32;
               const char = String.fromCharCode(charCode);
 
-              if (charCode !== 32 && charCode !== 0) {
+              // if (charCode !== 32 && charCode !== 0) {
                 buffer.setCell(x, y, char, ...cosCH.rgbColorFromPalette(packet.palette, packet.colors, x, y));
-              }
+              // }
             }
           }
           break;
         case 4:
+          setTermWidth(packet.width);
+          setTermHeight(packet.height);
           break;
         default:
           break;
@@ -79,6 +86,10 @@ export const CraftPCPanel: React.FC = () => {
 
           <canvas
             ref={canvasRef}
+            tabIndex={0}
+            onClick={(e) => e.currentTarget.focus()}
+            onKeyDown={(e) => {e.preventDefault();window.electronAPI.craftpc.key({key: e.key, code: e.code, repeat: e.repeat, ctrlKey: e.ctrlKey, type: e.type})}}
+            onKeyUp={(e) => {e.preventDefault();window.electronAPI.craftpc.key({key: e.key, code: e.code, repeat: e.repeat, ctrlKey: e.ctrlKey, type: e.type})}}
             className="w-full row-[2/3] col-[2/3]"
             width={620} height={350}
             style={{ imageRendering: 'pixelated', cursor: 'default' }}
