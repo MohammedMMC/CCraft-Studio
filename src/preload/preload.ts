@@ -33,6 +33,7 @@ const electronAPI = {
     onExit: (cb: () => void) => ipcRenderer.on('craftpc:exit', cb),
     onPacket: (cb: (data: any) => void) => ipcRenderer.on('craftpc:packet', (_event, data) => cb(data)),
     key: (data: any) => ipcRenderer.send('craftpc:key', data),
+    mouse: (data: any) => ipcRenderer.send('craftpc:mouse', data),
     removeAllListeners: () => {
       ipcRenderer.removeAllListeners('craftpc:packet');
       ipcRenderer.removeAllListeners('craftpc:exit');

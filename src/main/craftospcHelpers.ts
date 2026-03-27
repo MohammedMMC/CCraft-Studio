@@ -572,7 +572,7 @@ export function buildMousePacket(
     y: number
 ): string {
     const EVENT_IDS = { click: 0, up: 1, scroll: 2, drag: 3 };
-    const buf = Buffer.alloc(10);
+    const buf = Buffer.alloc(12);
     buf[0] = 2; buf[1] = windowId;
     buf[2] = EVENT_IDS[event]; buf[3] = button;
     buf.writeUInt32LE(x, 4);

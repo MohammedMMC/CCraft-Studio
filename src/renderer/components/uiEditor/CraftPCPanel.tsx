@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { UIEventHandler, useEffect, useRef, useState } from 'react';
 import { useProjectStore } from '../../stores/projectStore';
 import { useAppStore } from '@/stores/appStore';
 import type * as craftpcHelpers from 'src/main/craftospcHelpers';
@@ -15,6 +15,9 @@ export const CraftPCPanel: React.FC = () => {
 
   const [termWidth, setTermWidth] = useState(51);
   const [termHeight, setTermHeight] = useState(19);
+
+  const isClickHeld = useRef(false);
+  const lastSendTime = useRef(0);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -42,9 +45,7 @@ export const CraftPCPanel: React.FC = () => {
               const charCode = packet.screen?.[y]?.[x] ?? 32;
               const char = String.fromCharCode(charCode);
 
-              // if (charCode !== 32 && charCode !== 0) {
-                buffer.setCell(x, y, char, ...cosCH.rgbColorFromPalette(packet.palette, packet.colors, x, y));
-              // }
+              buffer.setCell(x, y, char, ...cosCH.rgbColorFromPalette(packet.palette, packet.colors, x, y));
             }
           }
           break;
@@ -55,7 +56,7 @@ export const CraftPCPanel: React.FC = () => {
         default:
           break;
       }
-      console.log('Received packet:', packet);
+      if (packet.type !== 0) console.log('Received packet:', packet);
     });
 
     window.electronAPI.craftpc.start(craftPCExecPath || '', false).then(() => {
@@ -63,7 +64,33 @@ export const CraftPCPanel: React.FC = () => {
     }).catch((err) => {
       console.error('Failed to start CraftOS-PC:', err);
     });
+
+    window.addEventListener("mouseup", () => isClickHeld.current = false);
   }, []);
+
+  function handleKeyboardEvent(e: React.KeyboardEvent) {
+    e.preventDefault();
+    window.electronAPI.craftpc.key({ key: e.key, code: e.code, repeat: e.repeat, ctrlKey: e.ctrlKey, type: e.type });
+  }
+
+  function handleMouseEvent(e: React.MouseEvent) {
+    e.preventDefault();
+    if (e.type === "mousemove" && Date.now() - lastSendTime.current < 100) return;
+    if (e.type === "mousemove" && !isClickHeld.current) return;
+    const canvas = canvasRef.current as HTMLCanvasElement;
+
+    if (e.type === "mousedown") isClickHeld.current = true;
+    if (e.type === "mouseup") isClickHeld.current = false;
+
+    window.electronAPI.craftpc.mouse({
+      eventType: e.type.replace("mousedown", "click").replace("mouseup", "up").replace("mousemove", "drag"),
+      button: e.button,
+      x: Math.floor(e.nativeEvent.offsetX / (canvas.clientWidth / termWidth)) + 1,
+      y: Math.floor(e.nativeEvent.offsetY / (canvas.clientHeight / termHeight)) + 1,
+    });
+    lastSendTime.current = Date.now();
+  }
+
 
   return (
     <div className="flex flex-col h-full">
@@ -88,8 +115,12 @@ export const CraftPCPanel: React.FC = () => {
             ref={canvasRef}
             tabIndex={0}
             onClick={(e) => e.currentTarget.focus()}
-            onKeyDown={(e) => {e.preventDefault();window.electronAPI.craftpc.key({key: e.key, code: e.code, repeat: e.repeat, ctrlKey: e.ctrlKey, type: e.type})}}
-            onKeyUp={(e) => {e.preventDefault();window.electronAPI.craftpc.key({key: e.key, code: e.code, repeat: e.repeat, ctrlKey: e.ctrlKey, type: e.type})}}
+            onKeyDown={handleKeyboardEvent}
+            onKeyUp={handleKeyboardEvent}
+            onMouseDown={handleMouseEvent}
+            onMouseUp={handleMouseEvent}
+            onMouseMove={handleMouseEvent}
+            // onScroll={handleMouseEvent}
             className="w-full row-[2/3] col-[2/3]"
             width={620} height={350}
             style={{ imageRendering: 'pixelated', cursor: 'default' }}

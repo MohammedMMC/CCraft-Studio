@@ -38,6 +38,10 @@ export function setupCraftPCIPC(): void {
         }
         proc?.stdin?.write(craftpcHelpers.buildKeyPacket(0, craftpcHelpers.KEY_MAP[data.code], data.type == "keydown", false, data.repeat, data.ctrlKey));
     });
+    
+    ipcMain.on('craftpc:mouse', (_event, data) => {
+        proc?.stdin?.write(craftpcHelpers.buildMousePacket(0, data.eventType, 0, data.x, data.y));
+    });
 
     ipcMain.handle('craftpc:start', async (_event, execPath: string, isRemote: boolean = false) => {
         if (proc) return;

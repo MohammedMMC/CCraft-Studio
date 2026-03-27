@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 
-export const PanelDiv: React.FC<{ resizeable?: boolean; children: React.ReactNode }> = ({ resizeable = false, children }) => {
+export const PanelDiv: React.FC<{ resizeable?: boolean; hidden?: boolean; children: React.ReactNode }> = ({ resizeable = false, hidden = false, children }) => {
     const [panelWidth, setPanelWidth] = useState(300);
     const isResizing = useRef(false);
     const startX = useRef(0);
@@ -38,7 +38,7 @@ export const PanelDiv: React.FC<{ resizeable?: boolean; children: React.ReactNod
     return (
         <div
             style={{ width: panelWidth }}
-            className="relative border-l border-app-border bg-app-panel flex flex-col overflow-hidden"
+            className={(hidden ? "hidden " : "") + "relative border-l border-app-border bg-app-panel flex flex-col overflow-hidden"}
         >
             {resizeable && (
                 <div
