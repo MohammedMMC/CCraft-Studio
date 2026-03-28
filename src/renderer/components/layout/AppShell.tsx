@@ -37,9 +37,11 @@ export const AppShell: React.FC<AppShellProps> = ({ onExport }) => {
         </div>
 
         {/* CraftOS-PC Panel */}
-        <PanelDiv resizeable={true} hidden={!(mode === 'ui' && useCraftOSPC && showCraftPC)}>
-          <CraftPCPanel />
-        </PanelDiv>
+        {useCraftOSPC && (
+          <PanelDiv resizeable={true} hidden={!(mode === 'ui' && showCraftPC)}>
+            <CraftPCPanel />
+          </PanelDiv>
+        )}
 
 
         {/* Elements Panel */}

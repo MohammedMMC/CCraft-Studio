@@ -1,9 +1,10 @@
-import { ipcMain, WebContents } from 'electron';
+import { ipcMain, shell, WebContents } from 'electron';
 import { ChildProcess, spawn } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import * as craftpcHelpers from './craftospcHelpers';
+import WebSocket from 'ws';
 
 export const CRAFTPC_DATA_DIR =
     os.platform() === 'win32'
@@ -21,6 +22,7 @@ export const CRAFTPC_EXEC_PATH =
 
 
 let proc: ChildProcess | null = null;
+let socket: WebSocket | null = null;
 let leftover: Buffer = Buffer.alloc(0);
 let protocolState: craftpcHelpers.ParseOptions = {};
 
@@ -32,41 +34,100 @@ export function setupCraftPCIPC(): void {
         };
     });
 
-    ipcMain.on('craftpc:key', (_event, data: any) => {
-        if (data.key.length == 1 && data.type == "keydown") {
-            proc?.stdin?.write(craftpcHelpers.buildKeyPacket(0, data.key.charCodeAt(0), data.type == "keydown", true, data.repeat, data.ctrlKey));
-        }
-        proc?.stdin?.write(craftpcHelpers.buildKeyPacket(0, craftpcHelpers.KEY_MAP[data.code], data.type == "keydown", false, data.repeat, data.ctrlKey));
+    ipcMain.handle('craftpc:openProjectFolder', async (_event, dirPath: string, windowId: number) => {
+        await shell.openPath(path.join(dirPath, "computer", String(windowId)));
     });
-    
-    ipcMain.on('craftpc:mouse', (_event, data) => {
-        proc?.stdin?.write(craftpcHelpers.buildMousePacket(0, data.eventType, 0, data.x, data.y));
+
+    ipcMain.on('craftpc:key', (_event, data: any, windowId: number = 0) => {
+        let outTo: ((data: any) => void) | undefined;
+
+        if (socket) {
+            outTo = (data) => socket!.send(data);
+        } else if (proc?.stdin) {
+            outTo = (data) => proc!.stdin!.write(data);
+        }
+        if (!outTo) return;
+
+        if (data.key.length == 1 && data.type == "keydown") {
+            outTo(craftpcHelpers.buildKeyPacket(windowId, data.key.charCodeAt(0), data.type == "keydown", true, data.repeat, data.ctrlKey));
+        }
+        outTo(craftpcHelpers.buildKeyPacket(windowId, craftpcHelpers.KEY_MAP[data.code], data.type == "keydown", false, data.repeat, data.ctrlKey));
+    });
+
+    ipcMain.on('craftpc:mouse', (_event, data, windowId: number = 0) => {
+        proc?.stdin?.write(craftpcHelpers.buildMousePacket(windowId, data.eventType, 0, data.x, data.y));
     });
 
     ipcMain.handle('craftpc:start', async (_event, execPath: string, isRemote: boolean = false) => {
         if (proc) return;
-        proc = spawn(execPath, [isRemote ? '--raw-websocket <id>' : '--raw'], { windowsHide: true });
+        let remoteId: string = "";
+
+        if (isRemote) {
+            remoteId = await fetch("https://remote.craftos-pc.cc/new").then(res => res.text());
+
+            if (remoteId.length !== 40) {
+                throw new Error("Failed to obtain remote ID");
+            }
+        }
+
+        proc = spawn(execPath, [isRemote ? ('--raw-websocket wss://remote.craftos-pc.cc/' + remoteId) : '--raw'], { windowsHide: true });
 
         proc.stdin!.write(craftpcHelpers.HANDSHAKE);
 
-        proc.stdout!.on('data', (chunk: Buffer) => {
-            leftover = Buffer.concat([leftover, chunk]);
-            const { packets, remaining } = craftpcHelpers.parseCraftOSPackets(leftover, protocolState);
-            leftover = remaining;
+        if (isRemote) {
+            socket = new WebSocket("wss://remote.craftos-pc.cc/" + remoteId);
 
-            for (const { packet } of packets) {
-                if (packet.type === 6) {
-                    protocolState.useBinaryChecksum = packet.binaryChecksum;
-                    protocolState.isVersion11 = true;
-                    craftpcHelpers.setBinaryChecksum(packet.binaryChecksum);
+            socket.on('open', () => {
+                socket?.send(craftpcHelpers.HANDSHAKE);
+            });
+
+            socket.on('message', (data) => {
+                leftover = Buffer.concat([leftover, data as Buffer]);
+                const { packets, remaining } = craftpcHelpers.parseCraftOSPackets(leftover, protocolState);
+                leftover = remaining;
+
+                for (const { packet } of packets) {
+                    if (packet.type === 6) {
+                        protocolState.useBinaryChecksum = packet.binaryChecksum;
+                        protocolState.isVersion11 = true;
+                        craftpcHelpers.setBinaryChecksum(packet.binaryChecksum);
+                    }
+
+                    _event.sender.send('craftpc:packet', packet);
                 }
-                _event.sender.send('craftpc:packet', packet);
-            }
-        });
+            });
+
+            socket.on('error', () => {
+                socket?.close();
+            });
+
+            socket.on('close', () => {
+                ipcMain.emit('craftpc:stop');
+            });
+
+        } else {
+            proc.stdout!.on('data', (chunk: Buffer) => {
+                leftover = Buffer.concat([leftover, chunk]);
+                const { packets, remaining } = craftpcHelpers.parseCraftOSPackets(leftover, protocolState);
+                leftover = remaining;
+
+                for (const { packet } of packets) {
+                    if (packet.type === 6) {
+                        protocolState.useBinaryChecksum = packet.binaryChecksum;
+                        protocolState.isVersion11 = true;
+                        craftpcHelpers.setBinaryChecksum(packet.binaryChecksum);
+                    }
+
+                    _event.sender.send('craftpc:packet', packet);
+                }
+            });
+        }
 
         proc.stderr!.on('data', (d: Buffer) => console.error('[CraftOS-PC]', d.toString()));
-        proc.on('error', () => { proc = null; _event.sender.send('craftpc:exit'); });
-        proc.on('close', () => { proc = null; _event.sender.send('craftpc:exit'); });
+        proc.on('error', () => { ipcMain.emit('craftpc:stop'); });
+        proc.on('close', () => { ipcMain.emit('craftpc:stop'); });
+
+        return remoteId;
     });
 
 
@@ -74,7 +135,9 @@ export function setupCraftPCIPC(): void {
         // proc?.stdin?.write(useBinaryChecksum ? '!CPC000CBAACAAAAAAAA2C7A548B\n' : '!CPC000CBAACAAAAAAAA3AB9B910\n');
         proc?.kill();
         proc = null;
+
+        socket?.close();
+        socket = null;
     });
 
 }
-

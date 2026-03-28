@@ -29,11 +29,13 @@ const electronAPI = {
 
   craftpc: {
     getDirs: () => ipcRenderer.invoke('craftpc:getDirs'),
+    openProjectFolder: (dirPath: string, windowId: number) => ipcRenderer.invoke('craftpc:openProjectFolder', dirPath, windowId),
     start: (execPath: string, isRemote: boolean = false) => ipcRenderer.invoke('craftpc:start', execPath, isRemote),
+    stop: () => ipcRenderer.invoke('craftpc:stop'),
     onExit: (cb: () => void) => ipcRenderer.on('craftpc:exit', cb),
     onPacket: (cb: (data: any) => void) => ipcRenderer.on('craftpc:packet', (_event, data) => cb(data)),
-    key: (data: any) => ipcRenderer.send('craftpc:key', data),
-    mouse: (data: any) => ipcRenderer.send('craftpc:mouse', data),
+    key: (data: any, windowId: number = 0) => ipcRenderer.send('craftpc:key', data, windowId),
+    mouse: (data: any, windowId: number = 0) => ipcRenderer.send('craftpc:mouse', data, windowId),
     removeAllListeners: () => {
       ipcRenderer.removeAllListeners('craftpc:packet');
       ipcRenderer.removeAllListeners('craftpc:exit');

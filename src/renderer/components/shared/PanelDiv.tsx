@@ -19,7 +19,7 @@ export const PanelDiv: React.FC<{ resizeable?: boolean; hidden?: boolean; childr
         if (!isResizing.current) return;
         const delta = startX.current - e.clientX;
         const newWidth = startWidth.current + delta;
-        setPanelWidth(Math.max(300, Math.min(600, newWidth)));
+        setPanelWidth(Math.max(300, Math.min(700, newWidth)));
     };
 
     const handleMouseUp = () => {

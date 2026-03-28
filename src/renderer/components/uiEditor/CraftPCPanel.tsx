@@ -1,10 +1,11 @@
-import React, { UIEventHandler, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useProjectStore } from '../../stores/projectStore';
 import { useAppStore } from '@/stores/appStore';
 import type * as craftpcHelpers from 'src/main/craftospcHelpers';
 import * as cosCH from '../../utils/craftospcCanvasHelpers';
 import { TerminalRenderer } from '@/engine/terminal/TerminalRenderer';
 import { TerminalBuffer } from '@/engine/terminal/TerminalBuffer';
+import { CraftOSPCIcons } from '../shared/Icons';
 
 
 
@@ -15,9 +16,13 @@ export const CraftPCPanel: React.FC = () => {
 
   const [termWidth, setTermWidth] = useState(51);
   const [termHeight, setTermHeight] = useState(19);
+  const [windowId, setWindowId] = useState(0);
+  const [sessionStarted, setSessionStarted] = useState(false);
+  const [failedToStart, setFailedToStart] = useState(true);
 
   const isClickHeld = useRef(false);
   const lastSendTime = useRef(0);
+  const terminalBuffer = useRef(new TerminalBuffer(termWidth, termHeight));
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -27,11 +32,12 @@ export const CraftPCPanel: React.FC = () => {
     startedRef.current = true;
 
     const canvas = canvasRef.current as HTMLCanvasElement;
-    const buffer = new TerminalBuffer(termWidth, termHeight);
+    const buffer = terminalBuffer.current;
     const terminalRenderer = new TerminalRenderer(canvas, buffer);
     setInterval(() => terminalRenderer.render(), 100);
 
     window.electronAPI.craftpc.onPacket((packet: craftpcHelpers.CraftOSPacket) => {
+      if (packet.windowId && packet.windowId !== windowId) setWindowId(packet.windowId);
       switch (packet.type) {
         case 0:
           setTermWidth(packet.width);
@@ -56,13 +62,15 @@ export const CraftPCPanel: React.FC = () => {
         default:
           break;
       }
-      if (packet.type !== 0) console.log('Received packet:', packet);
+      console.log('Received packet:', packet);
     });
 
     window.electronAPI.craftpc.start(craftPCExecPath || '', false).then(() => {
       console.log('CraftOS-PC process started!');
+      setFailedToStart(false);
     }).catch((err) => {
       console.error('Failed to start CraftOS-PC:', err);
+      setFailedToStart(true);
     });
 
     window.addEventListener("mouseup", () => isClickHeld.current = false);
@@ -70,7 +78,7 @@ export const CraftPCPanel: React.FC = () => {
 
   function handleKeyboardEvent(e: React.KeyboardEvent) {
     e.preventDefault();
-    window.electronAPI.craftpc.key({ key: e.key, code: e.code, repeat: e.repeat, ctrlKey: e.ctrlKey, type: e.type });
+    window.electronAPI.craftpc.key({ key: e.key, code: e.code, repeat: e.repeat, ctrlKey: e.ctrlKey, type: e.type }, windowId);
   }
 
   function handleMouseEvent(e: React.MouseEvent) {
@@ -87,10 +95,26 @@ export const CraftPCPanel: React.FC = () => {
       button: e.button,
       x: Math.floor(e.nativeEvent.offsetX / (canvas.clientWidth / termWidth)) + 1,
       y: Math.floor(e.nativeEvent.offsetY / (canvas.clientHeight / termHeight)) + 1,
-    });
+    }, windowId);
     lastSendTime.current = Date.now();
   }
 
+  function startRemoteSession() {
+    terminalBuffer.current.clear();
+    setSessionStarted(true);
+
+    window.electronAPI.craftpc.stop().then(() => {
+      window.electronAPI.craftpc.start(craftPCExecPath || '', true).then((id) => {
+        setFailedToStart(false);
+        console.log(id);
+
+        console.log('CraftOS-PC remote session started!');
+      }).catch((err) => {
+        setSessionStarted(false);
+        setFailedToStart(true);
+      });
+    });
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -98,12 +122,18 @@ export const CraftPCPanel: React.FC = () => {
         <span>CraftOS-PC</span>
       </div>
       <div className="h-full flex flex-col items-center justify-center text-app-text-dim">
-        {/* <div className="w-full flex p-4 justify-between">
-          <CraftOSPCIcons name="monitor" size={36} />
-          <CraftOSPCIcons name="computer" size={36} />
-        </div> */}
+        <div className="w-full flex p-4 justify-between">
+          {/* <button><CraftOSPCIcons name="monitor" size={36} /></button>
+          <button><CraftOSPCIcons name="computer" size={36} /></button> */}
+          <button onClick={() => { window.electronAPI.craftpc.openProjectFolder(craftPCDataPath || "", windowId) }} disabled={sessionStarted || failedToStart}>
+            <CraftOSPCIcons name="folder" size={36} />
+          </button>
+          <button onClick={startRemoteSession} disabled={sessionStarted}>
+            <CraftOSPCIcons name="remote" size={36} />
+          </button>
+        </div>
         <div className="relative grid bg-app-bg w-full aspect-[62/35]">
-          {(!craftPCDataPath || !craftPCExecPath) && (
+          {(!craftPCDataPath || !craftPCExecPath || failedToStart) && (
             <div className="absolute flex items-center justify-center h-full w-full">
               <p className="text-center font-[MinecraftFont] tracking-wider text-app-text-dim">CraftOS-PC not detected.</p>
             </div>
@@ -120,11 +150,10 @@ export const CraftPCPanel: React.FC = () => {
             onMouseDown={handleMouseEvent}
             onMouseUp={handleMouseEvent}
             onMouseMove={handleMouseEvent}
-            // onScroll={handleMouseEvent}
-            className="w-full row-[2/3] col-[2/3]"
+            // onScroll={handleMouseEvent} // TODO
+            className="w-full row-[2/3] col-[2/3] outline-0"
             width={620} height={350}
             style={{ imageRendering: 'pixelated', cursor: 'default' }}
-
           ></canvas>
 
           <div className="CraftOSPC-xsides row-[2/3] col-[3/4] bg-repeat-y w-[12px] h-auto bg-[position:-12px_0px]"></div>

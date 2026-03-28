@@ -1,8 +1,8 @@
 local isTouching = false
 
 while running do
-    local event, p1, p2, p3, p4, p5 = os.pullEvent()
     drawScreens()
+    local event, p1, p2, p3, p4, p5 = os.pullEvent()
 
     -- for _, comp in pairs(getScreen(currentScreen).children) do
     --     if comp.onEvent then comp:onEvent(event, p1, p2, p3, p4, p5) end

@@ -149,26 +149,30 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
 
       {/* View Controls (UI mode only) */}
       {mode === 'ui' && (
-        <button
-          onClick={toggleGrid}
-          className={`toolbar-btn ${showGrid ? 'text-app-accent' : ''}`}
-          title="Toggle Grid"
-        >
-          <GridIcon />
-        </button>
+        <>
+          <button
+            onClick={toggleGrid}
+            className={`toolbar-btn ${showGrid ? 'text-app-accent' : ''}`}
+            title="Toggle Grid"
+          >
+            <GridIcon />
+          </button>
+
+          {useCraftOSPC && (
+            <button
+              onClick={toggleCraftPC}
+              className={`toolbar-btn ${showCraftPC ? 'text-app-accent' : ''}`}
+              title="Toggle CraftOS-PC App Preview"
+            >
+              <CraftOSPCIcon className={showCraftPC ? 'fill-app-accent' : ''} />
+            </button>
+          )}
+
+          <div className="w-px h-5 bg-app-border mx-1" />
+        </>
       )}
 
-      {useCraftOSPC && (
-        <button
-          onClick={toggleCraftPC}
-          className={`toolbar-btn ${showCraftPC ? 'text-app-accent' : ''}`}
-          title="Toggle CraftOS-PC App Preview"
-        >
-          <CraftOSPCIcon className={showCraftPC ? 'fill-app-accent' : ''} />
-        </button>
-      )}
 
-      <div className="w-px h-5 bg-app-border mx-1" />
 
       {/* Zoom */}
       <button onClick={zoomOut} className="toolbar-btn" title="Zoom Out">-</button>
