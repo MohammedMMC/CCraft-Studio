@@ -55,7 +55,16 @@ export function setupCraftPCIPC(): void {
     });
 
     ipcMain.on('craftpc:mouse', (_event, data, windowId: number = 0) => {
-        proc?.stdin?.write(craftpcHelpers.buildMousePacket(windowId, data.eventType, 0, data.x, data.y));
+        let outTo: ((data: any) => void) | undefined;
+
+        if (socket) {
+            outTo = (data) => socket!.send(data);
+        } else if (proc?.stdin) {
+            outTo = (data) => proc!.stdin!.write(data);
+        }
+        if (!outTo) return;
+
+        outTo(craftpcHelpers.buildMousePacket(windowId, data.eventType, 0, data.x, data.y));
     });
 
     ipcMain.handle('craftpc:start', async (_event, execPath: string, isRemote: boolean = false) => {
@@ -93,8 +102,11 @@ export function setupCraftPCIPC(): void {
                         craftpcHelpers.setBinaryChecksum(packet.binaryChecksum);
                     }
 
+                    if (packet.type === 4 && !protocolState.isVersion11) socket?.send(craftpcHelpers.HANDSHAKE);
+
                     _event.sender.send('craftpc:packet', packet);
                 }
+
             });
 
             socket.on('error', () => {
@@ -130,7 +142,6 @@ export function setupCraftPCIPC(): void {
         return remoteId;
     });
 
-
     ipcMain.handle('craftpc:stop', async () => {
         // proc?.stdin?.write(useBinaryChecksum ? '!CPC000CBAACAAAAAAAA2C7A548B\n' : '!CPC000CBAACAAAAAAAA3AB9B910\n');
         proc?.kill();
@@ -138,6 +149,9 @@ export function setupCraftPCIPC(): void {
 
         socket?.close();
         socket = null;
+
+        protocolState = {};
+        craftpcHelpers.setBinaryChecksum(false);
     });
 
 }

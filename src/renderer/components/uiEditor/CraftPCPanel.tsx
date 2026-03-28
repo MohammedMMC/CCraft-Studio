@@ -20,11 +20,14 @@ export const CraftPCPanel: React.FC = () => {
   const [sessionStarted, setSessionStarted] = useState(false);
   const [failedToStart, setFailedToStart] = useState(true);
 
+  const [remoteId, setRemoteId] = useState<string | null>(null);
+
   const isClickHeld = useRef(false);
   const lastSendTime = useRef(0);
-  const terminalBuffer = useRef(new TerminalBuffer(termWidth, termHeight));
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const terminalBuffer = useRef(new TerminalBuffer(termWidth, termHeight));
+  const terminalRenderer = useRef<TerminalRenderer | null>(null);
 
   const startedRef = useRef(false);
   useEffect(() => {
@@ -32,9 +35,9 @@ export const CraftPCPanel: React.FC = () => {
     startedRef.current = true;
 
     const canvas = canvasRef.current as HTMLCanvasElement;
-    const buffer = terminalBuffer.current;
-    const terminalRenderer = new TerminalRenderer(canvas, buffer);
-    setInterval(() => terminalRenderer.render(), 100);
+
+    terminalRenderer.current = new TerminalRenderer(canvas, terminalBuffer.current);
+    setInterval(() => terminalRenderer.current?.render(), 100);
 
     window.electronAPI.craftpc.onPacket((packet: craftpcHelpers.CraftOSPacket) => {
       if (packet.windowId && packet.windowId !== windowId) setWindowId(packet.windowId);
@@ -42,16 +45,16 @@ export const CraftPCPanel: React.FC = () => {
         case 0:
           setTermWidth(packet.width);
           setTermHeight(packet.height);
-          buffer.clear();
+          terminalBuffer.current.clear();
 
-          terminalRenderer.setBlinkingCursor(packet.blink, packet.cursorX, packet.cursorY);
+          terminalRenderer.current?.setBlinkingCursor(packet.blink, packet.cursorX, packet.cursorY);
 
           for (let y = 0; y < packet.height; y++) {
             for (let x = 0; x < packet.width; x++) {
               const charCode = packet.screen?.[y]?.[x] ?? 32;
               const char = String.fromCharCode(charCode);
 
-              buffer.setCell(x, y, char, ...cosCH.rgbColorFromPalette(packet.palette, packet.colors, x, y));
+              terminalBuffer.current.setCell(x, y, char, ...cosCH.rgbColorFromPalette(packet.palette, packet.colors, x, y));
             }
           }
           break;
@@ -100,13 +103,16 @@ export const CraftPCPanel: React.FC = () => {
   }
 
   function startRemoteSession() {
+    terminalRenderer.current?.setBlinkingCursor(false, 0, 0);
     terminalBuffer.current.clear();
+
     setSessionStarted(true);
 
     window.electronAPI.craftpc.stop().then(() => {
-      window.electronAPI.craftpc.start(craftPCExecPath || '', true).then((id) => {
+      setRemoteId(null);
+      window.electronAPI.craftpc.start(craftPCExecPath || '', true).then((rId) => {
         setFailedToStart(false);
-        console.log(id);
+        setRemoteId(rId);
 
         console.log('CraftOS-PC remote session started!');
       }).catch((err) => {
@@ -138,6 +144,13 @@ export const CraftPCPanel: React.FC = () => {
               <p className="text-center font-[MinecraftFont] tracking-wider text-app-text-dim">CraftOS-PC not detected.</p>
             </div>
           )}
+
+          {(!failedToStart && remoteId) && (
+            <div className="absolute flex items-center justify-center h-full w-full">
+              <p className="text-center font-[MinecraftFont] tracking-wider text-app-text-dim text-sm">{"wget run https://remote.craftos-pc.cc/server.lua " + remoteId}</p>
+            </div>
+          )}
+
           <div className="CraftOSPC-corners bg-no-repeat w-[12px] h-[12px] bg-[position:0px_0px]"></div><div className="CraftOSPC-ysides col-[2/3] row-[1/2] bg-repeat-x w-auto h-[12px] bg-[position:0px_0px]"></div><div className="CraftOSPC-corners bg-no-repeat w-[12px] h-[12px] bg-[position:-12px_0px]"></div>
           <div className="CraftOSPC-xsides row-[2/3] col-[1/2] bg-repeat-y w-[12px] h-auto bg-[position:0px_0px]"></div>
 

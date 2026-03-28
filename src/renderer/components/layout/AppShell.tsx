@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useEditorStore } from '../../stores/editorStore';
 import { Toolbar } from './Toolbar';
 import { TabBar } from './TabBar';
@@ -20,7 +20,11 @@ export const AppShell: React.FC<AppShellProps> = ({ onExport }) => {
   const mode = useEditorStore((s) => s.mode);
   const showCraftPC = useEditorStore(s => s.showCraftPC);
   const useCraftOSPC = useAppStore((s) => s.useCraftOSPC);
+  const [firstTimeCraftPC, setFirstTimeCraftPC] = useState(false);
 
+  useEffect(() => {
+    if (!firstTimeCraftPC && showCraftPC) setFirstTimeCraftPC(true);
+  }, [showCraftPC]);
 
   return (
     <div className="flex flex-col w-full h-full">
@@ -37,7 +41,7 @@ export const AppShell: React.FC<AppShellProps> = ({ onExport }) => {
         </div>
 
         {/* CraftOS-PC Panel */}
-        {useCraftOSPC && (
+        {useCraftOSPC && firstTimeCraftPC && (
           <PanelDiv resizeable={true} hidden={!(mode === 'ui' && showCraftPC)}>
             <CraftPCPanel />
           </PanelDiv>

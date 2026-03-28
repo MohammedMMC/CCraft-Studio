@@ -36,7 +36,7 @@ export class TerminalRenderer {
     }
 
     setTimeout(() => this.render(), 100);
-    setTimeout(() => this.render(), 150);
+    setTimeout(() => this.render(), 300);
   }
 
   setBlinkingCursor(blink: boolean, x: number, y: number) {
