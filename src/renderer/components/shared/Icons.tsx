@@ -50,17 +50,17 @@ export const CraftOSPCIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export const CraftOSPCIcons: React.FC<{ name: 'folder' | 'remote' | 'monitor' | 'computer', size?: number }> = ({ name, size = 16 }) => {
+export const CraftOSPCIcons: React.FC<{ name: 'folder' | 'remote' | 'monitor' | 'computer', size?: number, className?: string }> = ({ name, size = 16, className }) => {
   return ({
     folder: () => (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width={size} height={size} className="fill-app-text-dim">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width={size} height={size} className={className || "fill-app-text-dim"}>
         <path fillRule="evenodd" clipRule="evenodd" d="M1 6.257V2.5l.5-.5h5l.35.15.86.85h5.79l.5.5V6h1.13l.48.63-2.63 7-.48.37H8.743a5.48 5.48 0 0 0 .657-1h2.73l2.37-6H8.743a5.534 5.534 0 0 0-.72-.724l.127-.126L8.5 6H13V4H7.5l-.35-.15L6.29 3H2l.01 2.594c-.361.184-.7.407-1.01.663z" />
         <path d="M6 10.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
         <path fillRule="evenodd" clipRule="evenodd" d="M8 10.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0zM4.5 13a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z" />
       </svg>
     ),
     remote: () => (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={size} height={size} className="fill-app-text-dim">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={size} height={size} className={className || "fill-app-text-dim"}>
         <path fillRule="evenodd" clipRule="evenodd" d="M1.344 2.125h20.312l.782.781v8.599a7.825 7.825 0 0 0-1.563-.912V3.688H2.125V17.75h7.813a7.813 7.813 0 0 0 1.562 4.688H5.25v-1.563h4.688v-1.563H1.344l-.782-.78V2.905l.782-.781zM17.75 11.5a6.25 6.25 0 1 0 0 12.5 6.25 6.25 0 0 0 0-12.5zm0 10.938a4.688 4.688 0 1 1 0-9.377 4.688 4.688 0 0 1 0 9.377zm2.603-3.132L18.2 17.153 20.353 15l.647.646-1.506 1.507L21 18.659l-.647.647zM15 17.246l1.506 1.507L15 20.259l.647.647 2.153-2.153-2.153-2.153-.647.646z" />
       </svg>
     ),

@@ -39,32 +39,14 @@ export function setupCraftPCIPC(): void {
     });
 
     ipcMain.on('craftpc:key', (_event, data: any, windowId: number = 0) => {
-        let outTo: ((data: any) => void) | undefined;
-
-        if (socket) {
-            outTo = (data) => socket!.send(data);
-        } else if (proc?.stdin) {
-            outTo = (data) => proc!.stdin!.write(data);
-        }
-        if (!outTo) return;
-
         if (data.key.length == 1 && data.type == "keydown") {
-            outTo(craftpcHelpers.buildKeyPacket(windowId, data.key.charCodeAt(0), data.type == "keydown", true, data.repeat, data.ctrlKey));
+            proc!.stdin!.write(craftpcHelpers.buildKeyPacket(windowId, data.key.charCodeAt(0), data.type == "keydown", true, data.repeat, data.ctrlKey));
         }
-        outTo(craftpcHelpers.buildKeyPacket(windowId, craftpcHelpers.KEY_MAP[data.code], data.type == "keydown", false, data.repeat, data.ctrlKey));
+        proc!.stdin!.write(craftpcHelpers.buildKeyPacket(windowId, craftpcHelpers.KEY_MAP[data.code], data.type == "keydown", false, data.repeat, data.ctrlKey));
     });
 
     ipcMain.on('craftpc:mouse', (_event, data, windowId: number = 0) => {
-        let outTo: ((data: any) => void) | undefined;
-
-        if (socket) {
-            outTo = (data) => socket!.send(data);
-        } else if (proc?.stdin) {
-            outTo = (data) => proc!.stdin!.write(data);
-        }
-        if (!outTo) return;
-
-        outTo(craftpcHelpers.buildMousePacket(windowId, data.eventType, 0, data.x, data.y));
+        proc!.stdin!.write(craftpcHelpers.buildMousePacket(windowId, data.eventType, 0, data.x, data.y));
     });
 
     ipcMain.handle('craftpc:start', async (_event, execPath: string, isRemote: boolean = false) => {
@@ -81,10 +63,11 @@ export function setupCraftPCIPC(): void {
 
         proc = spawn(execPath, [isRemote ? ('--raw-websocket wss://remote.craftos-pc.cc/' + remoteId) : '--raw'], { windowsHide: true });
 
-        proc.stdin!.write(craftpcHelpers.HANDSHAKE);
 
         if (isRemote) {
             socket = new WebSocket("wss://remote.craftos-pc.cc/" + remoteId);
+
+            if (proc && proc.stdin) proc.stdin.write = socket?.send.bind(socket) as any;
 
             socket.on('open', () => {
                 socket?.send(craftpcHelpers.HANDSHAKE);
@@ -118,6 +101,8 @@ export function setupCraftPCIPC(): void {
             });
 
         } else {
+            proc.stdin!.write(craftpcHelpers.HANDSHAKE);
+
             proc.stdout!.on('data', (chunk: Buffer) => {
                 leftover = Buffer.concat([leftover, chunk]);
                 const { packets, remaining } = craftpcHelpers.parseCraftOSPackets(leftover, protocolState);
@@ -143,7 +128,8 @@ export function setupCraftPCIPC(): void {
     });
 
     ipcMain.handle('craftpc:stop', async () => {
-        // proc?.stdin?.write(useBinaryChecksum ? '!CPC000CBAACAAAAAAAA2C7A548B\n' : '!CPC000CBAACAAAAAAAA3AB9B910\n');
+        proc?.stdin?.write(protocolState.useBinaryChecksum ? '!CPC000CBAACAAAAAAAA2C7A548B\n' : '!CPC000CBAACAAAAAAAA3AB9B910\n');
+
         proc?.kill();
         proc = null;
 

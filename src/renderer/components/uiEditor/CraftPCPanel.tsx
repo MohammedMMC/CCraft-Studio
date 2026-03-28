@@ -19,6 +19,7 @@ export const CraftPCPanel: React.FC = () => {
   const [windowId, setWindowId] = useState(0);
   const [sessionStarted, setSessionStarted] = useState(false);
   const [failedToStart, setFailedToStart] = useState(true);
+  const [sessionConnected, setSessionConnected] = useState(false);
 
   const [remoteId, setRemoteId] = useState<string | null>(null);
 
@@ -40,6 +41,7 @@ export const CraftPCPanel: React.FC = () => {
     setInterval(() => terminalRenderer.current?.render(), 100);
 
     window.electronAPI.craftpc.onPacket((packet: craftpcHelpers.CraftOSPacket) => {
+      if (sessionStarted) setSessionConnected(true);
       if (packet.windowId && packet.windowId !== windowId) setWindowId(packet.windowId);
       switch (packet.type) {
         case 0:
@@ -68,13 +70,7 @@ export const CraftPCPanel: React.FC = () => {
       console.log('Received packet:', packet);
     });
 
-    window.electronAPI.craftpc.start(craftPCExecPath || '', false).then(() => {
-      console.log('CraftOS-PC process started!');
-      setFailedToStart(false);
-    }).catch((err) => {
-      console.error('Failed to start CraftOS-PC:', err);
-      setFailedToStart(true);
-    });
+    startLocalApp();
 
     window.addEventListener("mouseup", () => isClickHeld.current = false);
   }, []);
@@ -102,9 +98,28 @@ export const CraftPCPanel: React.FC = () => {
     lastSendTime.current = Date.now();
   }
 
+  function startLocalApp() {
+    terminalRenderer.current?.setBlinkingCursor(false, 0, 0);
+    terminalBuffer.current.clear();
+    setSessionConnected(false);
+    setSessionStarted(false);
+    setRemoteId(null);
+
+    window.electronAPI.craftpc.stop().then(() => {
+      window.electronAPI.craftpc.start(craftPCExecPath || '', false).then(() => {
+        console.log('CraftOS-PC process started!');
+        setFailedToStart(false);
+      }).catch((err) => {
+        console.error('Failed to start CraftOS-PC:', err);
+        setFailedToStart(true);
+      });
+    });
+  }
+
   function startRemoteSession() {
     terminalRenderer.current?.setBlinkingCursor(false, 0, 0);
     terminalBuffer.current.clear();
+    setSessionConnected(false);
 
     setSessionStarted(true);
 
@@ -113,7 +128,6 @@ export const CraftPCPanel: React.FC = () => {
       window.electronAPI.craftpc.start(craftPCExecPath || '', true).then((rId) => {
         setFailedToStart(false);
         setRemoteId(rId);
-
         console.log('CraftOS-PC remote session started!');
       }).catch((err) => {
         setSessionStarted(false);
@@ -131,11 +145,11 @@ export const CraftPCPanel: React.FC = () => {
         <div className="w-full flex p-4 justify-between">
           {/* <button><CraftOSPCIcons name="monitor" size={36} /></button>
           <button><CraftOSPCIcons name="computer" size={36} /></button> */}
-          <button onClick={() => { window.electronAPI.craftpc.openProjectFolder(craftPCDataPath || "", windowId) }} disabled={sessionStarted || failedToStart}>
+          <button className={sessionStarted || failedToStart ? "opacity-50 cursor-not-allowed" : ""} onClick={() => { window.electronAPI.craftpc.openProjectFolder(craftPCDataPath || "", windowId) }} disabled={sessionStarted || failedToStart}>
             <CraftOSPCIcons name="folder" size={36} />
           </button>
-          <button onClick={startRemoteSession} disabled={sessionStarted}>
-            <CraftOSPCIcons name="remote" size={36} />
+          <button onClick={sessionStarted ? startLocalApp : startRemoteSession}>
+            <CraftOSPCIcons name="remote" size={36} className={sessionStarted ? "fill-app-success/80" : "fill-app-error/80"} />
           </button>
         </div>
         <div className="relative grid bg-app-bg w-full aspect-[62/35]">
@@ -145,7 +159,7 @@ export const CraftPCPanel: React.FC = () => {
             </div>
           )}
 
-          {(!failedToStart && remoteId) && (
+          {(!failedToStart && remoteId && !sessionConnected) && (
             <div className="absolute flex items-center justify-center h-full w-full">
               <p className="text-center font-[MinecraftFont] tracking-wider text-app-text-dim text-sm">{"wget run https://remote.craftos-pc.cc/server.lua " + remoteId}</p>
             </div>
