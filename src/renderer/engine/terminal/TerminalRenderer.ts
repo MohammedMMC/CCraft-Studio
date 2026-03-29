@@ -1,14 +1,14 @@
 import { TerminalBuffer } from './TerminalBuffer';
 import { CC_COLOR_NAMES, CC_COLORS, CCColor } from '../../models/CCColors';
 
-const CC_CHAR_WIDTH = 6;
-const CC_CHAR_HEIGHT = 9;
-const SCALE = 4;
+export const CC_CHAR_WIDTH = 6;
+export const CC_CHAR_HEIGHT = 9;
+export const CC_CHAR_SCALE = 4;
 const MAIN_FONT_FAMILY = 'MinecraftFont';
 
 // Preload the font so canvas can use it immediately
 let fontsLoaded = false;
-const fontPromise = document.fonts.load(`${CC_CHAR_HEIGHT * SCALE}px ${MAIN_FONT_FAMILY}`).then(() => fontsLoaded = true);
+const fontPromise = document.fonts.load(`${CC_CHAR_HEIGHT * CC_CHAR_SCALE}px ${MAIN_FONT_FAMILY}`).then(() => fontsLoaded = true);
 
 export class TerminalRenderer {
   private canvas: HTMLCanvasElement;
@@ -22,8 +22,8 @@ export class TerminalRenderer {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
     this.buffer = buffer;
-    this.charWidth = CC_CHAR_WIDTH * SCALE;
-    this.charHeight = CC_CHAR_HEIGHT * SCALE;
+    this.charWidth = CC_CHAR_WIDTH * CC_CHAR_SCALE;
+    this.charHeight = CC_CHAR_HEIGHT * CC_CHAR_SCALE;
     this.blinkingData = {
       x: 0, y: 0, char: '_',
       blinkingInterval: null

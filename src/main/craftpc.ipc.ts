@@ -34,8 +34,8 @@ export function setupCraftPCIPC(): void {
         };
     });
 
-    ipcMain.handle('craftpc:openProjectFolder', async (_event, dirPath: string, windowId: number) => {
-        await shell.openPath(path.join(dirPath, "computer", String(windowId)));
+    ipcMain.handle('craftpc:openProjectFolder', async (_event, dirPath: string, computerId: number) => {
+        await shell.openPath(path.join(dirPath, "computer", String(computerId)));
     });
 
     ipcMain.on('craftpc:key', (_event, data: any, windowId: number = 0) => {

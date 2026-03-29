@@ -1,4 +1,17 @@
+import { TerminalBuffer } from '@/engine/terminal/TerminalBuffer';
+import { TerminalRenderer } from '@/engine/terminal/TerminalRenderer';
 import type * as craftpcHelpers from 'src/main/craftospcHelpers';
+
+export type Monitor = {
+    windowId: number;
+    width: number;
+    height: number;
+    canvasWidth: number;
+    canvasHeight: number;
+    buffer: TerminalBuffer;
+    renderer: TerminalRenderer; 
+    id: string;
+};
 
 export function rgbColorFromPalette(
     palette: craftpcHelpers.PacketTerminal['palette'],

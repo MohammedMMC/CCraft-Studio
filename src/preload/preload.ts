@@ -29,7 +29,7 @@ const electronAPI = {
 
   craftpc: {
     getDirs: () => ipcRenderer.invoke('craftpc:getDirs'),
-    openProjectFolder: (dirPath: string, windowId: number) => ipcRenderer.invoke('craftpc:openProjectFolder', dirPath, windowId),
+    openProjectFolder: (dirPath: string, computerId: number) => ipcRenderer.invoke('craftpc:openProjectFolder', dirPath, computerId),
     start: (execPath: string, isRemote: boolean = false) => ipcRenderer.invoke('craftpc:start', execPath, isRemote),
     stop: () => ipcRenderer.invoke('craftpc:stop'),
     onExit: (cb: () => void) => ipcRenderer.on('craftpc:exit', cb),
