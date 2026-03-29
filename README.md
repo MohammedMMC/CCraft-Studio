@@ -1,5 +1,17 @@
-
 # CCraft Studio
+
+This is an open-source project. It’s a studio app for people playing the CC: Tweaked Minecraft mod.
+
+A lot of players (including younger ones) want to create their own programs in the mod, but they give up because Lua programming feels too difficult or overwhelming. That’s the main problem we’re trying to solve.
+
+With **CCraft Studio**, instead of coding, users can:
+
+1. Build GUIs by dragging and dropping components
+2. Program behavior using block-based logic (no Lua needed)
+3. Instantly test everything using a built-in CraftOS-PC app
+4. Export directly into the game and more
+
+![Preview Image](https://github.com/MohammedMMC/CCraft-Studio/blob/main/preview/simple_preview.png?raw=true)
 
 This project is currently under active development. Features and functionality may change.
 
@@ -13,3 +25,7 @@ If you'd like to test the current state of the project, you can download the lat
 - **Have a Questions?** Feel free to start a [discussion](https://github.com/MohammedMMC/CCraft-Studio/discussions)
 
 Thank you for your interest in CCraft Studio!
+
+# Lisence
+
+This project is licensed under the MIT License.
