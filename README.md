@@ -15,11 +15,23 @@ With **CCraft Studio**, instead of coding, users can:
 
 This project is currently under active development. Features and functionality may change.
 
-### Getting Started
+## Getting Started
 
 If you'd like to test the current state of the project, you can download the latest release from our [Releases page](https://github.com/MohammedMMC/CCraft-Studio/releases).
 
-### Feedback & Support
+To run the CCraft Studio from source code, follow these steps:
+
+1. Install the dependencies:
+   ```bash
+   npm install . --force
+   ```
+
+2. Run the development environment:
+   ```bash
+   npm run dev
+   ```
+
+## Feedback & Support
 
 - **Found a bug or have a suggestion?** Please open an [issue](https://github.com/MohammedMMC/CCraft-Studio/issues)
 - **Have a Questions?** Feel free to start a [discussion](https://github.com/MohammedMMC/CCraft-Studio/discussions)
