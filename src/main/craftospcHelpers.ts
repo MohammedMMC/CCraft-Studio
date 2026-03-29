@@ -580,6 +580,138 @@ export function buildMousePacket(
     return buildPacket(buf);
 }
 
+export const FILE_REQUEST_TYPE = {
+    exists: 0,
+    isDir: 1,
+    isReadOnly: 2,
+    getSize: 3,
+    getDrive: 4,
+    getCapacity: 5,
+    getFreeSpace: 6,
+    list: 7,
+    attributes: 8,
+    find: 9,
+    makeDir: 10,
+    delete: 11,
+    copy: 12,
+    move: 13,
+} as const;
+
+export type FileRequestType = (typeof FILE_REQUEST_TYPE)[keyof typeof FILE_REQUEST_TYPE] | number;
+
+function assertByte(name: string, value: number): void {
+    if (!Number.isInteger(value) || value < 0 || value > 0xff) {
+        throw new RangeError(`${name} must be an integer between 0 and 255`);
+    }
+}
+
+function nulTerminatedUtf8(text: string): Buffer {
+    return Buffer.concat([Buffer.from(text, 'utf8'), Buffer.from([0])]);
+}
+
+/**
+ * Build a Type 7 filesystem request packet.
+ *
+ * @example
+ * // Delete a file or folder
+ * stdin.write(buildFileRequestPacket(0, FILE_REQUEST_TYPE.delete, 21, '/tmp/old.txt'));
+ *
+ * @example
+ * // Copy folder/file
+ * stdin.write(buildFileRequestPacket(0, FILE_REQUEST_TYPE.copy, 22, '/src', '/backup/src'));
+ */
+export function buildFileRequestPacket(
+    windowId: number,
+    requestType: FileRequestType,
+    requestId: number,
+    path: string,
+    path2?: string,
+): string {
+    assertByte('windowId', windowId);
+    assertByte('requestType', requestType);
+    assertByte('requestId', requestId);
+
+    const needsSecondPath = requestType === FILE_REQUEST_TYPE.copy || requestType === FILE_REQUEST_TYPE.move;
+    if (needsSecondPath && !path2) {
+        throw new Error('requestType copy/move requires path2');
+    }
+
+    const chunks: Buffer[] = [
+        Buffer.from([7, windowId, requestType, requestId]),
+        nulTerminatedUtf8(path),
+    ];
+
+    if (needsSecondPath && path2) {
+        chunks.push(nulTerminatedUtf8(path2));
+    }
+
+    return buildPacket(Buffer.concat(chunks));
+}
+
+/**
+ * Build a Type 9 file data packet used by read/write operations.
+ */
+export function buildFileDataPacket(
+    windowId: number,
+    requestId: number,
+    data: Buffer | string,
+    opts: { error?: boolean; encoding?: BufferEncoding } = {},
+): string {
+    assertByte('windowId', windowId);
+    assertByte('requestId', requestId);
+
+    const payload = Buffer.isBuffer(data) ? data : Buffer.from(data, opts.encoding ?? 'utf8');
+    const header = Buffer.alloc(8);
+    header[0] = 9;
+    header[1] = windowId;
+    header[2] = opts.error ? 1 : 0;
+    header[3] = requestId;
+    header.writeUInt32LE(payload.length, 4);
+
+    return buildPacket(Buffer.concat([header, payload]));
+}
+
+/**
+ * Compute open request type in range 16-23 using raw mode mode bits.
+ */
+export function getFileOpenRequestType(opts: { write?: boolean; append?: boolean; binary?: boolean } = {}): number {
+    return 16 | (opts.write ? 1 : 0) | (opts.append ? 2 : 0) | (opts.binary ? 4 : 0);
+}
+
+/**
+ * Convenience helper for write/append operations.
+ * Returns Type 7 request packet + matching Type 9 data packet.
+ */
+export function buildFileWritePackets(
+    windowId: number,
+    requestId: number,
+    path: string,
+    data: Buffer | string,
+    opts: { append?: boolean; binary?: boolean; encoding?: BufferEncoding } = {},
+): { requestPacket: string; dataPacket: string } {
+    const requestType = getFileOpenRequestType({ write: true, append: opts.append, binary: opts.binary });
+    return {
+        requestPacket: buildFileRequestPacket(windowId, requestType, requestId, path),
+        dataPacket: buildFileDataPacket(windowId, requestId, data, { encoding: opts.encoding }),
+    };
+}
+
+export function buildDeletePacket(windowId: number, requestId: number, path: string): string {
+    return buildFileRequestPacket(windowId, FILE_REQUEST_TYPE.delete, requestId, path);
+}
+
+export function buildMakeDirPacket(windowId: number, requestId: number, path: string): string {
+    return buildFileRequestPacket(windowId, FILE_REQUEST_TYPE.makeDir, requestId, path);
+}
+
+export function buildCopyPacket(windowId: number, requestId: number, fromPath: string, toPath: string): string {
+    return buildFileRequestPacket(windowId, FILE_REQUEST_TYPE.copy, requestId, fromPath, toPath);
+}
+
+export function buildMovePacket(windowId: number, requestId: number, fromPath: string, toPath: string): string {
+    return buildFileRequestPacket(windowId, FILE_REQUEST_TYPE.move, requestId, fromPath, toPath);
+}
+
 /**
  * The initial handshake to send on connection.
  * Requests binary checksum + filesystem + window list (flags 0x0007).

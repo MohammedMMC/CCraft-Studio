@@ -140,4 +140,42 @@ export function setupCraftPCIPC(): void {
         craftpcHelpers.setBinaryChecksum(false);
     });
 
+    ipcMain.handle('craftpc:exportProject', async (_event, data: { files: { path: string; content: string }[], path: string, isRemote: boolean, computerId: number, projectName: string }) => {
+
+        if (data.isRemote) {
+
+        } else {
+            if (!fs.existsSync(data.path)) return null;
+
+            const dir = path.join(data.path, "computer", String(data.computerId), data.projectName);
+
+            await new Promise((resolve, reject) => {
+                if (fs.existsSync(dir)) {
+                    fs.rmdir(dir, { recursive: true }, (err) => {
+                        if (err) reject(err);
+                        fs.mkdir(dir, { recursive: true }, (err) => {
+                            if (err) reject(err);
+                            else resolve(undefined);
+                        });
+                    });
+                } else {
+                    fs.mkdir(dir, { recursive: true }, (err) => {
+                        if (err) reject(err);
+                        else resolve(undefined);
+                    });
+                }
+            });
+
+            for (const file of data.files) {
+                const fullPath = path.join(dir, file.path);
+                const fileDir = path.dirname(fullPath);
+                if (!fs.existsSync(fileDir)) {
+                    fs.mkdirSync(fileDir, { recursive: true });
+                }
+                fs.writeFileSync(fullPath, file.content, 'utf-8');
+            }
+            return dir;
+        }
+    });
+
 }

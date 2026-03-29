@@ -7,6 +7,8 @@ import { CC_CHAR_HEIGHT, CC_CHAR_SCALE, CC_CHAR_WIDTH, TerminalRenderer } from '
 import { TerminalBuffer } from '@/engine/terminal/TerminalBuffer';
 import { CraftOSPCIcons } from '../shared/Icons';
 
+import { ExportOptions, exportProject } from '../../engine/luaExport/index';
+import { CCProject } from '@/models/Project';
 
 
 export const CraftPCPanel: React.FC = () => {
@@ -157,6 +159,25 @@ export const CraftPCPanel: React.FC = () => {
     });
   }
 
+  async function reloadFiles() {
+    const options: ExportOptions = { mode: "full", minify: true };
+    const files = exportProject(project as CCProject, options);
+
+    if (files.length > 0) {
+      if (currentSessionType === "local") {
+        window.electronAPI.craftpc.exportProject({
+          files: files.map(f => ({ path: f.path, content: f.content })),
+          path: craftPCDataPath || "",
+          isRemote: false,
+          computerId: computerId.current,
+          projectName: project?.name || "CCProject"
+        })
+      }else {
+
+      }
+    }
+  }
+
   return (
     <div className="flex flex-col h-full">
       <div className="panel-header flex items-center justify-between">
@@ -166,6 +187,9 @@ export const CraftPCPanel: React.FC = () => {
         <div className="w-full flex p-4 justify-between">
           {/* <button><CraftOSPCIcons name="monitor" size={36} /></button>
           <button><CraftOSPCIcons name="computer" size={36} /></button> */}
+          <button className={failedToStart ? "opacity-50 cursor-not-allowed" : ""} onClick={reloadFiles} disabled={failedToStart}>
+            <CraftOSPCIcons name="reload" size={36} />
+          </button>
           <button className={currentSessionType == "remote" || failedToStart ? "opacity-50 cursor-not-allowed" : ""} onClick={() => { window.electronAPI.craftpc.openProjectFolder(craftPCDataPath || "", computerId.current) }} disabled={currentSessionType == "remote" || failedToStart}>
             <CraftOSPCIcons name="folder" size={36} />
           </button>
@@ -199,7 +223,7 @@ export const CraftPCPanel: React.FC = () => {
             onMouseUp={handleMouseEvent}
             onMouseMove={handleMouseEvent}
             // onScroll={handleMouseEvent} // TODO
-            className="w-full row-[2/3] col-[2/3] outline-0 cursor-default m-1"
+            className="w-full row-[2/3] col-[2/3] outline-0 cursor-default p-[1px]"
             width={canvasSize.width} height={canvasSize.height}
             style={{ imageRendering: 'pixelated', aspectRatio: `${canvasSize.width}/${canvasSize.height}` }}
           ></canvas>
