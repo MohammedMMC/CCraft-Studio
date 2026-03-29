@@ -19,7 +19,7 @@ export const CraftPCPanel: React.FC = () => {
 
   const [canvasSize, setCanvasSize] = useState({ width: termWidth * CC_CHAR_WIDTH * CC_CHAR_SCALE, height: termHeight * CC_CHAR_HEIGHT * CC_CHAR_SCALE });
 
-  const [windowId, setWindowId] = useState(0);
+  const windowId = useRef(0);
   const computerId = useRef(0);
 
   const [currentSessionType, setCurrentSessionType] = useState<"local" | "remote">("local");
@@ -36,8 +36,6 @@ export const CraftPCPanel: React.FC = () => {
   const terminalBuffer = useRef(new TerminalBuffer(termWidth, termHeight));
   const terminalRenderer = useRef<TerminalRenderer | null>(null);
 
-  const [monitors, setMonitors] = useState<Map<number, cosCH.Monitor>>(new Map());
-
   const startedRef = useRef(false);
   useEffect(() => {
     if (startedRef.current) return;
@@ -51,7 +49,7 @@ export const CraftPCPanel: React.FC = () => {
     window.electronAPI.craftpc.onPacket((packet: craftpcHelpers.CraftOSPacket) => {
       if (!sessionConnected) setSessionConnected(true);
 
-      if (packet.windowId && packet.windowId !== windowId) setWindowId(packet.windowId);
+      if (packet.windowId && packet.windowId !== windowId.current) windowId.current = packet.windowId;
       switch (packet.type) {
         case 0:
           if (packet.windowId === 0) {
@@ -69,24 +67,12 @@ export const CraftPCPanel: React.FC = () => {
           }
           break;
         case 4:
-          computerId.current = packet.computerId;
           if (packet.windowId === 0) {
-            setWindowId(0);
-            // setTermWidth(packet.width);
-            // setTermHeight(packet.height);
-            // updateCanvasSize(packet);
+            computerId.current = packet.computerId;
+            setTermWidth(packet.width);
+            setTermHeight(packet.height);
+            updateCanvasSize(packet);
           }
-          // if (packet.title.toLowerCase().includes("monitor")) {
-          setMonitors(prev => new Map(prev).set(packet.windowId, {
-            windowId: packet.windowId,
-            width: packet.width, height: packet.height,
-            canvasWidth: packet.width * CC_CHAR_WIDTH * CC_CHAR_SCALE,
-            canvasHeight: packet.height * CC_CHAR_HEIGHT * CC_CHAR_SCALE,
-            id: packet.title.split("")[1].split(" ")[1],
-            buffer: new TerminalBuffer(packet.width, packet.height),
-            renderer: new TerminalRenderer(canvas, new TerminalBuffer(packet.width, packet.height))
-          }));
-          // }
           break;
         default:
           break;
@@ -101,7 +87,7 @@ export const CraftPCPanel: React.FC = () => {
 
   function handleKeyboardEvent(e: React.KeyboardEvent) {
     e.preventDefault();
-    window.electronAPI.craftpc.key({ key: e.key, code: e.code, repeat: e.repeat, ctrlKey: e.ctrlKey, type: e.type }, windowId);
+    window.electronAPI.craftpc.key({ key: e.key, code: e.code, repeat: e.repeat, ctrlKey: e.ctrlKey, type: e.type }, windowId.current);
   }
 
   function handleMouseEvent(e: React.MouseEvent) {
@@ -118,11 +104,11 @@ export const CraftPCPanel: React.FC = () => {
       button: e.button,
       x: Math.floor(e.nativeEvent.offsetX / (canvas.clientWidth / termWidth)) + 1,
       y: Math.floor(e.nativeEvent.offsetY / (canvas.clientHeight / termHeight)) + 1,
-    }, windowId);
+    }, windowId.current);
     lastSendTime.current = Date.now();
   }
 
-  function updateCanvasSize(packet: { width: number; height: number }) {
+  function updateCanvasSize(packet: craftpcHelpers.PacketTermChange) {
     const newcanvasSize = { width: packet.width * CC_CHAR_WIDTH * CC_CHAR_SCALE, height: packet.height * CC_CHAR_HEIGHT * CC_CHAR_SCALE };
     setCanvasSize(newcanvasSize);
 
@@ -131,6 +117,8 @@ export const CraftPCPanel: React.FC = () => {
       canvasRef.current.height = newcanvasSize.height;
       canvasRef.current.style.aspectRatio = `${newcanvasSize.width}/${newcanvasSize.height}`;
     }
+
+    console.log(newcanvasSize + " " + packet.width + " " + packet.height);
   }
 
   function startLocalSession() {
@@ -168,14 +156,6 @@ export const CraftPCPanel: React.FC = () => {
       });
     });
   }
-
-  useEffect(() => {
-    const currentMonitor = monitors.get(windowId);
-    if (currentMonitor) {
-      currentMonitor.renderer.setBuffer(currentMonitor.buffer);
-      updateCanvasSize({ width: currentMonitor.width, height: currentMonitor.height });
-    }
-  }, [windowId]);
 
   return (
     <div className="flex flex-col h-full">
@@ -219,36 +199,13 @@ export const CraftPCPanel: React.FC = () => {
             onMouseUp={handleMouseEvent}
             onMouseMove={handleMouseEvent}
             // onScroll={handleMouseEvent} // TODO
-            className="w-full row-[2/3] col-[2/3] outline-0 m-1 cursor-default"
+            className="w-full row-[2/3] col-[2/3] outline-0 cursor-default m-1"
             width={canvasSize.width} height={canvasSize.height}
             style={{ imageRendering: 'pixelated', aspectRatio: `${canvasSize.width}/${canvasSize.height}` }}
           ></canvas>
 
           <div className="CraftOSPC-xsides row-[2/3] col-[3/4] bg-repeat-y w-[12px] h-auto bg-[position:-12px_0px]"></div>
           <div className="CraftOSPC-corners bg-no-repeat w-[12px] h-[12px] bg-[position:0px_-12px]"></div><div className="CraftOSPC-ysides col-[2/3] row-[3/4] bg-repeat-x w-auto h-[12px] bg-[position:0px_-12px]"></div><div className="CraftOSPC-corners bg-no-repeat w-[12px] h-[12px] bg-[position:-12px_-12px]"></div>
-        </div>
-
-        <div className="h-32 w-[calc(100%-16px)] overflow-x-auto flex justify-between gap-2 m-2 overflow-hidden">
-          {monitors.size > 0 && Array.from(monitors.values()).map(monitor => (
-            <>
-              <div
-                style={{ aspectRatio: `${monitor.canvasWidth}/${monitor.canvasHeight}` }}
-                className={(windowId == monitor.windowId ? "hidden " : "") + "relative grid bg-black grid-cols-[6px_auto_6px] grid-rows-[6px_auto_6px]"}>
-                <div className="CraftOSPC-corners bg-no-repeat w-[6px] h-[6px] bg-[position:0px_0px]"></div><div className="CraftOSPC-ysides col-[2/3] row-[1/2] bg-repeat-x w-auto h-[6px] bg-[position:0px_0px]"></div><div className="CraftOSPC-corners bg-no-repeat w-[6px] h-[6px] bg-[position:-12px_0px]"></div>
-                <div className="CraftOSPC-xsides row-[2/3] col-[1/2] bg-repeat-y w-[6px] bg-[position:0px_0px]"></div>
-
-                <canvas
-                  onClick={(e) => setWindowId(monitor.windowId)}
-                  className="w-full row-[2/3] col-[2/3] cursor-pointer"
-                  width={monitor.canvasWidth} height={monitor.canvasHeight}
-                  style={{ height: "calc(128px - 6px * 2)", imageRendering: 'pixelated', aspectRatio: `${monitor.canvasWidth}/${monitor.canvasHeight}` }}
-                ></canvas>
-
-                <div className="CraftOSPC-xsides row-[2/3] col-[3/4] bg-repeat-y w-[6px] bg-[position:-12px_0px]"></div>
-                <div className="CraftOSPC-corners bg-no-repeat w-[6px] h-[6px] bg-[position:0px_-12px]"></div><div className="CraftOSPC-ysides col-[2/3] row-[3/4] bg-repeat-x w-auto h-[6px] bg-[position:0px_-12px]"></div><div className="CraftOSPC-corners bg-no-repeat w-[6px] h-[6px] bg-[position:-12px_-12px]"></div>
-              </div>
-            </>
-          ))}
         </div>
 
       </div>

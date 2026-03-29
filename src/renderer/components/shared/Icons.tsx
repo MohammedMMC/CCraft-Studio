@@ -50,7 +50,7 @@ export const CraftOSPCIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export const CraftOSPCIcons: React.FC<{ name: 'folder' | 'remote' | 'monitor' | 'computer', size?: number, className?: string }> = ({ name, size = 16, className }) => {
+export const CraftOSPCIcons: React.FC<{ name: 'folder' | 'remote' | 'monitor' | 'computer', size?: number | string, className?: string }> = ({ name, size = 16, className }) => {
   return ({
     folder: () => (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width={size} height={size} className={className || "fill-app-text-dim"}>
@@ -65,7 +65,7 @@ export const CraftOSPCIcons: React.FC<{ name: 'folder' | 'remote' | 'monitor' | 
       </svg>
     ),
     monitor: () => (
-      <svg style={{ shapeRendering: "crispEdges", imageRendering: "pixelated" }} width={size} height={size} viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg className={className} style={{ shapeRendering: "crispEdges", imageRendering: "pixelated" }} width={size} height={size} viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M8 0H0V8H8V0Z" fill="#383838" />
         <path d="M16 0H8V8H16V0Z" fill="#353535" />
         <path d="M24 0H16V8H24V0Z" fill="#353535" />
@@ -325,7 +325,7 @@ export const CraftOSPCIcons: React.FC<{ name: 'folder' | 'remote' | 'monitor' | 
       </svg>
     ),
     computer: () => (
-      <svg style={{ shapeRendering: "crispEdges", imageRendering: "pixelated" }} width={size} height={size} viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg className={className} style={{ shapeRendering: "crispEdges", imageRendering: "pixelated" }} width={size} height={size} viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0 0H8V16H0V0Z" fill="#353535" />
         <path d="M8 0H24V8H8V0Z" fill="#323232" />
         <path d="M24 0H32V8H24V0Z" fill="#303030" />
