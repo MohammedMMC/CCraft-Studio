@@ -1,6 +1,6 @@
 {
   "name": "ccraft-studio",
-  "version": "0.2.0",
+  "version": "0.3.0-alpha",
   "description": "An app for creating apps or to code easily for Minecraft ComputerCraft Mod",
   "main": "dist/main/main.js",
   "scripts": {
