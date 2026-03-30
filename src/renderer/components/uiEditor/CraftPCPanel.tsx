@@ -89,7 +89,7 @@ export const CraftPCPanel: React.FC = () => {
 
   function handleKeyboardEvent(e: React.KeyboardEvent) {
     e.preventDefault();
-    window.electronAPI.craftpc.key({ key: e.key, code: e.code, repeat: e.repeat, ctrlKey: e.ctrlKey, type: e.type }, windowId.current);
+    window.electronAPI.craftpc.key({ key: e.key, code: e.code, repeat: e.repeat, ctrlKey: e.ctrlKey, type: e.type, metaKey: e.metaKey }, windowId.current);
   }
 
   function handleMouseEvent(e: React.MouseEvent) {
@@ -119,24 +119,25 @@ export const CraftPCPanel: React.FC = () => {
       canvasRef.current.height = newcanvasSize.height;
       canvasRef.current.style.aspectRatio = `${newcanvasSize.width}/${newcanvasSize.height}`;
     }
-
-    console.log(newcanvasSize + " " + packet.width + " " + packet.height);
   }
 
-  function startLocalSession() {
-    setCurrentSessionType("local");
-    terminalRenderer.current?.setBlinkingCursor(false, 0, 0);
-    terminalBuffer.current.clear();
-    setSessionConnected(false);
-    setRemoteId(null);
+  async function startLocalSession() {
+    return new Promise<void>((resolve, reject) => {
+      setCurrentSessionType("local");
+      terminalRenderer.current?.setBlinkingCursor(false, 0, 0);
+      terminalBuffer.current.clear();
+      setSessionConnected(false);
+      setRemoteId(null);
 
-    window.electronAPI.craftpc.stop().then(() => {
-      window.electronAPI.craftpc.start(craftPCExecPath || '', false).then(() => {
-        console.log('CraftOS-PC process started!');
-        setFailedToStart(false);
-      }).catch((err) => {
-        console.error('Failed to start CraftOS-PC:', err);
-        setFailedToStart(true);
+      window.electronAPI.craftpc.stop().then(() => {
+        window.electronAPI.craftpc.start(craftPCExecPath || '', false).then(() => {
+          console.log('CraftOS-PC process started!');
+          setFailedToStart(false);
+          resolve();
+        }).catch((err) => {
+          setFailedToStart(true);
+          reject(err);
+        });
       });
     });
   }
@@ -160,6 +161,8 @@ export const CraftPCPanel: React.FC = () => {
   }
 
   async function reloadFiles() {
+    await window.electronAPI.craftpc.closeTestingApp(windowId.current);
+
     const options: ExportOptions = { mode: "full", minify: true };
     const files = exportProject(project as CCProject, options);
 
@@ -171,11 +174,21 @@ export const CraftPCPanel: React.FC = () => {
           isRemote: false,
           computerId: computerId.current,
           projectName: project?.name || "CCProject"
-        })
-      }else {
+        }).catch(async (err) => {
+          await startLocalSession();
+          reloadFiles();
+        }).then(() => {
+          window.electronAPI.craftpc.startTestingApp({
+            computerId: computerId.current,
+            projectName: project?.name || "CCProject",
+            windowId: windowId.current
+          });
+        });
+      } else {
 
       }
     }
+
   }
 
   return (

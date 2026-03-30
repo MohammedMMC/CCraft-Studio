@@ -25,6 +25,7 @@ let proc: ChildProcess | null = null;
 let socket: WebSocket | null = null;
 let leftover: Buffer = Buffer.alloc(0);
 let protocolState: craftpcHelpers.ParseOptions = {};
+let lastV11Check: number = 0;
 
 export function setupCraftPCIPC(): void {
     ipcMain.handle('craftpc:getDirs', async () => {
@@ -38,11 +39,35 @@ export function setupCraftPCIPC(): void {
         await shell.openPath(path.join(dirPath, "computer", String(computerId)));
     });
 
+    ipcMain.handle('craftpc:closeTestingApp', (_event, windowId: number = 0) => {
+        return new Promise((resolve, reject) => {
+            proc!.stdin!.write(craftpcHelpers.buildEventPacket(windowId, "close", []),
+                (err) => err ? reject(err) : resolve(undefined));
+        });
+    });
+    ipcMain.handle('craftpc:startTestingApp', async (_event, data: { windowId: number, computerId: number, projectName: string }) => {
+        for (const char of `"${data.projectName}/startup.lua"`) {
+            await new Promise((resolve, reject) => {
+                proc!.stdin!.write(craftpcHelpers.buildKeyPacket(data.windowId, char.charCodeAt(0), true, true, false, false),
+                    (err) => err ? reject(err) : resolve(undefined));
+            });
+        }
+
+        await new Promise((resolve, reject) => {
+            proc!.stdin!.write(craftpcHelpers.buildKeyPacket(data.windowId,  craftpcHelpers.KEY_MAP['Enter'], true, false, false, false),
+                (err) => err ? reject(err) : resolve(undefined));
+        });
+        await new Promise((resolve, reject) => {
+            proc!.stdin!.write(craftpcHelpers.buildKeyPacket(data.windowId,  craftpcHelpers.KEY_MAP['Enter'], false, false, false, false),
+                (err) => err ? reject(err) : resolve(undefined));
+        });
+    });
+
     ipcMain.on('craftpc:key', (_event, data: any, windowId: number = 0) => {
-        if (data.key.length == 1 && data.type == "keydown") {
+        proc!.stdin!.write(craftpcHelpers.buildKeyPacket(windowId, craftpcHelpers.KEY_MAP[data.code], data.type == "keydown", false, data.type == "keydown" ? data.repeat : false, data.type == "keydown" ? data.ctrlKey : false));
+        if (data.key.length == 1 && data.type == "keydown" && !data.ctrlKey && !data.altKey && !data.metaKey) {
             proc!.stdin!.write(craftpcHelpers.buildKeyPacket(windowId, data.key.charCodeAt(0), data.type == "keydown", true, data.repeat, data.ctrlKey));
         }
-        proc!.stdin!.write(craftpcHelpers.buildKeyPacket(windowId, craftpcHelpers.KEY_MAP[data.code], data.type == "keydown", false, data.repeat, data.ctrlKey));
     });
 
     ipcMain.on('craftpc:mouse', (_event, data, windowId: number = 0) => {
@@ -85,11 +110,13 @@ export function setupCraftPCIPC(): void {
                         craftpcHelpers.setBinaryChecksum(packet.binaryChecksum);
                     }
 
-                    if (packet.type === 4 && !protocolState.isVersion11) socket?.send(craftpcHelpers.HANDSHAKE);
-
                     _event.sender.send('craftpc:packet', packet);
                 }
 
+                if (lastV11Check + 3000 <= Date.now() && !protocolState.isVersion11) {
+                    socket?.send(craftpcHelpers.HANDSHAKE);
+                    lastV11Check = Date.now()
+                }
             });
 
             socket.on('error', () => {
@@ -128,12 +155,17 @@ export function setupCraftPCIPC(): void {
     });
 
     ipcMain.handle('craftpc:stop', async () => {
-        proc?.stdin?.write(protocolState.useBinaryChecksum ? '!CPC000CBAACAAAAAAAA2C7A548B\n' : '!CPC000CBAACAAAAAAAA3AB9B910\n');
+        if (socket !== null && socket?.readyState === WebSocket.OPEN) {
+            proc?.stdin?.write(protocolState.useBinaryChecksum ? '!CPC000CBAACAAAAAAAA2C7A548B\n' : '!CPC000CBAACAAAAAAAA3AB9B910\n');
+        }
 
         proc?.kill();
+        console.log("CRAFTOS PIDDDDD: ", proc?.pid);
         proc = null;
 
-        socket?.close();
+        if (socket?.readyState === WebSocket.OPEN) {
+            socket?.close();
+        }
         socket = null;
 
         protocolState = {};

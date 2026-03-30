@@ -551,7 +551,7 @@ export function buildKeyPacket(
     ctrlHeld = false
 ): string {
     const flags =
-        (keyDown ? 0b0001 : 0) |
+        (!keyDown ? 0b0001 : 0) |
         (held ? 0b0010 : 0) |
         (ctrlHeld ? 0b0100 : 0) |
         (isChar ? 0b1000 : 0);
@@ -607,6 +607,83 @@ function assertByte(name: string, value: number): void {
 
 function nulTerminatedUtf8(text: string): Buffer {
     return Buffer.concat([Buffer.from(text, 'utf8'), Buffer.from([0])]);
+}
+
+export type LuaEventParam = LuaValue | number | string | boolean | null | undefined;
+
+function isLuaValue(v: unknown): v is LuaValue {
+    return !!v && typeof v === 'object' && 'luaType' in (v as Record<string, unknown>);
+}
+
+function toLuaValue(value: LuaEventParam): LuaValue {
+    if (isLuaValue(value)) return value;
+    if (typeof value === 'number') {
+        if (Number.isInteger(value) && value >= 0 && value <= 0xffffffff) {
+            return { luaType: 'number', value };
+        }
+        return { luaType: 'float', value };
+    }
+    if (typeof value === 'boolean') return { luaType: 'boolean', value };
+    if (typeof value === 'string') return { luaType: 'string', value };
+    return { luaType: 'nil' };
+}
+
+function serializeLuaValue(v: LuaValue): Buffer {
+    if (v.luaType === 'number') {
+        const out = Buffer.alloc(5);
+        out[0] = 0;
+        out.writeUInt32LE(v.value >>> 0, 1);
+        return out;
+    }
+
+    if (v.luaType === 'float') {
+        const out = Buffer.alloc(9);
+        out[0] = 1;
+        out.writeDoubleBE(v.value, 1);
+        return out;
+    }
+
+    if (v.luaType === 'boolean') {
+        return Buffer.from([2, v.value ? 1 : 0]);
+    }
+
+    if (v.luaType === 'string') {
+        return Buffer.concat([Buffer.from([3]), nulTerminatedUtf8(v.value)]);
+    }
+
+    if (v.luaType === 'table') {
+        const count = Math.min(255, Math.min(v.keys.length, v.values.length));
+        const keys = v.keys.slice(0, count).map(serializeLuaValue);
+        const values = v.values.slice(0, count).map(serializeLuaValue);
+        return Buffer.concat([Buffer.from([4, count]), ...keys, ...values]);
+    }
+
+    return Buffer.from([5]);
+}
+
+/**
+ * Build a Type 3 generic event packet.
+ *
+ * @example
+ * // Queue a paste event
+ * stdin.write(buildEventPacket(0, 'paste', ['hello world']));
+ */
+export function buildEventPacket(
+    windowId: number,
+    name: string,
+    params: LuaEventParam[] = [],
+): string {
+    assertByte('windowId', windowId);
+    assertByte('paramCount', params.length);
+
+    const serializedParams = params.map((p) => serializeLuaValue(toLuaValue(p)));
+    const payload = Buffer.concat([
+        Buffer.from([3, windowId, params.length]),
+        nulTerminatedUtf8(name),
+        ...serializedParams,
+    ]);
+
+    return buildPacket(payload);
 }
 
 /**

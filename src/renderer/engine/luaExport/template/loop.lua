@@ -9,6 +9,11 @@ while running do
     -- end
     local isMonitor = event == "monitor_touch"
     local screen = getScreen(isMonitor and 'monitor:' .. p1 or 'terminal')
+
+    if event == "close" then
+        running = false
+        return;
+    end
     
     if screen then
         if event == "mouse_click" or event == "monitor_touch" then
