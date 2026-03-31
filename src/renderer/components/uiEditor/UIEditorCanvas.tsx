@@ -104,10 +104,10 @@ function renderElementToBuffer(
 
       buffer.fillRect(x, y, width, height, ' ', el.bgColor, el.bgColor);
       if (el.orientation.startsWith("v")) {
-        buffer.fillRect(x, y + (el.orientation == "vbtt" ? Math.round(height * (100 - percentValue) / 100) : 0), width, Math.round(height * percentValue / 100), ' ', el.filledColor, el.filledColor);
+        buffer.fillRect(x, y + (el.orientation == "vbtt" ? height - Math.round(height * percentValue / 100) : 0), width, Math.round(height * percentValue / 100), ' ', el.filledColor, el.filledColor);
         buffer.fillRect(x, y + Math.round((height - 1) * (el.orientation == "vbtt" ? 100 - percentValue : percentValue) / 100), width, 1, ' ', el.handleColor, el.handleColor);
       } else {
-        buffer.fillRect(x + (el.orientation == "hrtl" ? Math.round(width * (100 - percentValue) / 100) : 0), y, Math.round(width * percentValue / 100), height, ' ', el.filledColor, el.filledColor);
+        buffer.fillRect(x + (el.orientation == "hrtl" ? width - Math.round(width * percentValue / 100) : 0), y, Math.round(width * percentValue / 100), height, ' ', el.filledColor, el.filledColor);
         buffer.fillRect(x + Math.round((width - 1) * (el.orientation == "hrtl" ? 100 - percentValue : percentValue) / 100), y, 1, height, ' ', el.handleColor, el.handleColor);
       }
       break;
