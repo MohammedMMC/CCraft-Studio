@@ -47,7 +47,7 @@ function Slider:drawElement()
 
         self.monitor.setCursorPos(self.x, self.y +
             (self.orientation == "vbtt"
-                and self.height - math.floor((self.height - 1) * percentValue / 100 + 0.5)
+                and (self.height-1) - math.floor((self.height - 1) * percentValue / 100 + 0.5)
                 or math.floor((self.height - 1) * percentValue / 100 + 0.5))
         );
         self.monitor.setBackgroundColor(self.handleColor)
@@ -56,7 +56,8 @@ function Slider:drawElement()
         self.monitor.setBackgroundColor(self.filledColor)
         for j = 0, self.height - 1 do
             self.monitor.setCursorPos(
-                self.x + (self.orientation == "hrtl" and self.width - math.floor(self.width * percentValue / 100 + 0.5) or 0),
+                self.x +
+                (self.orientation == "hrtl" and self.width - math.floor(self.width * percentValue / 100 + 0.5) or 0),
                 self.y + j)
             self.monitor.write(string.rep(" ", math.floor(self.width * percentValue / 100 + 0.5)))
         end
@@ -65,8 +66,7 @@ function Slider:drawElement()
         for j = 0, self.height - 1 do
             self.monitor.setCursorPos(
                 self.x +
-                math.floor((self.width - 1) * (self.orientation == "hrtl" and 100 - percentValue or percentValue) / 100 +
-                    0.5),
+                (self.orientation == "hrtl" and self.width - math.floor((self.width - 1) * percentValue / 100 + 0.5) or math.floor((self.width - 1) * percentValue / 100 + 0.5)),
                 self.y + j)
             self.monitor.write(string.rep(" ", 1))
         end
