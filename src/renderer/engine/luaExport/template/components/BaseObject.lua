@@ -13,7 +13,7 @@ function BaseObject:new(name, props)
     for pn, pi in pairs(props) do
         obj[pn] = pi
     end
-    
+
     return obj
 end
 
@@ -78,12 +78,12 @@ function resolveLayout()
         if comp.widthUnit == "fill" then
             w = refW
         elseif comp.widthUnit == "%" and comp.rawWidth then
-            w = math.max(1, math.floor(comp.rawWidth / 100 * refW))
+            w = math.max(1, math.floor(comp.rawWidth / 100 * refW + 0.5))
         end
         if comp.heightUnit == "fill" then
             h = refH
         elseif comp.heightUnit == "%" and comp.rawHeight then
-            h = math.max(1, math.floor(comp.rawHeight / 100 * refH))
+            h = math.max(1, math.floor(comp.rawHeight / 100 * refH + 0.5))
         end
         return w, h
     end
@@ -106,27 +106,41 @@ function resolveLayout()
     local function resolveFlexLayout(container, children, innerX, innerY, innerW, innerH, gap)
         local isRow = container.flexDirection == "row"
         local sizes = {}
-        local totalChildMain = 0
+
         for i, child in ipairs(children) do
             local cw, ch = resolveSize(child, innerW, innerH)
             sizes[i] = { w = cw, h = ch }
-            totalChildMain = totalChildMain + (isRow and cw or ch)
         end
 
         local mainSpace = isRow and innerW or innerH
         local crossSpace = isRow and innerH or innerW
         local totalGap = gap * math.max(0, #children - 1)
 
-        -- Shrink children proportionally if they overflow the main axis
-        if totalChildMain > 0 and totalChildMain + totalGap > mainSpace then
-            local availableForChildren = math.max(#children, mainSpace - totalGap)
-            local ratio = availableForChildren / totalChildMain
-            for i, s in ipairs(sizes) do
-                if isRow then
-                    s.w = math.max(1, math.floor(s.w * ratio))
-                else
-                    s.h = math.max(1, math.floor(s.h * ratio))
-                end
+        local childData = {}
+        for i, child in ipairs(children) do
+            childData[i] = {
+                index = i,
+                isAbsolute = (isRow and child.widthUnit or child.heightUnit) == "px",
+                mainSize = isRow and sizes[i].w or sizes[i].h,
+            }
+        end
+
+        local totalAbsoluteMain = 0
+        local nonAbsoluteChildIndexes = {}
+
+        for _, data in ipairs(childData) do
+            if data.isAbsolute then
+                totalAbsoluteMain = totalAbsoluteMain + data.mainSize
+            else
+                table.insert(nonAbsoluteChildIndexes, data.index)
+            end
+        end
+
+        local spaceForNonAbsolute = math.max(0, mainSpace - totalGap - totalAbsoluteMain)
+        if #nonAbsoluteChildIndexes > 0 then
+            for i, childIndex in ipairs(nonAbsoluteChildIndexes) do
+                sizes[childIndex][isRow and 'w' or 'h'] = math.floor(spaceForNonAbsolute / #nonAbsoluteChildIndexes) +
+                    ((i <= spaceForNonAbsolute % #nonAbsoluteChildIndexes) and 1 or 0)
             end
         end
 
@@ -134,8 +148,17 @@ function resolveLayout()
         for i, s in ipairs(sizes) do totalMain = totalMain + (isRow and s.w or s.h) end
         totalMain = totalMain + totalGap
 
+        if totalMain > mainSpace and #children > 0 then
+            local maxShrinkSize = (isRow and sizes[#children].w or sizes[#children].h) - 1
+            if maxShrinkSize > 0 then
+                local shrinkSize = math.min(totalMain - mainSpace, maxShrinkSize)
+                sizes[#children][isRow and 'w' or 'h'] = math.max(1, sizes[#children][isRow and 'w' or 'h'] - shrinkSize)
+                totalMain = totalMain - shrinkSize
+            end
+        end
+
         local mainOffset = 0
-        local spaceBetween = gap
+        local gapSpaces = {}
 
         local jc = container.justifyContent or "start"
         if jc == "center" then
@@ -145,7 +168,10 @@ function resolveLayout()
         elseif jc == "space-between" and #children > 1 then
             local childMainSum = 0
             for i, s in ipairs(sizes) do childMainSum = childMainSum + (isRow and s.w or s.h) end
-            spaceBetween = math.floor((mainSpace - childMainSum) / math.max(1, #children - 1))
+            for i = 1, #children - 1 do
+                gapSpaces[i] = math.floor((mainSpace - childMainSum) / (#children - 1)) +
+                    ((i <= ((mainSpace - childMainSum) % (#children - 1))) and 1 or 0)
+            end
             mainOffset = 0
         end
 
@@ -165,7 +191,11 @@ function resolveLayout()
             child.y = isRow and (innerY + crossOffset) or (innerY + cursor)
             child.width = s.w
             child.height = s.h
-            cursor = cursor + childMain + (jc == "space-between" and spaceBetween or gap)
+
+            if i < #children then
+                local space = (jc == "space-between" and #gapSpaces > 0) and gapSpaces[i] or gap
+                cursor = cursor + childMain + space
+            end
         end
     end
 
@@ -178,13 +208,42 @@ function resolveLayout()
         local cellW = math.max(1, math.floor((innerW - totalGapX) / cols))
         local cellH = math.max(1, math.floor((innerH - totalGapY) / rows))
 
+        local childData = {}
         for i, child in ipairs(children) do
-            local cw, ch = resolveSize(child, innerW, innerH)
+            childData[i] = {
+                index = i,
+                isAbsoluteW = child.widthUnit ~= "px",
+                isAbsoluteH = child.heightUnit ~= "px",
+                mainWidth = children[i].width,
+                mainHeight = children[i].height,
+            }
+        end
+
+        for i, child in ipairs(children) do
+            local cData = childData[i]
+            local w = children[i].width
+            local h = children[i].height
+
+            if cData.isAbsoluteW then
+                children[i].width = math.max(1, math.floor(w * (cellW / math.max(1, cData.mainWidth))))
+            else
+                children[i].width = math.min(cData.mainWidth, cellW)
+            end
+
+            if cData.isAbsoluteH then
+                children[i].height = math.max(1, math.floor(h * (cellH / math.max(1, cData.mainHeight))))
+            else
+                children[i].height = math.min(cData.mainHeight, cellH)
+            end
+        end
+
+        for i, child in ipairs(children) do
             local col = (i - 1) % cols
             local row = math.floor((i - 1) / cols)
             if row >= rows then break end
-            local w = math.min(cw, cellW)
-            local h = math.min(ch, cellH)
+
+            local w = math.min(child.width, cellW)
+            local h = math.min(child.height, cellH)
             local cellX = innerX + col * (cellW + gap)
             local cellY = innerY + row * (cellH + gap)
             child.x = cellX + math.floor((cellW - w) / 2)
@@ -206,7 +265,7 @@ function resolveLayout()
         local pad = container.padding or 0
         if container.paddingUnit == "%" then
             local ref = math.min(bw, bh)
-            pad = math.max(0, math.floor(pad / 100 * ref))
+            pad = math.max(0, math.floor(pad / 100 * ref + 0.5))
         end
         local innerX = bx + pad
         local innerY = by + pad
@@ -216,7 +275,7 @@ function resolveLayout()
         local gap = container.gap or 0
         if container.gapUnit == "%" then
             local ref = (container.display == "flex" and container.flexDirection == "row") and innerW or innerH
-            gap = math.max(0, math.floor(gap / 100 * ref))
+            gap = math.max(0, math.floor(gap / 100 * ref + 0.5))
         end
 
         local children = getVisibleChildren(container)
@@ -254,5 +313,4 @@ function resolveLayout()
             end
         end
     end
-
 end

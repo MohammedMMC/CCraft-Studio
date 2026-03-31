@@ -348,30 +348,8 @@ function resolveFlexLayout(
   const spaceForNonAbsolute = Math.max(0, mainSpace - totalGap - totalAbsoluteMain);
 
   if (nonAbsoluteChildIndexes.length > 0) {
-    if (nonAbsoluteChildIndexes.length === children.length) {
-      for (let i = 0; i < nonAbsoluteChildIndexes.length; i++) {
-        const size = (Math.floor(spaceForNonAbsolute / nonAbsoluteChildIndexes.length)) + (i < (spaceForNonAbsolute % nonAbsoluteChildIndexes.length) ? 1 : 0);
-        if (isRow) {
-          childSizes[nonAbsoluteChildIndexes[i]].width = size;
-        } else {
-          childSizes[nonAbsoluteChildIndexes[i]].height = size;
-        }
-      }
-    } else {
-      const totalNonAbsoluteMain = nonAbsoluteChildIndexes.reduce(
-        (sum, i) => sum + (isRow ? childSizes[i].width : childSizes[i].height), 0
-      );
-
-      if (totalNonAbsoluteMain > spaceForNonAbsolute) {
-        const shrinkRatio = spaceForNonAbsolute / totalNonAbsoluteMain;
-        for (const i of nonAbsoluteChildIndexes) {
-          if (isRow) {
-            childSizes[i].width = Math.max(1, Math.floor(childSizes[i].width * shrinkRatio));
-          } else {
-            childSizes[i].height = Math.max(1, Math.floor(childSizes[i].height * shrinkRatio));
-          }
-        }
-      }
+    for (let i = 0; i < nonAbsoluteChildIndexes.length; i++) {
+      childSizes[nonAbsoluteChildIndexes[i]][isRow ? 'width' : 'height'] = (Math.floor(spaceForNonAbsolute / nonAbsoluteChildIndexes.length)) + (i < (spaceForNonAbsolute % nonAbsoluteChildIndexes.length) ? 1 : 0);
     }
   }
 
@@ -380,7 +358,7 @@ function resolveFlexLayout(
   ) + totalGap;
 
   if (totalMain > mainSpace && children.length > 0) {
-    const maxShrinkSize = isRow ? childSizes[children.length - 1].width - 1 : childSizes[children.length - 1].height - 1;
+    const maxShrinkSize = (isRow ? childSizes[children.length - 1].width : childSizes[children.length - 1].height) - 1;
     if (maxShrinkSize > 0) {
       const shrinkSize = Math.min(totalMain - mainSpace, maxShrinkSize);
       childSizes[children.length - 1][isRow ? 'width' : 'height'] = Math.max(1, childSizes[children.length - 1][isRow ? 'width' : 'height'] - shrinkSize);
