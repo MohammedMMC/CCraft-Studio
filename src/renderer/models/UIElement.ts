@@ -331,28 +331,65 @@ function resolveFlexLayout(
   const crossSpace = isRow ? innerH : innerW;
   const totalGap = gap * Math.max(0, children.length - 1);
 
-  // Shrink children proportionally if they overflow the main axis
-  const totalChildMain = childSizes.reduce(
-    (sum, s) => sum + (isRow ? s.width : s.height), 0
-  );
-  if (totalChildMain > 0 && totalChildMain + totalGap > mainSpace) {
-    const availableForChildren = Math.max(children.length, mainSpace - totalGap);
-    const ratio = availableForChildren / totalChildMain;
-    for (const s of childSizes) {
-      if (isRow) {
-        s.width = Math.max(1, Math.floor(s.width * ratio));
-      } else {
-        s.height = Math.max(1, Math.floor(s.height * ratio));
+  const childData = children.map((child, i) => ({
+    index: i,
+    isAbsolute: (isRow ? child.widthUnit : child.heightUnit) === 'px',
+    mainSize: isRow ? childSizes[i].width : childSizes[i].height,
+  }));
+
+  const totalAbsoluteMain = childData
+    .filter(m => m.isAbsolute)
+    .reduce((sum, m) => sum + m.mainSize, 0);
+
+  const nonAbsoluteChildIndexes = childData
+    .filter(m => !m.isAbsolute)
+    .map(m => m.index);
+
+  const spaceForNonAbsolute = Math.max(0, mainSpace - totalGap - totalAbsoluteMain);
+
+  if (nonAbsoluteChildIndexes.length > 0) {
+    if (nonAbsoluteChildIndexes.length === children.length) {
+      for (let i = 0; i < nonAbsoluteChildIndexes.length; i++) {
+        const size = (Math.floor(spaceForNonAbsolute / nonAbsoluteChildIndexes.length)) + (i < (spaceForNonAbsolute % nonAbsoluteChildIndexes.length) ? 1 : 0);
+        if (isRow) {
+          childSizes[nonAbsoluteChildIndexes[i]].width = size;
+        } else {
+          childSizes[nonAbsoluteChildIndexes[i]].height = size;
+        }
+      }
+    } else {
+      const totalNonAbsoluteMain = nonAbsoluteChildIndexes.reduce(
+        (sum, i) => sum + (isRow ? childSizes[i].width : childSizes[i].height), 0
+      );
+
+      if (totalNonAbsoluteMain > spaceForNonAbsolute) {
+        const shrinkRatio = spaceForNonAbsolute / totalNonAbsoluteMain;
+        for (const i of nonAbsoluteChildIndexes) {
+          if (isRow) {
+            childSizes[i].width = Math.max(1, Math.floor(childSizes[i].width * shrinkRatio));
+          } else {
+            childSizes[i].height = Math.max(1, Math.floor(childSizes[i].height * shrinkRatio));
+          }
+        }
       }
     }
   }
 
-  const totalMain = childSizes.reduce(
+  let totalMain = childSizes.reduce(
     (sum, s) => sum + (isRow ? s.width : s.height), 0
   ) + totalGap;
 
+  if (totalMain > mainSpace && children.length > 0) {
+    const maxShrinkSize = isRow ? childSizes[children.length - 1].width - 1 : childSizes[children.length - 1].height - 1;
+    if (maxShrinkSize > 0) {
+      const shrinkSize = Math.min(totalMain - mainSpace, maxShrinkSize);
+      childSizes[children.length - 1][isRow ? 'width' : 'height'] = Math.max(1, childSizes[children.length - 1][isRow ? 'width' : 'height'] - shrinkSize);
+      totalMain -= shrinkSize;
+    }
+  }
+
   let mainOffset = 0;
-  let spaceBetween = gap;
+  const gapSpaces: number[] = [];
 
   switch (container.justifyContent) {
     case 'center':
@@ -364,11 +401,17 @@ function resolveFlexLayout(
     case 'space-between':
       if (children.length > 1) {
         const childMainSum = childSizes.reduce((s, c) => s + (isRow ? c.width : c.height), 0);
-        spaceBetween = Math.floor((mainSpace - childMainSum) / Math.max(1, children.length - 1));
+
+        for (let i = 0; i < children.length - 1; i++) {
+          gapSpaces.push(
+            Math.floor((mainSpace - childMainSum) / (children.length - 1))
+            + (i < ((mainSpace - childMainSum) % (children.length - 1)) ? 1 : 0)
+          );
+        }
       }
       mainOffset = 0;
       break;
-    default: // 'start'
+    default:
       mainOffset = 0;
   }
 
@@ -388,7 +431,7 @@ function resolveFlexLayout(
       case 'end':
         crossOffset = crossSpace - childCross;
         break;
-      default: // 'start'
+      default:
         crossOffset = 0;
     }
 
@@ -403,7 +446,9 @@ function resolveFlexLayout(
       height: size.height,
     });
 
-    cursor += childMain + (container.justifyContent === 'space-between' ? spaceBetween : gap);
+    if (i < children.length - 1) {
+      cursor += childMain + (container.justifyContent === 'space-between' && gapSpaces.length > 0 ? gapSpaces[i] : gap);
+    }
   }
 
   return results;
@@ -420,16 +465,35 @@ function resolveGridLayout(
   const cols = Math.max(1, container.gridTemplateCols);
   const rows = Math.max(1, container.gridTemplateRows);
 
-  const totalGapX = gap * (cols - 1);
-  const totalGapY = gap * (rows - 1);
+  const totalGapX = gap * Math.max(0, cols - 1);
+  const totalGapY = gap * Math.max(0, rows - 1);
+
   const cellW = Math.max(1, Math.floor((innerW - totalGapX) / cols));
   const cellH = Math.max(1, Math.floor((innerH - totalGapY) / rows));
+
+  const childData = children.map((child, i) => ({
+    index: i,
+    isAbsoluteW: child.widthUnit !== 'px',
+    isAbsoluteH: child.heightUnit !== 'px',
+    mainWidth: childSizes[i].width,
+    mainHeight: childSizes[i].height,
+  }));
+
+  for (let i = 0; i < children.length; i++) {
+    const cData = childData[i];
+
+    childSizes[i].width = cData.isAbsoluteW
+      ? Math.max(1, Math.floor(childSizes[i].width * (cellW / Math.max(1, cData.mainWidth))))
+      : Math.min(cData.mainWidth, cellW);
+
+    childSizes[i].height = cData.isAbsoluteH
+      ? Math.max(1, Math.floor(childSizes[i].height * (cellH / Math.max(1, cData.mainHeight))))
+      : Math.min(cData.mainHeight, cellH);
+  }
 
   const results: ResolvedChildPosition[] = [];
 
   for (let i = 0; i < children.length; i++) {
-    const child = children[i];
-    const size = childSizes[i];
     const col = i % cols;
     const row = Math.floor(i / cols);
 
@@ -438,11 +502,11 @@ function resolveGridLayout(
     const cellX = innerX + col * (cellW + gap);
     const cellY = innerY + row * (cellH + gap);
 
-    const w = Math.min(size.width, cellW);
-    const h = Math.min(size.height, cellH);
+    const w = Math.min(childSizes[i].width, cellW);
+    const h = Math.min(childSizes[i].height, cellH);
 
     results.push({
-      id: child.id,
+      id: children[i].id,
       x: cellX + Math.floor((cellW - w) / 2),
       y: cellY + Math.floor((cellH - h) / 2),
       width: w,
