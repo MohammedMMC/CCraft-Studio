@@ -15,7 +15,7 @@ export const CRAFTPC_DATA_DIR =
 
 export const CRAFTPC_EXEC_PATH =
     os.platform() === 'win32'
-        ? path.join(process.env.LOCALAPPDATA || '', 'CraftOS-PC', 'CraftOS-PC_console.exe')
+        ? [path.join(process.env.LOCALAPPDATA || '', 'CraftOS-PC', 'CraftOS-PC_console.exe'), path.join(process.env.PROGRAMFILES || '', 'CraftOS-PC', 'CraftOS-PC_console.exe'), path.join(process.env['PROGRAMFILES(X86)'] || '', 'CraftOS-PC', 'CraftOS-PC_console.exe')]
         : os.platform() === 'darwin'
             ? '/Applications/CraftOS-PC.app/Contents/MacOS/CraftOS-PC_console'
             : '/usr/bin/CraftOS-PC_console';
@@ -30,7 +30,7 @@ let lastV11Check: number = 0;
 export function setupCraftPCIPC(): void {
     ipcMain.handle('craftpc:getDirs', async () => {
         return {
-            exec: fs.existsSync(CRAFTPC_EXEC_PATH) ? CRAFTPC_EXEC_PATH : null,
+            exec: Array.isArray(CRAFTPC_EXEC_PATH) ? CRAFTPC_EXEC_PATH.find(fs.existsSync) : (fs.existsSync(CRAFTPC_EXEC_PATH) ? CRAFTPC_EXEC_PATH : null),
             data: fs.existsSync(CRAFTPC_DATA_DIR) ? CRAFTPC_DATA_DIR : null
         };
     });
