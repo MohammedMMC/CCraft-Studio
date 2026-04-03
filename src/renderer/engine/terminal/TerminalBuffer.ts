@@ -1,4 +1,4 @@
-import { CCColor, CC_COLORS } from '../../models/CCColors';
+import { CCColor } from '../../models/CCColors';
 
 export interface TerminalCell {
   char: string;

@@ -395,7 +395,6 @@ export const UIEditorCanvas: React.FC = () => {
             style={{
               width: canvasWidth,
               height: canvasHeight,
-              imageRendering: 'pixelated',
               pointerEvents: 'none',
             }}
           />
