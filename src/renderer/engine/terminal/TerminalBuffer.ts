@@ -32,16 +32,16 @@ export class TerminalBuffer {
     if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
       const existing = this.cells[y][x];
       this.cells[y][x] = {
-        char: char === ' ' ? existing.char : (char[0] || ' '),
+        char: char === ' ' ? existing.char : (char || ' '),
         fg, bg,
       };
     }
   }
 
-  writeText(x: number, y: number, text: string, fg: CCColor, bg: CCColor) {
-    for (let i = 0; i < text.length; i++) {
-      this.setCell(x + i, y, text[i], fg, bg);
-    }
+  writeText(x: number, y: number, text: string[], fg: CCColor, bg: CCColor) {
+    text.forEach((char, i) => {
+      this.setCell(x + i, y, char.length != 1 ? char.slice(1) : char, fg, bg);
+    });
   }
 
   fillRect(x: number, y: number, w: number, h: number, char: string, fg: CCColor, bg: CCColor) {

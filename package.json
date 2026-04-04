@@ -3,7 +3,6 @@
   "version": "0.3.0-alpha",
   "description": "An app for creating apps or to code easily for Minecraft ComputerCraft Mod",
   "main": "dist/main/main.js",
-  "type": "commonjs",
   "scripts": {
     "dev": "npm run build:main && npm run build:preload && concurrently -n vite,tsc,electron \"vite\" \"electron . --dev\"",
     "dev:vite": "vite",

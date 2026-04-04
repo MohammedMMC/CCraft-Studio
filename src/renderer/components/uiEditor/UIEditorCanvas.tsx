@@ -2,16 +2,10 @@ import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { TerminalBuffer } from '../../engine/terminal/TerminalBuffer';
-import { TerminalRenderer } from '../../engine/terminal/TerminalRenderer';
+import { CC_CHAR_HEIGHT, CC_CHAR_WIDTH, TerminalRenderer } from '../../engine/terminal/TerminalRenderer';
 import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContainerLayout, isContainerLike, SliderElement } from '../../models/UIElement';
 import { CanvasElement } from './CanvasElement';
 import { GridOverlay } from './GridOverlay';
-
-const CC_CHAR_WIDTH = 6;
-const CC_CHAR_HEIGHT = 9;
-const SCALE = 2;
-export const CHAR_WIDTH = CC_CHAR_WIDTH * SCALE;
-export const CHAR_HEIGHT = CC_CHAR_HEIGHT * SCALE;
 
 function renderElementToBuffer(
   buffer: TerminalBuffer,
@@ -25,18 +19,20 @@ function renderElementToBuffer(
   const y = el.y - 1;
   const { width, height } = isChild ? { width: displayWidth, height: displayHeight } : resolveSize(el, displayWidth, displayHeight);
 
+  let eText: string[] = [];
+  if (el.type !== 'container' && el.type !== 'slider') {
+    eText = (el.text.match(/\\\d+|./g) || [])
+  }
+
   switch (el.type) {
     case 'label': {
       buffer.fillRect(x, y, width, height, ' ', el.fgColor, el.bgColor);
-      const text = alignText(el.text, width, el.textAlign);
-      buffer.writeText(x, y, text.slice(0, width), el.fgColor, el.bgColor);
+      buffer.writeText(x, y, alignText(eText, width, el.textAlign).slice(0, width), el.fgColor, el.bgColor);
       break;
     }
     case 'button': {
       buffer.fillRect(x, y, width, height, ' ', el.fgColor, el.bgColor);
-      const midY = y + Math.floor(height / 2);
-      const text = alignText(el.text, width, el.textAlign);
-      buffer.writeText(x, midY, text.slice(0, width), el.fgColor, el.bgColor);
+      buffer.writeText(x, y + Math.floor(height / 2), alignText(eText, width, el.textAlign).slice(0, width), el.fgColor, el.bgColor);
       break;
     }
     case 'container':
@@ -44,8 +40,8 @@ function renderElementToBuffer(
       if (el.type === 'panel') {
         const panel = el as PanelElement;
 
-        const text = alignText(panel.text, width, panel.textAlign);
-        const textsp = [(text.length - text.trimStart().length), (text.length - text.trimEnd().length)];
+        const text = alignText(eText, width, panel.textAlign);
+        const textsp = [(text.length - trimStartArr(text).length), (text.length - trimEndArr(text).length)];
         const plus2 = width < panel.text.length + 4 ? 0 : 2;
         const textpos = (textsp[1] == 0 ? textsp[0] - 4 + Number(textsp[0] == 4) + (plus2 == 0 ? 3 : 0) + Number(textsp[0] == 5) : (textsp[0] == 0 ? (Number(width == (plus2 + Number(textsp[1] == 5) + panel.text.length + 2)) || plus2 || 1) : (textsp[0] - (plus2 == 2 ? 1 : 0))));
 
@@ -60,7 +56,7 @@ function renderElementToBuffer(
           buffer.fillRect(x + 1, y + 1, width - 2, height - 2, ' ', panel.fgColor, panel.bgColor);
         }
 
-        buffer.writeText(x + textpos, y, (plus2 == 2 ? " " : "") + text.trimStart().trimEnd() + (plus2 == 2 ? " " : ""), panel.fgColor, panel.titleBgColor);
+        buffer.writeText(x + textpos, y, (plus2 == 2 ? [" ", ...trimStartArr(trimEndArr(text)), " "] : trimStartArr(trimEndArr(text))), panel.fgColor, panel.titleBgColor);
       } else {
         buffer.fillRect(x, y, width, height, ' ', el.fgColor, el.bgColor);
       }
@@ -87,13 +83,11 @@ function renderElementToBuffer(
 
       if (el.orientation.startsWith("v")) {
         buffer.fillRect(x, y + (el.orientation == "vbtt" ? height - progressHeight : 0), width, progressHeight, ' ', el.progressColor, el.progressColor);
-        const text = alignText(el.text, width, el.textAlign);
-        buffer.writeText(x, y + Math.floor(height / 2), text, el.fgColor, 50 <= el.progress ? el.progressColor : el.bgColor);
+        buffer.writeText(x, y + Math.floor(height / 2), alignText(eText, width, el.textAlign), el.fgColor, 50 <= el.progress ? el.progressColor : el.bgColor);
       } else {
         buffer.fillRect(x + (el.orientation == "hrtl" ? width - progressWidth : 0), y, progressWidth, height, ' ', el.progressColor, el.progressColor);
-        const text = alignText(el.text, width, el.textAlign);
-        text.slice(0, width).split('').forEach((char, i) => {
-          buffer.writeText(x + i, y + Math.floor(height / 2), char, el.fgColor, (el.orientation == "hrtl" ? (i >= width - progressWidth) : (i < progressWidth)) ? el.progressColor : el.bgColor);
+        alignText(eText, width, el.textAlign).slice(0, width).forEach((char, i) => {
+          buffer.writeText(x + i, y + Math.floor(height / 2), [char], el.fgColor, (el.orientation == "hrtl" ? (i >= width - progressWidth) : (i < progressWidth)) ? el.progressColor : el.bgColor);
         });
       }
 
@@ -119,11 +113,10 @@ function renderElementToBuffer(
 
       if (el.checked) {
         const icon = el.checkIcon || 'x';
-        buffer.writeText(x + Math.floor((boxSize - 1) / 2), y + Math.floor((boxSize - 1) / 2), icon, el.checkColor, el.boxColor);
+        buffer.writeText(x + Math.floor((boxSize - 1) / 2), y + Math.floor((boxSize - 1) / 2), [icon], el.checkColor, el.boxColor);
       }
 
-      const text = alignText(el.text, width - boxSize - 1, el.textAlign);
-      buffer.writeText(x + boxSize + 1, y + Math.floor(height / 2), text.slice(0, width - boxSize - 1), el.textColor, el.bgColor);
+      buffer.writeText(x + boxSize + 1, y + Math.floor(height / 2), alignText(eText, width - boxSize - 1, el.textAlign).slice(0, width - boxSize - 1), el.textColor, el.bgColor);
       break;
     }
   }
@@ -145,14 +138,19 @@ function renderChildAtPosition(
     return;
   }
 
+  let eText: string[] = [];
+  if (child.type !== 'container' && child.type !== 'slider') {
+    eText = (child.text.match(/\\\d+|./g) || [])
+  }
+
   switch (child.type) {
     case 'container':
     case 'panel': {
       if (child.type === 'panel') {
         const panel = child as PanelElement;
 
-        const text = alignText(panel.text, width, panel.textAlign);
-        const textsp = [(text.length - text.trimStart().length), (text.length - text.trimEnd().length)];
+        const text = alignText(eText, width, panel.textAlign);
+        const textsp = [(text.length - trimStartArr(text).length), (text.length - trimEndArr(text).length)];
         const plus2 = width < panel.text.length + 4 ? 0 : 2;
         const textpos = (textsp[1] == 0 ? textsp[0] - 4 + Number(textsp[0] == 4) + (plus2 == 0 ? 3 : 0) + Number(textsp[0] == 5) : (textsp[0] == 0 ? (Number(width == (plus2 + Number(textsp[1] == 5) + panel.text.length + 2)) || plus2 || 1) : (textsp[0] - (plus2 == 2 ? 1 : 0))));
 
@@ -167,7 +165,7 @@ function renderChildAtPosition(
           buffer.fillRect(x + 1, y + 1, width - 2, height - 2, ' ', panel.fgColor, panel.bgColor);
         }
 
-        buffer.writeText(x + textpos, y, (plus2 == 2 ? " " : "") + text.trimStart().trimEnd() + (plus2 == 2 ? " " : ""), panel.fgColor, panel.titleBgColor);
+        buffer.writeText(x + textpos, y, (plus2 == 2 ? [" ", ...trimStartArr(trimEndArr(eText)), " "] : trimStartArr(trimEndArr(eText))), panel.fgColor, panel.titleBgColor);
       } else {
         buffer.fillRect(x, y, width, height, ' ', child.fgColor, child.bgColor);
       }
@@ -188,18 +186,21 @@ function renderChildAtPosition(
   }
 }
 
-function alignText(text: string, width: number, align: 'left' | 'center' | 'right'): string {
+const trimStartArr = (arr: string[]) => arr.slice(arr.findIndex(c => c !== ' ') >>> 0);
+const trimEndArr = (arr: string[]) => arr.slice(0, arr.length - (arr.slice().reverse().findIndex(c => c !== ' ') >>> 0));
+
+function alignText(text: string[], width: number, align: 'left' | 'center' | 'right'): string[] {
   if (text.length >= width) return text.slice(0, width);
   const padding = width - text.length;
   switch (align) {
     case 'center': {
       const left = Math.floor(padding / 2);
-      return ' '.repeat(left) + text + ' '.repeat(padding - left);
+      return [...' '.repeat(left).split(''), ...text, ...' '.repeat(padding - left).split('')];
     }
     case 'right':
-      return ' '.repeat(padding) + text;
+      return [...' '.repeat(padding).split(''), ...text];
     default:
-      return text + ' '.repeat(padding);
+      return [...text, ...' '.repeat(padding).split('')];
   }
 }
 
@@ -308,8 +309,8 @@ export const UIEditorCanvas: React.FC = () => {
 
   if (!project || !activeScreenId || !screen || !buffer) return null;
 
-  const canvasWidth = project.displayWidth * CHAR_WIDTH;
-  const canvasHeight = project.displayHeight * CHAR_HEIGHT;
+  const canvasWidth = project.displayWidth * CC_CHAR_WIDTH;
+  const canvasHeight = project.displayHeight * CC_CHAR_HEIGHT;
   const elements = [...screen.uiElements].sort((a, b) => a.zIndex - b.zIndex);
 
   const depthMap = useMemo(() => {
@@ -403,8 +404,8 @@ export const UIEditorCanvas: React.FC = () => {
             <GridOverlay
               width={project.displayWidth}
               height={project.displayHeight}
-              charWidth={CHAR_WIDTH}
-              charHeight={CHAR_HEIGHT}
+              charWidth={CC_CHAR_WIDTH}
+              charHeight={CC_CHAR_HEIGHT}
             />
           )}
 
@@ -416,8 +417,8 @@ export const UIEditorCanvas: React.FC = () => {
                 key={element.id}
                 element={element}
                 resolvedPosition={resolvedPos}
-                charWidth={CHAR_WIDTH}
-                charHeight={CHAR_HEIGHT}
+                charWidth={CC_CHAR_WIDTH}
+                charHeight={CC_CHAR_HEIGHT}
                 isSelected={element.id === selectedElementId}
                 onSelect={() => selectElement(element.id)}
                 screenId={activeScreenId}

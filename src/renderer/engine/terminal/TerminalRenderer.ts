@@ -85,8 +85,8 @@ export class TerminalRenderer {
     bgHex: string
   ) {
     if (!this.fontReady || !this.fontData) return;
-
-    const code = ch.charCodeAt(0) & 0xff;
+    
+    const code = ch.length !== 1 ? parseInt(ch) : ch.charCodeAt(0) & 0xff;
     const srcX = 16 * (code & 0x0f) + 2;
     const srcY = 22 * (code >> 4) + 2;
 
