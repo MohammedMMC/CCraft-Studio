@@ -22,6 +22,7 @@ If you'd like to test the current state of the project, you can download the lat
 To run the CCraft Studio from source code, follow these steps:
 
 1. Install the dependencies:
+
    ```bash
    npm install . --force
    ```
@@ -38,6 +39,12 @@ To run the CCraft Studio from source code, follow these steps:
 
 Thank you for your interest in CCraft Studio!
 
-# Lisence
+# License
 
 This project is licensed under the MIT License.
+
+## Third-Party Notices
+
+This project includes ideas, codes and/or assets from 3rd-party projects:
+
+- Details: `LICENSES/THIRD_PARTY_NOTICES.md`
