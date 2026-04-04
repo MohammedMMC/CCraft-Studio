@@ -174,6 +174,8 @@ export function setupCraftPCIPC(): void {
 
     ipcMain.handle('craftpc:exportProject', async (_event, data: { files: { path: string; content: string }[], path: string, isRemote: boolean, windowId: number, computerId: number, projectName: string }) => {
         if (data.isRemote) {
+            if (!proc || !proc.stdin) throw new Error("CraftOS-PC process is not running");
+
             await new Promise((resolve, reject) => {
                 proc!.stdin!.write(craftpcHelpers.buildDeletePacket(data.windowId, 0, data.projectName), (err) => {
                     if (err) reject(err);
@@ -187,7 +189,7 @@ export function setupCraftPCIPC(): void {
                         (err) => err ? reject(err) : resolve(undefined));
                 }));
             }
-            
+
             return data.projectName;
         } else {
             if (!fs.existsSync(data.path)) return null;
