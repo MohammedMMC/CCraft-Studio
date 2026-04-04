@@ -16,7 +16,7 @@ function ProgressBar:setProgress(progress)
 end
 
 function ProgressBar:drawElement()
-    local alignedText = self:alignText(self.text, self.width, self.textAlign)
+    local alignedTextArr = self.alignText(self.textArr, self.width, self.textAlign)
 
     -- Draw background
     self.monitor.setBackgroundColor(self.bgColor)
@@ -41,10 +41,10 @@ function ProgressBar:drawElement()
         self.monitor.setCursorPos(self.x, self.y + math.floor(self.height / 2))
         self.monitor.setTextColor(self.fgColor)
         self.monitor.setBackgroundColor(50 <= self.progress and self.progressColor or self.bgColor)
-        self.monitor.write(alignedText)
+        Screen.cPrint(self.monitor, self.textArr, self.width, self.textAlign)
     else
-        for i = 1, #alignedText do
-            local char = alignedText:sub(i, i)
+        for i = 1, #alignedTextArr do
+            local char = alignedTextArr[i]
             self.monitor.setCursorPos(self.x + i - 1, self.y + math.floor(self.height / 2))
             self.monitor.setTextColor(self.fgColor)
             self.monitor.setBackgroundColor(
@@ -52,7 +52,7 @@ function ProgressBar:drawElement()
                     and ((i - 1) >= (self.width - progressWidth))
                     or ((self.orientation ~= "hrtl") and ((i - 1) < progressWidth)))
                 and self.progressColor or self.bgColor)
-            self.monitor.write(char)
+            Screen.cPrint(self.monitor, { char })
         end
     end
 end

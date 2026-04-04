@@ -43,5 +43,5 @@ function CheckBox:drawElement()
     self.monitor.setBackgroundColor(self.bgColor)
 
     self.monitor.setCursorPos(self.x + boxSize + 1, self.y + math.floor(self.height / 2))
-    self.monitor.write(self:alignText(self.text, (self.width - boxSize - 1), self.textAlign))
+    Screen.cPrint(self.monitor, self.textArr, (self.width - boxSize - 1), self.textAlign)
 end

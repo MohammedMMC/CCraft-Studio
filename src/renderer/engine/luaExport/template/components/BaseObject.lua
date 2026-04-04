@@ -34,16 +34,102 @@ function BaseObject:getMonitor()
     return scn and scn.monitor or nil
 end
 
-function BaseObject:alignText(text, width, align)
-    local len = #text
-    if len >= width then return text:sub(1, width) end
+function BaseObject.tokenizeText(text)
+    if type(text) == "table" then
+        local tokens = {}
+        for i, token in ipairs(text) do
+            tokens[i] = token
+        end
+        return tokens
+    end
+
+    local tokens = {}
+    local i = 1
+    while i <= #text do
+        local match = text:match("^(\\%d+)", i)
+        if match then
+            tokens[#tokens + 1] = match
+            i = i + #match
+        else
+            tokens[#tokens + 1] = text:sub(i, i)
+            i = i + 1
+        end
+    end
+
+    return tokens
+end
+
+function BaseObject.trimStartArr(arr)
+    local idx = 1
+    while idx <= #arr and arr[idx] == " " do
+        idx = idx + 1
+    end
+    if idx > #arr then return {} end
+    local result = {}
+    for i = idx, #arr do
+        result[#result + 1] = arr[i]
+    end
+    return result
+end
+
+function BaseObject.trimEndArr(arr)
+    local idx = #arr
+    while idx >= 1 and arr[idx] == " " do
+        idx = idx - 1
+    end
+    if idx < 1 then return {} end
+    local result = {}
+    for i = 1, idx do
+        result[#result + 1] = arr[i]
+    end
+    return result
+end
+
+function BaseObject.alignText(text, width, align)
+    local tokens = BaseObject.tokenizeText(text)
+    local len = #tokens
+
+    if len >= width then
+        local clipped = {}
+        for i = 1, width do
+            clipped[#clipped + 1] = tokens[i]
+        end
+        return type(text) == "table" and clipped or table.concat(clipped)
+    end
+
+    local pad = width - len
+    local isArray = type(text) == "table"
+    
     if align == "center" then
-        local pad = math.floor((width - len) / 2)
-        return string.rep(" ", pad) .. text .. string.rep(" ", width - len - pad)
+        local left = math.floor(pad / 2)
+        local right = pad - left
+        if isArray then
+            local result = {}
+            for i = 1, left do result[#result + 1] = " " end
+            for _, token in ipairs(tokens) do result[#result + 1] = token end
+            for i = 1, right do result[#result + 1] = " " end
+            return result
+        else
+            return string.rep(" ", left) .. text .. string.rep(" ", right)
+        end
     elseif align == "right" then
-        return string.rep(" ", width - len) .. text
+        if isArray then
+            local result = {}
+            for i = 1, pad do result[#result + 1] = " " end
+            for _, token in ipairs(tokens) do result[#result + 1] = token end
+            return result
+        else
+            return string.rep(" ", pad) .. text
+        end
     else
-        return text .. string.rep(" ", width - len)
+        if isArray then
+            local result = {}
+            for _, token in ipairs(tokens) do result[#result + 1] = token end
+            for i = 1, pad do result[#result + 1] = " " end
+            return result
+        else
+            return text .. string.rep(" ", pad)
+        end
     end
 end
 
@@ -61,6 +147,10 @@ end
 function BaseObject:draw()
     if not self:isVisible() then return end
     self.monitor = self:getMonitor()
+
+    if self.type ~= 'container' and self.type ~= 'slider' then
+        self.textArr = BaseObject.tokenizeText(self.text)
+    end
 
     self:drawElement()
 
