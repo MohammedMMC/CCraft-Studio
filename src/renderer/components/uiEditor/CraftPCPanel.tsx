@@ -167,28 +167,24 @@ export const CraftPCPanel: React.FC = () => {
     const files = exportProject(project as CCProject, options);
 
     if (files.length > 0) {
-      if (currentSessionType === "local") {
-        window.electronAPI.craftpc.exportProject({
-          files: files.map(f => ({ path: f.path, content: f.content })),
-          path: craftPCDataPath || "",
-          isRemote: false,
+      window.electronAPI.craftpc.exportProject({
+        files: files.map(f => ({ path: f.path, content: f.content })),
+        path: craftPCDataPath || "",
+        isRemote: false,
+        computerId: computerId.current,
+        projectName: project?.name || "CCProject",
+        windowId: windowId.current
+      }).catch(async (err) => {
+        await startLocalSession();
+        reloadFiles();
+      }).then(() => {
+        window.electronAPI.craftpc.startTestingApp({
           computerId: computerId.current,
-          projectName: project?.name || "CCProject"
-        }).catch(async (err) => {
-          await startLocalSession();
-          reloadFiles();
-        }).then(() => {
-          window.electronAPI.craftpc.startTestingApp({
-            computerId: computerId.current,
-            projectName: project?.name || "CCProject",
-            windowId: windowId.current
-          });
+          projectName: project?.name || "CCProject",
+          windowId: windowId.current
         });
-      } else {
-
-      }
+      });
     }
-
   }
 
   return (

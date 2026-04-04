@@ -54,11 +54,11 @@ export function setupCraftPCIPC(): void {
         }
 
         await new Promise((resolve, reject) => {
-            proc!.stdin!.write(craftpcHelpers.buildKeyPacket(data.windowId,  craftpcHelpers.KEY_MAP['Enter'], true, false, false, false),
+            proc!.stdin!.write(craftpcHelpers.buildKeyPacket(data.windowId, craftpcHelpers.KEY_MAP['Enter'], true, false, false, false),
                 (err) => err ? reject(err) : resolve(undefined));
         });
         await new Promise((resolve, reject) => {
-            proc!.stdin!.write(craftpcHelpers.buildKeyPacket(data.windowId,  craftpcHelpers.KEY_MAP['Enter'], false, false, false, false),
+            proc!.stdin!.write(craftpcHelpers.buildKeyPacket(data.windowId, craftpcHelpers.KEY_MAP['Enter'], false, false, false, false),
                 (err) => err ? reject(err) : resolve(undefined));
         });
     });
@@ -172,10 +172,23 @@ export function setupCraftPCIPC(): void {
         craftpcHelpers.setBinaryChecksum(false);
     });
 
-    ipcMain.handle('craftpc:exportProject', async (_event, data: { files: { path: string; content: string }[], path: string, isRemote: boolean, computerId: number, projectName: string }) => {
-
+    ipcMain.handle('craftpc:exportProject', async (_event, data: { files: { path: string; content: string }[], path: string, isRemote: boolean, windowId: number, computerId: number, projectName: string }) => {
         if (data.isRemote) {
+            await new Promise((resolve, reject) => {
+                proc!.stdin!.write(craftpcHelpers.buildDeletePacket(data.windowId, 0, data.projectName), (err) => {
+                    if (err) reject(err);
+                    else resolve(undefined);
+                });
+            });
 
+            for (const file of data.files) {
+                console.log(await new Promise((resolve, reject) => {
+                    proc!.stdin!.write(craftpcHelpers.buildFileWritePackets(data.windowId, 0, file.path, file.content, { encoding: 'utf-8' }).requestPacket,
+                        (err) => err ? reject(err) : resolve(undefined));
+                }));
+            }
+            
+            return data.projectName;
         } else {
             if (!fs.existsSync(data.path)) return null;
 
