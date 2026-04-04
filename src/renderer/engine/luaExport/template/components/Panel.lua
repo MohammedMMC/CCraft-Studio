@@ -45,10 +45,10 @@ function Panel:drawElement()
     self.monitor.setBackgroundColor(self.titleBgColor)
     self.monitor.setTextColor(self.fgColor)
 
-    local titleArr = trimEnd
+    local titleArr = BaseObject.trimStartArr(trimEnd)
     if plus2 == 2 then
         local result = { " " }
-        for _, token in ipairs(trimEnd) do
+        for _, token in ipairs(titleArr) do
             result[#result + 1] = token
         end
         result[#result + 1] = " "
