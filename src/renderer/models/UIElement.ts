@@ -30,7 +30,8 @@ export type UIElementType =
   | 'panel'
   | 'progressbar'
   | 'slider'
-  | 'checkbox';
+  | 'checkbox'
+  | 'input';
 
 export interface LabelElement extends BaseElement {
   type: 'label';
@@ -113,6 +114,15 @@ export interface CheckboxElement extends BaseElement {
   textAlign: 'left' | 'center' | 'right';
 }
 
+export interface InputElement extends BaseElement {
+  type: 'input';
+  text: string;
+  placeholder: string;
+  textColor: CCColor;
+  placeholderColor: CCColor;
+  textAlign: 'left' | 'center' | 'right';
+}
+
 export type UIElement =
   | LabelElement
   | ButtonElement
@@ -120,7 +130,8 @@ export type UIElement =
   | PanelElement
   | ProgressBarElement
   | SliderElement
-  | CheckboxElement;
+  | CheckboxElement
+  | InputElement;
 
 type OmitBase<T> = T extends UIElement ? Omit<T, 'id' | 'name' | 'zIndex'> : never;
 type UIElementDefaults = { [K in UIElementType]: OmitBase<Extract<UIElement, { type: K }>> };
@@ -128,28 +139,26 @@ type UIElementDefaults = { [K in UIElementType]: OmitBase<Extract<UIElement, { t
 export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
   label: {
     type: 'label',
-    parentId: null,
     x: 1, y: 1, width: 10, height: 1,
     widthUnit: 'px', heightUnit: 'px',
     fgColor: 'white', bgColor: 'black',
-    visible: true, text: 'Label', textAlign: 'left',
+    text: 'Label', textAlign: 'left',
+    visible: true, parentId: null,
   },
   button: {
     type: 'button',
-    parentId: null,
     x: 1, y: 1, width: 10, height: 3,
     widthUnit: 'px', heightUnit: 'px',
     fgColor: 'white', bgColor: 'gray',
-    visible: true, text: 'Button', textAlign: 'center',
+    text: 'Button', textAlign: 'center',
     focusBgColor: 'lightGray', focusTextColor: 'white',
+    visible: true, parentId: null,
   },
   container: {
     type: 'container',
-    parentId: null,
     x: 1, y: 1, width: 20, height: 10,
     widthUnit: 'px', heightUnit: 'px',
     fgColor: 'white', bgColor: 'gray',
-    visible: true,
     display: 'flex',
     flexDirection: 'column',
     gap: 0, gapUnit: 'px',
@@ -157,14 +166,13 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     justifyContent: 'start',
     gridTemplateCols: 2, gridTemplateRows: 2,
     padding: 0, paddingUnit: 'px',
+    visible: true, parentId: null,
   },
   panel: {
     type: 'panel',
-    parentId: null,
     x: 1, y: 1, width: 20, height: 10,
     widthUnit: 'px', heightUnit: 'px',
     fgColor: 'white', bgColor: 'gray',
-    visible: true,
     text: 'Panel',
     textAlign: 'left',
     borderColor: 'lightGray',
@@ -176,19 +184,19 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     justifyContent: 'start',
     gridTemplateCols: 2, gridTemplateRows: 2,
     padding: 0, paddingUnit: 'px',
+    visible: true, parentId: null,
   },
   progressbar: {
     type: 'progressbar',
     x: 1, y: 1, width: 20, height: 3,
     widthUnit: 'px', heightUnit: 'px',
     fgColor: 'white', bgColor: 'gray',
-    visible: true,
     text: 'Progress Bar',
     textAlign: 'center',
     progressColor: 'lightGray',
     progress: 50,
     orientation: 'hltr',
-    parentId: null,
+    visible: true, parentId: null,
   },
   slider: {
     type: 'slider',
@@ -197,12 +205,11 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     bgColor: 'gray',
     handleColor: 'white',
     filledColor: 'lightGray',
-    visible: true,
     from: 0,
     to: 100,
     value: 50,
     orientation: 'hltr',
-    parentId: null,
+    visible: true, parentId: null,
   },
   checkbox: {
     type: 'checkbox',
@@ -215,7 +222,18 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     textAlign: 'left',
     checked: false,
     visible: true, parentId: null,
-  }
+  },
+  input: {
+    type: 'input',
+    x: 1, y: 1, width: 10, height: 1,
+    widthUnit: 'px', heightUnit: 'px',
+    bgColor: 'black', textColor: 'white',
+    text: '',
+    placeholder: 'Input',
+    placeholderColor: 'gray',
+    textAlign: 'left',
+    visible: true, parentId: null,
+  },
 };
 
 export const UI_ELEMENT_LABELS: Record<UIElementType, { label: string; icon: string; description: string }> = {
@@ -226,6 +244,7 @@ export const UI_ELEMENT_LABELS: Record<UIElementType, { label: string; icon: str
   progressbar: { label: 'Progress Bar', icon: 'G', description: 'Show Progress' },
   slider: { label: 'Slider', icon: 'S', description: 'Value Control' },
   checkbox: { label: 'CheckBox', icon: 'X', description: 'Toggle Option' },
+  input: { label: 'Input', icon: 'I', description: 'Text Input' },
 };
 
 export function resolveSize(
@@ -256,8 +275,8 @@ export function resolveSize(
 
 export interface ResolvedChildPosition {
   id: string;
-  x: number;  
-  y: number;  
+  x: number;
+  y: number;
   width: number;
   height: number;
 }

@@ -142,6 +142,8 @@ end
 -- function BaseObject:onReleaseEvent(x,y)end
 -- function BaseObject:onClickEvent(x,y)end
 -- function BaseObject:onDragEvent(x,y)end
+-- function BaseObject:onkeyEvent(key)end
+-- function BaseObject:onCharEvent(char)end
 
 
 function BaseObject:draw()
@@ -150,6 +152,9 @@ function BaseObject:draw()
 
     if self.type ~= 'container' and self.type ~= 'slider' then
         self.textArr = BaseObject.tokenizeText(self.text)
+    end
+    if self.type == 'input' then
+        self.placeholderArr = BaseObject.tokenizeText(self.placeholder)
     end
 
     self:drawElement()

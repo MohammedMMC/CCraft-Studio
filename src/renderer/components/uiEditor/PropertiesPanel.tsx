@@ -362,7 +362,7 @@ export const PropertiesPanel: React.FC = () => {
                 </>
               ) : (
                 <>
-                  {(element.type !== 'container' && element.type !== 'slider' && element.type !== 'checkbox') && (
+                  {(element.type !== 'container' && element.type !== 'slider' && element.type !== 'checkbox' && element.type !== 'input') && (
                     <ColorPicker
                       label="Text Color"
                       value={element.fgColor}
@@ -668,7 +668,26 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
           </PropField>
         </>
       );
-
+    case 'input':
+      return (
+        <>
+          <PropField label="Text">
+            <input className="input-field text-xs" value={element.text} maxLength={200} onChange={(e) => update({ text: e.target.value.slice(0, 200) } as any)} />
+          </PropField>
+          <PropField label="Placeholder">
+            <input className="input-field text-xs" value={element.placeholder} maxLength={200} onChange={(e) => update({ placeholder: e.target.value.slice(0, 200) } as any)} />
+          </PropField>
+          <PropField label="Text Align">
+            <select className="select-field text-xs" value={element.textAlign} onChange={(e) => update({ textAlign: e.target.value as any } as any)}>
+              <option value="left">Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select>
+          </PropField>
+          <ColorPicker label="Text Color" value={element.textColor} onChange={(c) => update({ textColor: c } as any)} />
+          <ColorPicker label="Placeholder Color" value={element.placeholderColor} onChange={(c) => update({ placeholderColor: c } as any)} />
+        </>
+      );
     default:
       return null;
   }

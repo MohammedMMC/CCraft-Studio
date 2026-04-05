@@ -1,9 +1,9 @@
-import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContainerLayout, isContainerLike } from '../../models/UIElement';
+import { UIElement, ContainerElement, PanelElement, resolveSize, resolveContainerLayout, isContainerLike, UIElementType } from '../../models/UIElement';
 import { escapeLuaString, indent, luaColor, sanitize } from '../../utils/luaHelpers';
 import { CC_COLOR_NAMES, CC_COLORS } from '../../models/CCColors';
 import { CCProject, getMonitorSize } from '@/models/Project';
 
-const CLASSES_NAMES = {
+const CLASSES_NAMES: { [key in UIElementType]: string } = {
   "progressbar": "ProgressBar",
   "container": "Container",
   "checkbox": "CheckBox",
@@ -11,6 +11,7 @@ const CLASSES_NAMES = {
   "slider": "Slider",
   "label": "Label",
   "panel": "Panel",
+  "input": "Input",
 };
 
 export function buildPositionMap(

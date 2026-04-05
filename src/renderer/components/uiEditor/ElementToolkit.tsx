@@ -8,7 +8,8 @@ import { generateId } from '../../utils/idGenerator';
 import { ElementIcons } from '../shared/Icons';
 
 const ELEMENT_TYPES: UIElementType[] = [
-  'label', 'button', 'container', 'panel', 'progressbar', 'slider', 'checkbox',
+  'label', 'button', 'container', 'panel', 'progressbar', 'slider', 'checkbox', 'input',
+  // 'textarea', 'select',
 ];
 
 export const ElementToolkit: React.FC = () => {
@@ -50,7 +51,7 @@ export const ElementToolkit: React.FC = () => {
             <button
               key={type}
               onMouseEnter={() => hoverTimeout.current = setTimeout(() => setHoveredOnElement(type), 300)}
-              onMouseLeave={() => {clearTimeout(hoverTimeout.current); setHoveredOnElement("");}}
+              onMouseLeave={() => { clearTimeout(hoverTimeout.current); setHoveredOnElement(""); }}
               onClick={() => handleAddElement(type)}
               className="w-full flex items-center gap-2.5 px-3 py-2 rounded
                          bg-app-surface border border-app-border

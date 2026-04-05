@@ -14,12 +14,19 @@ while running do
         running = false
         return;
     end
-    
+
     if screen then
         if event == "mouse_click" or event == "monitor_touch" then
             isTouching = event ~= "monitor_touch"
 
             for _, comp in pairs(screen.children) do
+                for _, comp in pairs(screen.children) do
+                    if comp.type == 'input' and comp.isFocused then
+                        comp.isFocused = false
+                        drawScreens()
+                    end
+                end
+
                 if comp.checkTouch then
                     if comp:checkTouch(p2, p3) then
                         if comp.onClickEvent then
@@ -58,6 +65,19 @@ while running do
 
             drawScreens()
         elseif event == "key" then
+            for _, comp in pairs(screen.children) do
+                if comp.isFocused and comp.onkeyEvent then
+                    comp:onkeyEvent(p1)
+                    drawScreens()
+                end
+            end
+        elseif event == "char" then
+            for _, comp in pairs(screen.children) do
+                if comp.isFocused and comp.onCharEvent then
+                    comp:onCharEvent(p1)
+                    drawScreens()
+                end
+            end
             -- local h = handlers[currentScreen]
             -- if h and h.onKeyPress then
             --     for kn, handler in pairs(h.onKeyPress) do

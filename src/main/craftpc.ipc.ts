@@ -198,7 +198,7 @@ export function setupCraftPCIPC(): void {
 
             await new Promise((resolve, reject) => {
                 if (fs.existsSync(dir)) {
-                    fs.rmdir(dir, { recursive: true }, (err) => {
+                    fs.rm(dir, { recursive: true }, (err) => {
                         if (err) reject(err);
                         fs.mkdir(dir, { recursive: true }, (err) => {
                             if (err) reject(err);

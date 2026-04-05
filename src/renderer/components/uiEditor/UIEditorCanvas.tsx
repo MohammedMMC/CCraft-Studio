@@ -119,6 +119,11 @@ function renderElementToBuffer(
       buffer.writeText(x + boxSize + 1, y + Math.floor(height / 2), alignText(eText, width - boxSize - 1, el.textAlign).slice(0, width - boxSize - 1), el.textColor, el.bgColor);
       break;
     }
+    case 'input': {
+      buffer.fillRect(x, y, width, height, ' ', el.textColor, el.bgColor);
+      buffer.writeText(x, y, alignText(eText.length <= 0 ? (el.placeholder.match(/\\\d+|./g) || []) : eText, width, el.textAlign).slice(0, width), eText.length <= 0 ? el.placeholderColor : el.textColor, el.bgColor);
+      break;
+    }
   }
 }
 
