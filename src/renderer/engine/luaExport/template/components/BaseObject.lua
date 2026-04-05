@@ -9,6 +9,7 @@ function BaseObject:new(name, props)
     local obj = setmetatable({}, self)
     obj.name = name
     obj.monitor = nil
+    obj.screen = nil
 
     for pn, pi in pairs(props) do
         obj[pn] = pi
@@ -148,6 +149,7 @@ end
 
 function BaseObject:draw()
     if not self:isVisible() then return end
+    self.screen = getScreen(self.screenName)
     self.monitor = self:getMonitor()
 
     if self.type ~= 'container' and self.type ~= 'slider' then

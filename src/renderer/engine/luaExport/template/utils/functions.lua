@@ -9,6 +9,13 @@ function drawScreens()
             screen.monitor.setBackgroundColor(colors.black)
             screen.monitor.clear()
             screen:draw()
+
+            if screen.isBlinking then
+                screen.monitor.setCursorPos(screen.blinkingPosition.x, screen.blinkingPosition.y)
+                screen.monitor.setCursorBlink(true)
+            else
+                screen.monitor.setCursorBlink(false)
+            end
         end
     end
 end

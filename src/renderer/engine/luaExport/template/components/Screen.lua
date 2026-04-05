@@ -14,6 +14,9 @@ function Screen:new(name, props)
     obj.children = {}
     obj.bgColor = props.bgColor or colors.black
 
+    obj.isBlinking = false
+    obj.blinkingPosition = { x = 1, y = 1 }
+
     obj.isWorkingScreen = props.isWorkingScreen or false
     obj.displayType = props.displayType or 'any'
     obj.monitorsWidthSize = props.monitorsWidthSize
@@ -30,6 +33,14 @@ function Screen:new(name, props)
     end
 
     return obj
+end
+
+function Screen:setBlinking(state, x, y)
+    self.isBlinking = state == true
+    self.blinkingPosition = {
+        x = x or self.blinkingPosition.x,
+        y = y or self.blinkingPosition.y
+    }
 end
 
 function Screen:addChild(child)

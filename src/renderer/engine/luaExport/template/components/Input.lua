@@ -47,9 +47,14 @@ function Input:drawElement()
     Screen.cPrint(self.monitor, #self.textArr <= 0 and self.placeholderArr or self.textArr, self.width, self.textAlign)
 
     if self.isFocused then
-        self.monitor.setCursorPos(self.x + math.min(#self.textArr, self.width - 1), self.y)
-        self.monitor.setCursorBlink(true)
-    else
-        self.monitor.setCursorBlink(false)
+        local blinkPosX = self.x + math.min(#self.textArr, self.width - 1)
+
+        if self.textAlign == "right" then
+            blinkPosX = self.x + self.width - 1
+        elseif self.textAlign == "center" then
+            blinkPosX = self.x + math.min(#self.textArr + math.abs(math.floor((self.width - #self.textArr) / 2)), self.width - 1)
+        end
+
+        self.screen:setBlinking(true, blinkPosX, self.y)
     end
 end

@@ -20,11 +20,10 @@ while running do
             isTouching = event ~= "monitor_touch"
 
             for _, comp in pairs(screen.children) do
-                for _, comp in pairs(screen.children) do
-                    if comp.type == 'input' and comp.isFocused then
-                        comp.isFocused = false
-                        drawScreens()
-                    end
+                if comp.type == 'input' and comp.isFocused then
+                    screen:setBlinking(false)
+                    comp.isFocused = false
+                    drawScreens()
                 end
 
                 if comp.checkTouch then
