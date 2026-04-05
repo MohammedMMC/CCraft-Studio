@@ -5,6 +5,8 @@ directories:
 files:
   - dist/**/*
   - package.json
+  - LICENSE
+  - LICENSES/**/*
 win:
   target: nsis
   icon: assets/icons/icon.ico

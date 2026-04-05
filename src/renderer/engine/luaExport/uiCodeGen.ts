@@ -121,10 +121,10 @@ function generateComponentInstance(
   lines.push(`  x = ${pos.x}, y = ${pos.y}, width = ${pos.width}, height = ${pos.height},`);
 
   if (el.widthUnit !== 'px') {
-    lines.push(`  rawWidth = ${el.width},`);
+    lines.push(`  rawWidth = ${el.widthUnit === 'fill' ? 100 : el.width},`);
   }
   if (el.heightUnit !== 'px') {
-    lines.push(`  rawHeight = ${el.height},`);
+    lines.push(`  rawHeight = ${el.heightUnit === 'fill' ? 100 : el.height},`);
   }
   if (el.parentId) {
     const parent = allElements.find(p => p.id === el.parentId);

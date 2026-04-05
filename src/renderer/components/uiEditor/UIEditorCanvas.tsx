@@ -151,11 +151,11 @@ function renderChildAtPosition(
 
         const text = alignText(eText, width, panel.textAlign);
         const textsp = [(text.length - trimStartArr(text).length), (text.length - trimEndArr(text).length)];
-        const plus2 = width < panel.text.length + 4 ? 0 : 2;
-        const textpos = (textsp[1] == 0 ? textsp[0] - 4 + Number(textsp[0] == 4) + (plus2 == 0 ? 3 : 0) + Number(textsp[0] == 5) : (textsp[0] == 0 ? (Number(width == (plus2 + Number(textsp[1] == 5) + panel.text.length + 2)) || plus2 || 1) : (textsp[0] - (plus2 == 2 ? 1 : 0))));
+        const plus2 = width < eText.length + 4 ? 0 : 2;
+        const textpos = (textsp[1] == 0 ? textsp[0] - 4 + Number(textsp[0] == 4) + (plus2 == 0 ? 3 : 0) + Number(textsp[0] == 5) : (textsp[0] == 0 ? (Number(width == (plus2 + Number(textsp[1] == 5) + eText.length + 2)) || plus2 || 1) : (textsp[0] - (plus2 == 2 ? 1 : 0))));
 
         buffer.fillRect(x, y, textpos, 1, ' ', panel.fgColor, panel.borderColor);
-        buffer.fillRect(x + (textpos + panel.text.length + 2) + (textsp[0] != 2 && plus2 == 0 ? -2 : 0), y, width - (textpos + panel.text.length + 2) + (textsp[0] != 2 && plus2 == 0 ? 1 : 0), 1, ' ', panel.fgColor, panel.borderColor);
+        buffer.fillRect(x + (textpos + eText.length + 2) + (textsp[0] != 2 && plus2 == 0 ? -2 : 0), y, width - (textpos + eText.length + 2) + (textsp[0] != 2 && plus2 == 0 ? 1 : 0), 1, ' ', panel.fgColor, panel.borderColor);
 
         buffer.fillRect(x, y + height - 1, width, 1, ' ', panel.fgColor, panel.borderColor);
         buffer.fillRect(x, y, 1, height, ' ', panel.fgColor, panel.borderColor);

@@ -28,7 +28,7 @@ function Screen:new(name, props)
     if props.displayType == 'terminal' then
         obj.width, obj.height = term.getSize()
     end
-    
+
     return obj
 end
 
@@ -43,6 +43,17 @@ function Screen:getChild(name)
         end
     end
     return nil
+end
+
+function Screen.cPrint(monitor, textArr, width, textAlign)
+    for _, text in ipairs(BaseObject.alignText(textArr, width and width or #textArr, textAlign and textAlign or "left")) do
+        local num = tonumber(text:match("\\(%d+)"))
+        if num then
+            monitor.write(string.char(num))
+        else
+            monitor.write(text)
+        end
+    end
 end
 
 function Screen:addDrawOrder(child)

@@ -228,9 +228,6 @@ export const UI_ELEMENT_LABELS: Record<UIElementType, { label: string; icon: str
   checkbox: { label: 'CheckBox', icon: 'X', description: 'Toggle Option' },
 };
 
-/**
- * Resolve an element's width/height to actual character cells given the reference dimensions.
- */
 export function resolveSize(
   el: UIElement,
   refWidth: number,
@@ -238,36 +235,33 @@ export function resolveSize(
 ): { width: number; height: number } {
   let w = el.width;
   let h = el.height;
+  const rawWidth = (el as UIElement & { rawWidth?: number }).rawWidth ?? el.width;
+  const rawHeight = (el as UIElement & { rawHeight?: number }).rawHeight ?? el.height;
 
   if (el.widthUnit === 'fill') {
     w = refWidth;
   } else if (el.widthUnit === '%') {
-    w = Math.max(1, Math.round((el.width / 100) * refWidth));
+    w = Math.max(1, Math.round((rawWidth / 100) * refWidth));
   }
 
   if (el.heightUnit === 'fill') {
     h = refHeight;
   } else if (el.heightUnit === '%') {
-    h = Math.max(1, Math.round((el.height / 100) * refHeight));
+    h = Math.max(1, Math.round((rawHeight / 100) * refHeight));
   }
 
   return { width: w, height: h };
 }
 
-// ── Container Layout Engine ────────────────────────────────────────
 
 export interface ResolvedChildPosition {
   id: string;
-  x: number;   // absolute 1-based screen column
-  y: number;   // absolute 1-based screen row
+  x: number;  
+  y: number;  
   width: number;
   height: number;
 }
 
-/**
- * Resolve absolute screen positions for all children inside a container.
- */
-/** Type guard: is this element a container-like type (container or panel)? */
 export function isContainerLike(el: UIElement): el is ContainerElement | PanelElement {
   return el.type === 'container' || el.type === 'panel';
 }
@@ -300,14 +294,12 @@ export function resolveContainerLayout(
   const innerW = Math.max(1, bw - pad * 2);
   const innerH = Math.max(1, bh - pad * 2);
 
-  // Resolve gap
   let gap = container.gap;
   if (container.gapUnit === '%') {
     const ref = container.display === 'flex' && container.flexDirection === 'row' ? innerW : innerH;
     gap = Math.max(0, Math.round((container.gap / 100) * ref));
   }
 
-  // Resolve each child's size relative to the container inner area
   const childSizes = children.map(child => resolveSize(child, innerW, innerH));
 
   if (container.display === 'grid') {
@@ -331,25 +323,71 @@ function resolveFlexLayout(
   const crossSpace = isRow ? innerH : innerW;
   const totalGap = gap * Math.max(0, children.length - 1);
 
-  const childData = children.map((child, i) => ({
-    index: i,
-    isAbsolute: (isRow ? child.widthUnit : child.heightUnit) === 'px',
-    mainSize: isRow ? childSizes[i].width : childSizes[i].height,
-  }));
-
-  const totalAbsoluteMain = childData
-    .filter(m => m.isAbsolute)
-    .reduce((sum, m) => sum + m.mainSize, 0);
-
-  const nonAbsoluteChildIndexes = childData
-    .filter(m => !m.isAbsolute)
+  const pxChildIndexes = children
+    .map((child, i) => ({ index: i, unit: isRow ? child.widthUnit : child.heightUnit }))
+    .filter(m => m.unit === 'px')
     .map(m => m.index);
 
-  const spaceForNonAbsolute = Math.max(0, mainSpace - totalGap - totalAbsoluteMain);
+  const percentChildIndexes = children
+    .map((child, i) => ({ index: i, unit: isRow ? child.widthUnit : child.heightUnit }))
+    .filter(m => m.unit === '%' || m.unit === 'fill')
+    .map(m => m.index);
 
-  if (nonAbsoluteChildIndexes.length > 0) {
-    for (let i = 0; i < nonAbsoluteChildIndexes.length; i++) {
-      childSizes[nonAbsoluteChildIndexes[i]][isRow ? 'width' : 'height'] = (Math.floor(spaceForNonAbsolute / nonAbsoluteChildIndexes.length)) + (i < (spaceForNonAbsolute % nonAbsoluteChildIndexes.length) ? 1 : 0);
+  const fillChildIndexes = children
+    .map((child, i) => ({ index: i, unit: isRow ? child.widthUnit : child.heightUnit }))
+    .filter(m => m.unit === 'fill')
+    .map(m => m.index);
+
+  const totalPxMain = pxChildIndexes.reduce(
+    (sum, idx) => sum + (isRow ? childSizes[idx].width : childSizes[idx].height),
+    0,
+  );
+
+  const mainLayoutSpace = Math.max(0, mainSpace - totalGap);
+  const percentSpace = Math.max(0, mainLayoutSpace - totalPxMain);
+  let totalPercentMain = 0;
+
+  if (percentChildIndexes.length > 0) {
+    const weights = percentChildIndexes.map((idx) => {
+      const unit = isRow ? children[idx].widthUnit : children[idx].heightUnit;
+      const raw = unit === 'fill'
+        ? 100
+        : (isRow
+          ? ((children[idx] as UIElement & { rawWidth?: number }).rawWidth ?? children[idx].width)
+          : ((children[idx] as UIElement & { rawHeight?: number }).rawHeight ?? children[idx].height));
+      return Math.max(0, raw);
+    });
+    const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+    const useNormalization = totalWeight > 100;
+    const denominator = useNormalization
+      ? (totalWeight > 0 ? totalWeight : 1)
+      : 100;
+
+    const resolved = weights.map((w) => {
+      const exact = (w / denominator) * percentSpace;
+      const floored = Math.max(1, Math.floor(exact));
+      return { floored, fraction: exact - floored };
+    });
+
+    if (totalWeight >= 100) {
+      let distributed = resolved.reduce((sum, s) => sum + s.floored, 0);
+      const remaining = percentSpace - distributed;
+
+      if (remaining > 0 && resolved.length > 0) {
+        const byRemainderDesc = [...resolved.keys()].sort(
+          (a, b) => resolved[b].fraction - resolved[a].fraction
+        );
+        for (let i = 0; i < remaining; i++) {
+          const idx = byRemainderDesc[i % byRemainderDesc.length];
+          resolved[idx].floored += 1;
+        }
+      }
+    }
+
+    for (let i = 0; i < percentChildIndexes.length; i++) {
+      const idx = percentChildIndexes[i];
+      childSizes[idx][isRow ? 'width' : 'height'] = resolved[i].floored;
+      totalPercentMain += resolved[i].floored;
     }
   }
 
@@ -357,13 +395,20 @@ function resolveFlexLayout(
     (sum, s) => sum + (isRow ? s.width : s.height), 0
   ) + totalGap;
 
-  if (totalMain > mainSpace && children.length > 0) {
-    const maxShrinkSize = (isRow ? childSizes[children.length - 1].width : childSizes[children.length - 1].height) - 1;
-    if (maxShrinkSize > 0) {
-      const shrinkSize = Math.min(totalMain - mainSpace, maxShrinkSize);
-      childSizes[children.length - 1][isRow ? 'width' : 'height'] = Math.max(1, childSizes[children.length - 1][isRow ? 'width' : 'height'] - shrinkSize);
-      totalMain -= shrinkSize;
+  if (totalMain > mainSpace && fillChildIndexes.length > 0) {
+    let overflow = totalMain - mainSpace;
+    for (let i = fillChildIndexes.length - 1; i >= 0 && overflow > 0; i--) {
+      const idx = fillChildIndexes[i];
+      const currentSize = isRow ? childSizes[idx].width : childSizes[idx].height;
+      const shrinkSize = Math.min(overflow, Math.max(0, currentSize - 1));
+      if (shrinkSize > 0) {
+        childSizes[idx][isRow ? 'width' : 'height'] = currentSize - shrinkSize;
+        overflow -= shrinkSize;
+      }
     }
+    totalMain = childSizes.reduce(
+      (sum, s) => sum + (isRow ? s.width : s.height), 0
+    ) + totalGap;
   }
 
   let mainOffset = 0;

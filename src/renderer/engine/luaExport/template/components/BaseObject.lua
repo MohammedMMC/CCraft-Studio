@@ -34,16 +34,102 @@ function BaseObject:getMonitor()
     return scn and scn.monitor or nil
 end
 
-function BaseObject:alignText(text, width, align)
-    local len = #text
-    if len >= width then return text:sub(1, width) end
+function BaseObject.tokenizeText(text)
+    if type(text) == "table" then
+        local tokens = {}
+        for i, token in ipairs(text) do
+            tokens[i] = token
+        end
+        return tokens
+    end
+
+    local tokens = {}
+    local i = 1
+    while i <= #text do
+        local match = text:match("^(\\%d+)", i)
+        if match then
+            tokens[#tokens + 1] = match
+            i = i + #match
+        else
+            tokens[#tokens + 1] = text:sub(i, i)
+            i = i + 1
+        end
+    end
+
+    return tokens
+end
+
+function BaseObject.trimStartArr(arr)
+    local idx = 1
+    while idx <= #arr and arr[idx] == " " do
+        idx = idx + 1
+    end
+    if idx > #arr then return {} end
+    local result = {}
+    for i = idx, #arr do
+        result[#result + 1] = arr[i]
+    end
+    return result
+end
+
+function BaseObject.trimEndArr(arr)
+    local idx = #arr
+    while idx >= 1 and arr[idx] == " " do
+        idx = idx - 1
+    end
+    if idx < 1 then return {} end
+    local result = {}
+    for i = 1, idx do
+        result[#result + 1] = arr[i]
+    end
+    return result
+end
+
+function BaseObject.alignText(text, width, align)
+    local tokens = BaseObject.tokenizeText(text)
+    local len = #tokens
+
+    if len >= width then
+        local clipped = {}
+        for i = 1, width do
+            clipped[#clipped + 1] = tokens[i]
+        end
+        return type(text) == "table" and clipped or table.concat(clipped)
+    end
+
+    local pad = width - len
+    local isArray = type(text) == "table"
+    
     if align == "center" then
-        local pad = math.floor((width - len) / 2)
-        return string.rep(" ", pad) .. text .. string.rep(" ", width - len - pad)
+        local left = math.floor(pad / 2)
+        local right = pad - left
+        if isArray then
+            local result = {}
+            for i = 1, left do result[#result + 1] = " " end
+            for _, token in ipairs(tokens) do result[#result + 1] = token end
+            for i = 1, right do result[#result + 1] = " " end
+            return result
+        else
+            return string.rep(" ", left) .. text .. string.rep(" ", right)
+        end
     elseif align == "right" then
-        return string.rep(" ", width - len) .. text
+        if isArray then
+            local result = {}
+            for i = 1, pad do result[#result + 1] = " " end
+            for _, token in ipairs(tokens) do result[#result + 1] = token end
+            return result
+        else
+            return string.rep(" ", pad) .. text
+        end
     else
-        return text .. string.rep(" ", width - len)
+        if isArray then
+            local result = {}
+            for _, token in ipairs(tokens) do result[#result + 1] = token end
+            for i = 1, pad do result[#result + 1] = " " end
+            return result
+        else
+            return text .. string.rep(" ", pad)
+        end
     end
 end
 
@@ -61,6 +147,10 @@ end
 function BaseObject:draw()
     if not self:isVisible() then return end
     self.monitor = self:getMonitor()
+
+    if self.type ~= 'container' and self.type ~= 'slider' then
+        self.textArr = BaseObject.tokenizeText(self.text)
+    end
 
     self:drawElement()
 
@@ -116,46 +206,88 @@ function resolveLayout()
         local crossSpace = isRow and innerH or innerW
         local totalGap = gap * math.max(0, #children - 1)
 
-        local childData = {}
+        local pxChildIndexes = {}
+        local percentChildIndexes = {}
+
         for i, child in ipairs(children) do
-            childData[i] = {
-                index = i,
-                isAbsolute = (isRow and child.widthUnit or child.heightUnit) == "px",
-                mainSize = isRow and sizes[i].w or sizes[i].h,
-            }
-        end
-
-        local totalAbsoluteMain = 0
-        local nonAbsoluteChildIndexes = {}
-
-        for _, data in ipairs(childData) do
-            if data.isAbsolute then
-                totalAbsoluteMain = totalAbsoluteMain + data.mainSize
-            else
-                table.insert(nonAbsoluteChildIndexes, data.index)
+            local unit = isRow and child.widthUnit or child.heightUnit
+            if unit == "px" then
+                table.insert(pxChildIndexes, i)
+            elseif unit == "%" or unit == "fill" then
+                table.insert(percentChildIndexes, i)
             end
         end
 
-        local spaceForNonAbsolute = math.max(0, mainSpace - totalGap - totalAbsoluteMain)
-        if #nonAbsoluteChildIndexes > 0 then
-            for i, childIndex in ipairs(nonAbsoluteChildIndexes) do
-                sizes[childIndex][isRow and 'w' or 'h'] = math.floor(spaceForNonAbsolute / #nonAbsoluteChildIndexes) +
-                    ((i <= spaceForNonAbsolute % #nonAbsoluteChildIndexes) and 1 or 0)
+        local totalPxMain = 0
+        for _, idx in ipairs(pxChildIndexes) do
+            totalPxMain = totalPxMain + (isRow and sizes[idx].w or sizes[idx].h)
+        end
+
+        local mainLayoutSpace = math.max(0, mainSpace - totalGap)
+        local percentSpace = math.max(0, mainLayoutSpace - totalPxMain)
+        local totalPercentMain = 0
+
+        if #percentChildIndexes > 0 then
+            local weights = {}
+            local totalWeight = 0
+
+            for i, idx in ipairs(percentChildIndexes) do
+                local unit = isRow and children[idx].widthUnit or children[idx].heightUnit
+                local raw = unit == "fill" and 100 or (isRow and (children[idx].rawWidth or children[idx].width) or
+                    (children[idx].rawHeight or children[idx].height))
+                local weight = math.max(0, raw)
+                weights[i] = weight
+                totalWeight = totalWeight + weight
+            end
+
+            if totalWeight <= 0 then
+                totalWeight = 0
+                for i = 1, #weights do
+                    weights[i] = 1
+                    totalWeight = totalWeight + 1
+                end
+            end
+
+            local resolved = {}
+            for i, weight in ipairs(weights) do
+                local denominator = totalWeight > 100 and totalWeight or 100
+                local exact = (weight / denominator) * percentSpace
+                local floored = math.max(1, math.floor(exact))
+                resolved[i] = {
+                    floored = floored,
+                    fraction = exact - floored,
+                }
+            end
+
+            if totalWeight >= 100 then
+                local distributed = 0
+                for i = 1, #resolved do
+                    distributed = distributed + resolved[i].floored
+                end
+
+                local remaining = percentSpace - distributed
+                if remaining > 0 and #resolved > 0 then
+                    local byRemainderDesc = {}
+                    for i = 1, #resolved do byRemainderDesc[i] = i end
+                    table.sort(byRemainderDesc, function(a, b)
+                        return resolved[a].fraction > resolved[b].fraction
+                    end)
+                    for i = 1, remaining do
+                        local idx = byRemainderDesc[((i - 1) % #byRemainderDesc) + 1]
+                        resolved[idx].floored = resolved[idx].floored + 1
+                    end
+                end
+            end
+
+            for i, childIndex in ipairs(percentChildIndexes) do
+                sizes[childIndex][isRow and 'w' or 'h'] = resolved[i].floored
+                totalPercentMain = totalPercentMain + resolved[i].floored
             end
         end
 
         local totalMain = 0
         for i, s in ipairs(sizes) do totalMain = totalMain + (isRow and s.w or s.h) end
         totalMain = totalMain + totalGap
-
-        if totalMain > mainSpace and #children > 0 then
-            local maxShrinkSize = (isRow and sizes[#children].w or sizes[#children].h) - 1
-            if maxShrinkSize > 0 then
-                local shrinkSize = math.min(totalMain - mainSpace, maxShrinkSize)
-                sizes[#children][isRow and 'w' or 'h'] = math.max(1, sizes[#children][isRow and 'w' or 'h'] - shrinkSize)
-                totalMain = totalMain - shrinkSize
-            end
-        end
 
         local mainOffset = 0
         local gapSpaces = {}

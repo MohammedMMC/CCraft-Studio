@@ -42,5 +42,5 @@ function Button:drawElement()
     end
 
     self.monitor.setCursorPos(self.x, self.y + math.floor(self.height / 2))
-    self.monitor.write(self:alignText(self.text, self.width, self.textAlign))
+    Screen.cPrint(self.monitor, self.textArr, self.width, self.textAlign)
 end

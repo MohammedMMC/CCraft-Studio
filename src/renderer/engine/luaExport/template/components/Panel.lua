@@ -9,7 +9,7 @@ function Panel:new(name, props)
     local obj = BaseObject.new(self, name, props)
 
     obj.children = {}
-    
+
     return obj
 end
 
@@ -18,19 +18,22 @@ function Panel:addChild(child)
 end
 
 function Panel:drawElement()
-    local alignedText = self:alignText(self.text, self.width, self.textAlign)
-    local lead = #(alignedText:match("^%s*") or "")
-    local trail = #(alignedText:match("%s*$") or "")
+    local alignedTextArr = BaseObject.alignText(self.textArr, self.width, self.textAlign)
+    local trimStart = BaseObject.trimStartArr(alignedTextArr)
+    local trimEnd = BaseObject.trimEndArr(alignedTextArr)
+
+    local lead = #alignedTextArr - #trimStart
+    local trail = #alignedTextArr - #trimEnd
     local textsp = { lead, trail }
 
-    local plus2 = self.width < (#self.text + 4) and 0 or 2
+    local plus2 = self.width < (#self.textArr + 4) and 0 or 2
 
     local textpos
     if textsp[2] == 0 then
         textpos = lead - 4 + (lead == 4 and 1 or 0) + (plus2 == 0 and 3 or 0) + (lead == 5 and 1 or 0)
     else
         if lead == 0 then
-            textpos = ((self.width == (plus2 + (trail == 5 and 1 or 0) + #self.text + 2)) and 1 or 0)
+            textpos = ((self.width == (plus2 + (trail == 5 and 1 or 0) + #self.textArr + 2)) and 1 or 0)
             if textpos == 0 then
                 textpos = plus2 ~= 0 and plus2 or 1
             end
@@ -42,21 +45,26 @@ function Panel:drawElement()
     self.monitor.setBackgroundColor(self.titleBgColor)
     self.monitor.setTextColor(self.fgColor)
 
-    local title = self.text:match("^%s*(.-)%s*$")
+    local titleArr = BaseObject.trimStartArr(trimEnd)
     if plus2 == 2 then
-        title = " " .. title .. " "
+        local result = { " " }
+        for _, token in ipairs(titleArr) do
+            result[#result + 1] = token
+        end
+        result[#result + 1] = " "
+        titleArr = result
     end
 
     self.monitor.setCursorPos(self.x + textpos, self.y)
-    self.monitor.write(title)
+    Screen.cPrint(self.monitor, titleArr)
 
     self.monitor.setBackgroundColor(self.borderColor)
     self.monitor.setTextColor(self.fgColor)
     self.monitor.setCursorPos(self.x, self.y)
     self.monitor.write(string.rep(" ", textpos))
 
-    local rightStart = self.x + (textpos + #self.text + 2) + ((textsp[1] ~= 2 and plus2 == 0) and -2 or 0)
-    local rightWidth = self.width - (textpos + #self.text + 2) + ((textsp[1] ~= 2 and plus2 == 0) and 1 or 0)
+    local rightStart = self.x + (textpos + #self.textArr + 2) + ((textsp[1] ~= 2 and plus2 == 0) and -2 or 0)
+    local rightWidth = self.width - (textpos + #self.textArr + 2) + ((textsp[1] ~= 2 and plus2 == 0) and 1 or 0)
 
     self.monitor.setCursorPos(rightStart, self.y)
     self.monitor.write(string.rep(" ", rightWidth))

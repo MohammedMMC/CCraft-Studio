@@ -7,7 +7,7 @@ Label.__index = Label
 
 function Label:new(name, props)
     local obj = BaseObject.new(self, name, props)
-    
+
     return obj
 end
 
@@ -21,5 +21,5 @@ function Label:drawElement()
     end
 
     self.monitor.setCursorPos(self.x, self.y)
-    self.monitor.write(self:alignText(self.text, self.width, self.textAlign))
+    Screen.cPrint(self.monitor, self.textArr, self.width, self.textAlign)
 end

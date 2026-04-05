@@ -8,14 +8,14 @@ import WebSocket from 'ws';
 
 export const CRAFTPC_DATA_DIR =
     os.platform() === 'win32'
-        ? path.join(process.env.APPDATA || '', 'CraftOS-PC')
+        ? path.join((process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming')) || '', 'CraftOS-PC')
         : os.platform() === 'darwin'
             ? path.join(os.homedir(), 'Library', 'Application Support', 'CraftOS-PC')
             : path.join(process.env.XDG_DATA_HOME || path.join(os.homedir(), '.local', 'share'), 'craftos-pc');
 
 export const CRAFTPC_EXEC_PATH =
     os.platform() === 'win32'
-        ? [path.join(process.env.LOCALAPPDATA || '', 'CraftOS-PC', 'CraftOS-PC_console.exe'), path.join(process.env.PROGRAMFILES || '', 'CraftOS-PC', 'CraftOS-PC_console.exe'), path.join(process.env['PROGRAMFILES(X86)'] || '', 'CraftOS-PC', 'CraftOS-PC_console.exe')]
+        ? [path.join((process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local')) || '', 'CraftOS-PC', 'CraftOS-PC_console.exe'), path.join(process.env.PROGRAMFILES || '', 'CraftOS-PC', 'CraftOS-PC_console.exe'), path.join(process.env['PROGRAMFILES(X86)'] || '', 'CraftOS-PC', 'CraftOS-PC_console.exe')]
         : os.platform() === 'darwin'
             ? '/Applications/CraftOS-PC.app/Contents/MacOS/CraftOS-PC_console'
             : '/usr/bin/CraftOS-PC_console';
@@ -54,11 +54,11 @@ export function setupCraftPCIPC(): void {
         }
 
         await new Promise((resolve, reject) => {
-            proc!.stdin!.write(craftpcHelpers.buildKeyPacket(data.windowId,  craftpcHelpers.KEY_MAP['Enter'], true, false, false, false),
+            proc!.stdin!.write(craftpcHelpers.buildKeyPacket(data.windowId, craftpcHelpers.KEY_MAP['Enter'], true, false, false, false),
                 (err) => err ? reject(err) : resolve(undefined));
         });
         await new Promise((resolve, reject) => {
-            proc!.stdin!.write(craftpcHelpers.buildKeyPacket(data.windowId,  craftpcHelpers.KEY_MAP['Enter'], false, false, false, false),
+            proc!.stdin!.write(craftpcHelpers.buildKeyPacket(data.windowId, craftpcHelpers.KEY_MAP['Enter'], false, false, false, false),
                 (err) => err ? reject(err) : resolve(undefined));
         });
     });
@@ -172,10 +172,25 @@ export function setupCraftPCIPC(): void {
         craftpcHelpers.setBinaryChecksum(false);
     });
 
-    ipcMain.handle('craftpc:exportProject', async (_event, data: { files: { path: string; content: string }[], path: string, isRemote: boolean, computerId: number, projectName: string }) => {
-
+    ipcMain.handle('craftpc:exportProject', async (_event, data: { files: { path: string; content: string }[], path: string, isRemote: boolean, windowId: number, computerId: number, projectName: string }) => {
         if (data.isRemote) {
+            if (!proc || !proc.stdin) throw new Error("CraftOS-PC process is not running");
 
+            await new Promise((resolve, reject) => {
+                proc!.stdin!.write(craftpcHelpers.buildDeletePacket(data.windowId, 0, data.projectName), (err) => {
+                    if (err) reject(err);
+                    else resolve(undefined);
+                });
+            });
+
+            for (const file of data.files) {
+                console.log(await new Promise((resolve, reject) => {
+                    proc!.stdin!.write(craftpcHelpers.buildFileWritePackets(data.windowId, 0, file.path, file.content, { encoding: 'utf-8' }).requestPacket,
+                        (err) => err ? reject(err) : resolve(undefined));
+                }));
+            }
+
+            return data.projectName;
         } else {
             if (!fs.existsSync(data.path)) return null;
 
