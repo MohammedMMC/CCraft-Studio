@@ -85,7 +85,7 @@ export class TerminalRenderer {
     bgHex: string
   ) {
     if (!this.fontReady || !this.fontData) return;
-    
+
     const code = ch.length !== 1 ? parseInt(ch) : ch.charCodeAt(0) & 0xff;
     const srcX = 16 * (code & 0x0f) + 2;
     const srcY = 22 * (code >> 4) + 2;
@@ -139,9 +139,14 @@ export class TerminalRenderer {
         }
       }
     }
-
     if (this.blinkingData.blinkingInterval) {
-      this.drawBitmapChar(this.blinkingData.char, this.blinkingData.x, this.blinkingData.y, CC_COLORS["white"].hex, CC_COLORS["black"].hex);
+      const cell = cells[this.blinkingData.y][this.blinkingData.x];
+
+      const fg = !CC_COLOR_NAMES.includes(cell.fg as CCColor)
+        ? (cell.fg as string)
+        : CC_COLORS[cell.fg as CCColor].hex;
+
+      this.drawBitmapChar(this.blinkingData.char, this.blinkingData.x, this.blinkingData.y, fg, "transparent");
     }
   }
 }
