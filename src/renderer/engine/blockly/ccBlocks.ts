@@ -54,6 +54,16 @@ function ELEMENTS(elementType: UIElementType[] | UIElementType | "any" = "any", 
   return elements.map((el) => [el.name, el.name]);
 }
 
+function COLOR_PROPS(elementName: string): [string, string][] {
+  const screen = useProjectStore.getState().getActiveScreen();
+  if (!screen) return [['', '']];
+  const element = screen.uiElements.find((el) => el.name === elementName);
+  if (!element) return [['', '']];
+  return Object.keys(element)
+    .filter((key) => key.toLowerCase().includes("color"))
+    .map((key) => [key.toLowerCase().replace("color", ""), key]);
+}
+
 export function defineAllBlocks() {
   // =====================================================================
   // Blocks: Color
@@ -231,10 +241,13 @@ export function defineAllBlocks() {
     init(this: Blockly.Block) {
       this.appendValueInput('COLOR')
         .appendField('set')
-        .appendField(new Blockly.FieldTextInput('element1'), 'ELEMENT')
-        .appendField(new Blockly.FieldDropdown([
-          ['background', 'bgColor'], ['foreground', 'fgColor'],
-        ]), 'PROP')
+        .appendField(new Blockly.FieldDropdown(ELEMENTS), 'ELEMENT')
+        .appendField(new Blockly.FieldDropdown(function (this: Blockly.FieldDropdown) {
+          const block = this.getSourceBlock();
+          const elementName = block?.getFieldValue('ELEMENT') || '';
+
+          return COLOR_PROPS(elementName);
+        }), 'PROP')
         .appendField('to');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);

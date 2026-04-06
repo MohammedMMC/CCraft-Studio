@@ -24,7 +24,7 @@ To run the CCraft Studio from source code, follow these steps:
 1. Install the dependencies:
 
    ```bash
-   npm install . --force
+   npm install .
    ```
 
 2. Run the development environment:

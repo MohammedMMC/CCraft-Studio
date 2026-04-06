@@ -1,4 +1,6 @@
-export const TOOLBOX = {
+import * as Blockly from 'blockly';
+
+export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
   kind: 'categoryToolbox',
   contents: [
     // Category: Events
