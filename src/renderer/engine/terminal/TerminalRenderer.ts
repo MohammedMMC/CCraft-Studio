@@ -140,13 +140,7 @@ export class TerminalRenderer {
       }
     }
     if (this.blinkingData.blinkingInterval) {
-      const cell = cells[this.blinkingData.y][this.blinkingData.x];
-
-      const fg = !CC_COLOR_NAMES.includes(cell.fg as CCColor)
-        ? (cell.fg as string)
-        : CC_COLORS[cell.fg as CCColor].hex;
-
-      this.drawBitmapChar(this.blinkingData.char, this.blinkingData.x, this.blinkingData.y, fg, "transparent");
+      this.drawBitmapChar(this.blinkingData.char, this.blinkingData.x, this.blinkingData.y, CC_COLORS.white.hex, "transparent");
     }
   }
 }
