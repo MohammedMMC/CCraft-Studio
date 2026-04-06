@@ -39,14 +39,14 @@ function ProgressBar:drawElement()
     -- Draw text
     if self.orientation:match("^" .. "v") then
         self.monitor.setCursorPos(self.x, self.y + math.floor(self.height / 2))
-        self.monitor.setTextColor(self.fgColor)
+        self.monitor.setTextColor(self.textColor)
         self.monitor.setBackgroundColor(50 <= self.progress and self.progressColor or self.bgColor)
         Screen.cPrint(self.monitor, self.textArr, self.width, self.textAlign)
     else
         for i = 1, #alignedTextArr do
             local char = alignedTextArr[i]
             self.monitor.setCursorPos(self.x + i - 1, self.y + math.floor(self.height / 2))
-            self.monitor.setTextColor(self.fgColor)
+            self.monitor.setTextColor(self.textColor)
             self.monitor.setBackgroundColor(
                 (self.orientation == "hrtl"
                     and ((i - 1) >= (self.width - progressWidth))

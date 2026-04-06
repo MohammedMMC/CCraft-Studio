@@ -26,7 +26,7 @@ export const uiActionBlocks: BlockDefinition[] = [
       { name: 'element', type: 'dropdown', label: 'element', dropdownOptions: [] },
       { name: 'prop', type: 'dropdown', label: 'property', dropdownOptions: [
         { label: 'background', value: 'bgColor' },
-        { label: 'foreground', value: 'fgColor' },
+        { label: 'foreground', value: 'textColor' },
       ]},
       { name: 'color', type: 'color', label: 'color' },
     ],

@@ -28,7 +28,7 @@ function CheckBox:drawElement()
         self.monitor.write(string.rep(" ", self.width))
     end
 
-    self.monitor.setTextColor(self.checkColor)
+    self.monitor.setTextColor(self.checkedColor)
     self.monitor.setBackgroundColor(self.boxColor)
 
     for row = 0, boxSize - 1 do

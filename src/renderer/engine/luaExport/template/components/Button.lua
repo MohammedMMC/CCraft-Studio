@@ -33,7 +33,7 @@ function Button:onReleaseEvent(x, y)
 end
 
 function Button:drawElement()
-    self.monitor.setTextColor(self.isFocused and self.focusTextColor or self.fgColor)
+    self.monitor.setTextColor(self.isFocused and self.focusTextColor or self.textColor)
     self.monitor.setBackgroundColor(self.isFocused and self.focusBgColor or self.bgColor)
 
     for row = 0, self.height - 1 do

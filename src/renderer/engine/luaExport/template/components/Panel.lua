@@ -43,7 +43,7 @@ function Panel:drawElement()
     end
 
     self.monitor.setBackgroundColor(self.titleBgColor)
-    self.monitor.setTextColor(self.fgColor)
+    self.monitor.setTextColor(self.textColor)
 
     local titleArr = BaseObject.trimStartArr(trimEnd)
     if plus2 == 2 then
@@ -59,7 +59,7 @@ function Panel:drawElement()
     Screen.cPrint(self.monitor, titleArr)
 
     self.monitor.setBackgroundColor(self.borderColor)
-    self.monitor.setTextColor(self.fgColor)
+    self.monitor.setTextColor(self.textColor)
     self.monitor.setCursorPos(self.x, self.y)
     self.monitor.write(string.rep(" ", textpos))
 

@@ -37,7 +37,7 @@ export interface LabelElement extends BaseElement {
   type: 'label';
   text: string;
   textAlign: 'left' | 'center' | 'right';
-  fgColor: CCColor;
+  textColor: CCColor;
 }
 
 export interface ButtonElement extends BaseElement {
@@ -46,7 +46,7 @@ export interface ButtonElement extends BaseElement {
   textAlign: 'left' | 'center' | 'right';
   focusBgColor: CCColor;
   focusTextColor: CCColor;
-  fgColor: CCColor;
+  textColor: CCColor;
 }
 
 export interface ContainerElement extends BaseElement {
@@ -61,7 +61,6 @@ export interface ContainerElement extends BaseElement {
   gridTemplateRows: number;
   padding: number;
   paddingUnit: 'px' | '%';
-  fgColor: CCColor;
 }
 
 export interface PanelElement extends BaseElement {
@@ -80,7 +79,7 @@ export interface PanelElement extends BaseElement {
   gridTemplateRows: number;
   padding: number;
   paddingUnit: 'px' | '%';
-  fgColor: CCColor;
+  textColor: CCColor;
 }
 
 export interface ProgressBarElement extends BaseElement {
@@ -90,7 +89,7 @@ export interface ProgressBarElement extends BaseElement {
   orientation: 'hltr' | 'hrtl' | 'vttb' | 'vbtt',
   progressColor: CCColor;
   progress: number;
-  fgColor: CCColor;
+  textColor: CCColor;
 }
 
 export interface SliderElement extends BaseElement {
@@ -108,7 +107,7 @@ export interface CheckboxElement extends BaseElement {
   text: string;
   textColor: CCColor;
   boxColor: CCColor;
-  checkColor: CCColor;
+  checkedColor: CCColor;
   checkIcon: string;
   checked: boolean;
   textAlign: 'left' | 'center' | 'right';
@@ -136,14 +135,12 @@ export type UIElement =
 type OmitBase<T> = T extends UIElement ? Omit<T, 'id' | 'name' | 'zIndex'> : never;
 type UIElementDefaults = { [K in UIElementType]: OmitBase<Extract<UIElement, { type: K }>> };
 
-export const UI_ELEMENT_WITH_TEXT: UIElementType[] = ['label', 'button', 'checkbox', 'input', 'panel', 'progressbar'];
-
 export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
   label: {
     type: 'label',
     x: 1, y: 1, width: 10, height: 1,
     widthUnit: 'px', heightUnit: 'px',
-    fgColor: 'white', bgColor: 'black',
+    textColor: 'white', bgColor: 'black',
     text: 'Label', textAlign: 'left',
     visible: true, parentId: null,
   },
@@ -151,7 +148,7 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     type: 'button',
     x: 1, y: 1, width: 10, height: 3,
     widthUnit: 'px', heightUnit: 'px',
-    fgColor: 'white', bgColor: 'gray',
+    textColor: 'white', bgColor: 'gray',
     text: 'Button', textAlign: 'center',
     focusBgColor: 'lightGray', focusTextColor: 'white',
     visible: true, parentId: null,
@@ -160,7 +157,7 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     type: 'container',
     x: 1, y: 1, width: 20, height: 10,
     widthUnit: 'px', heightUnit: 'px',
-    fgColor: 'white', bgColor: 'gray',
+    bgColor: 'gray',
     display: 'flex',
     flexDirection: 'column',
     gap: 0, gapUnit: 'px',
@@ -174,7 +171,7 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     type: 'panel',
     x: 1, y: 1, width: 20, height: 10,
     widthUnit: 'px', heightUnit: 'px',
-    fgColor: 'white', bgColor: 'gray',
+    textColor: 'white', bgColor: 'gray',
     text: 'Panel',
     textAlign: 'left',
     borderColor: 'lightGray',
@@ -192,7 +189,7 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     type: 'progressbar',
     x: 1, y: 1, width: 20, height: 3,
     widthUnit: 'px', heightUnit: 'px',
-    fgColor: 'white', bgColor: 'gray',
+    textColor: 'white', bgColor: 'gray',
     text: 'Progress Bar',
     textAlign: 'center',
     progressColor: 'lightGray',
@@ -219,7 +216,7 @@ export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
     widthUnit: 'px', heightUnit: 'px',
     bgColor: 'black', textColor: 'white',
     text: 'CheckBox',
-    boxColor: 'gray', checkColor: 'white',
+    boxColor: 'gray', checkedColor: 'white',
     checkIcon: 'x',
     textAlign: 'left',
     checked: false,
@@ -249,6 +246,22 @@ export const UI_ELEMENT_LABELS: Record<UIElementType, { label: string; icon: str
   input: { label: 'Input', icon: 'I', description: 'Text Input' },
 };
 
+export const UI_ELEMENT_WITH_TEXT: UIElementType[] = ['label', 'button', 'checkbox', 'input', 'panel', 'progressbar'];
+export const UI_ELEMENT_COLORS_NAMES = {
+  textColor: 'Text',
+  focusTextColor: 'Focus Text',
+  bgColor: 'Background',
+  focusBgColor: 'Focus Background',
+  boxColor: 'CheckBox',
+  placeholderColor: 'Placeholder',
+  checkedColor: 'Checked',
+  filledColor: 'Filled',
+  handleColor: 'Handle',
+  progressColor: 'Progress',
+  borderColor: 'Border',
+  titleBgColor: 'Title Background',
+};
+
 export function resolveSize(
   el: UIElement,
   refWidth: number,
@@ -273,7 +286,6 @@ export function resolveSize(
 
   return { width: w, height: h };
 }
-
 
 export interface ResolvedChildPosition {
   id: string;

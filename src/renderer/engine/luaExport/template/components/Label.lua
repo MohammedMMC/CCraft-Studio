@@ -12,7 +12,7 @@ function Label:new(name, props)
 end
 
 function Label:drawElement()
-    self.monitor.setTextColor(self.fgColor)
+    self.monitor.setTextColor(self.textColor)
     self.monitor.setBackgroundColor(self.bgColor)
 
     for row = 0, self.height - 1 do

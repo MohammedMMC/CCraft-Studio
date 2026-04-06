@@ -3,10 +3,10 @@ import { useEditorStore } from '../../stores/editorStore';
 import { useProjectStore } from '../../stores/projectStore';
 import { useUIElementStore } from '../../stores/uiElementStore';
 import { useHistoryStore } from '../../stores/historyStore';
-import { UIElement, UIElementType, SizeUnit, resolveSize, SizeConstraintUnit } from '../../models/UIElement';
-import { CCColor } from '../../models/CCColors';
+import { UIElement, UIElementType, SizeUnit, resolveSize, SizeConstraintUnit, UI_ELEMENT_COLORS_NAMES } from '../../models/UIElement';
 import { ColorPicker } from './ColorPicker';
 import { generateId } from '../../utils/idGenerator';
+import { CCColor } from '@/models/CCColors';
 
 const clamp = (val: number, min: number, max: number): number =>
   Math.max(min, Math.min(max, Math.round(val)));
@@ -337,45 +337,14 @@ export const PropertiesPanel: React.FC = () => {
               <div className="h-px bg-app-border" />
 
               {/* Colors */}
-              {element.type === 'panel' ? (
-                <>
-                  <ColorPicker
-                    label="Title Color"
-                    value={element.fgColor}
-                    onChange={(fgColor) => update({ fgColor })}
-                  />
-                  <ColorPicker
-                    label="Title Background"
-                    value={element.titleBgColor}
-                    onChange={(titleBgColor) => update({ titleBgColor } as any)}
-                  />
-                  <ColorPicker
-                    label="Border Color"
-                    value={element.borderColor}
-                    onChange={(borderColor) => update({ borderColor } as any)}
-                  />
-                  <ColorPicker
-                    label="Background Color"
-                    value={element.bgColor}
-                    onChange={(bgColor) => update({ bgColor })}
-                  />
-                </>
-              ) : (
-                <>
-                  {(element.type !== 'container' && element.type !== 'slider' && element.type !== 'checkbox' && element.type !== 'input') && (
-                    <ColorPicker
-                      label="Text Color"
-                      value={element.fgColor}
-                      onChange={(fgColor) => update({ fgColor })}
-                    />
-                  )}
-                  <ColorPicker
-                    label="Background Color"
-                    value={element.bgColor}
-                    onChange={(bgColor) => update({ bgColor })}
-                  />
-                </>
-              )}
+              {Object.keys(UI_ELEMENT_COLORS_NAMES).map((key) => Object.keys(element).includes(key) && (
+                <ColorPicker
+                  key={key}
+                  label={UI_ELEMENT_COLORS_NAMES[key as keyof typeof UI_ELEMENT_COLORS_NAMES] + " Color"}
+                  value={element[key as keyof typeof element]?.toString() as CCColor}
+                  onChange={(value) => update({ [key]: value } as any)}
+                />
+              ))}
 
               <div className="h-px bg-app-border" />
 
@@ -479,8 +448,6 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
               <option value="right">Right</option>
             </select>
           </PropField>
-          <ColorPicker label="Focused Text Color" value={element.focusTextColor} onChange={(c) => update({ focusTextColor: c } as any)} />
-          <ColorPicker label="Focused Background Color" value={element.focusBgColor} onChange={(c) => update({ focusBgColor: c } as any)} />
         </>
       );
 
@@ -608,7 +575,6 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
               <option value="right">Right</option>
             </select>
           </PropField>
-          <ColorPicker label="Progress Color" value={element.progressColor} onChange={(c) => update({ progressColor: c } as any)} />
           <PropField label="Progress">
             <input type="number" className="input-field text-xs" value={element.progress} min={0} max={100}
               onChange={(e) => update({ progress: parseNum(e.target.value, 0, 100, 0) } as any)} />
@@ -618,8 +584,6 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
     case 'slider':
       return (
         <>
-          <ColorPicker label="Filled Color" value={element.filledColor} onChange={(c) => update({ filledColor: c } as any)} />
-          <ColorPicker label="Handle Color" value={element.handleColor} onChange={(c) => update({ handleColor: c } as any)} />
           <PropField label="Orientation">
             <select className="select-field text-xs" value={element.orientation} onChange={(e) => update({ orientation: e.target.value } as any)}>
               <option value="hltr">Horizontal - Left To Right</option>
@@ -657,9 +621,6 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
               <option value="right">Right</option>
             </select>
           </PropField>
-          <ColorPicker label="Text Color" value={element.textColor} onChange={(c) => update({ textColor: c } as any)} />
-          <ColorPicker label="Box Color" value={element.boxColor} onChange={(c) => update({ boxColor: c } as any)} />
-          <ColorPicker label="Check Color" value={element.checkColor} onChange={(c) => update({ checkColor: c } as any)} />
           <PropField label="Checked">
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" className="checkbox-field" checked={element.checked} onChange={(e) => update({ checked: e.target.checked } as any)} />
@@ -684,8 +645,6 @@ function renderTypeSpecificProps(element: UIElement, update: (u: Partial<UIEleme
               <option value="right">Right</option>
             </select>
           </PropField>
-          <ColorPicker label="Text Color" value={element.textColor} onChange={(c) => update({ textColor: c } as any)} />
-          <ColorPicker label="Placeholder Color" value={element.placeholderColor} onChange={(c) => update({ placeholderColor: c } as any)} />
         </>
       );
     default:

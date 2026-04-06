@@ -26,13 +26,13 @@ function renderElementToBuffer(
 
   switch (el.type) {
     case 'label': {
-      buffer.fillRect(x, y, width, height, ' ', el.fgColor, el.bgColor);
-      buffer.writeText(x, y, alignText(eText, width, el.textAlign).slice(0, width), el.fgColor, el.bgColor);
+      buffer.fillRect(x, y, width, height, ' ', el.textColor, el.bgColor);
+      buffer.writeText(x, y, alignText(eText, width, el.textAlign).slice(0, width), el.textColor, el.bgColor);
       break;
     }
     case 'button': {
-      buffer.fillRect(x, y, width, height, ' ', el.fgColor, el.bgColor);
-      buffer.writeText(x, y + Math.floor(height / 2), alignText(eText, width, el.textAlign).slice(0, width), el.fgColor, el.bgColor);
+      buffer.fillRect(x, y, width, height, ' ', el.textColor, el.bgColor);
+      buffer.writeText(x, y + Math.floor(height / 2), alignText(eText, width, el.textAlign).slice(0, width), el.textColor, el.bgColor);
       break;
     }
     case 'container':
@@ -45,20 +45,20 @@ function renderElementToBuffer(
         const plus2 = width < panel.text.length + 4 ? 0 : 2;
         const textpos = (textsp[1] == 0 ? textsp[0] - 4 + Number(textsp[0] == 4) + (plus2 == 0 ? 3 : 0) + Number(textsp[0] == 5) : (textsp[0] == 0 ? (Number(width == (plus2 + Number(textsp[1] == 5) + panel.text.length + 2)) || plus2 || 1) : (textsp[0] - (plus2 == 2 ? 1 : 0))));
 
-        buffer.fillRect(x, y, textpos, 1, ' ', panel.fgColor, panel.borderColor);
-        buffer.fillRect(x + (textpos + panel.text.length + 2) + (textsp[0] != 2 && plus2 == 0 ? -2 : 0), y, width - (textpos + panel.text.length + 2) + (textsp[0] != 2 && plus2 == 0 ? 1 : 0), 1, ' ', panel.fgColor, panel.borderColor);
+        buffer.fillRect(x, y, textpos, 1, ' ', panel.textColor, panel.borderColor);
+        buffer.fillRect(x + (textpos + panel.text.length + 2) + (textsp[0] != 2 && plus2 == 0 ? -2 : 0), y, width - (textpos + panel.text.length + 2) + (textsp[0] != 2 && plus2 == 0 ? 1 : 0), 1, ' ', panel.textColor, panel.borderColor);
 
-        buffer.fillRect(x, y + height - 1, width, 1, ' ', panel.fgColor, panel.borderColor);
-        buffer.fillRect(x, y, 1, height, ' ', panel.fgColor, panel.borderColor);
-        buffer.fillRect(x + width - 1, y, 1, height, ' ', panel.fgColor, panel.borderColor);
+        buffer.fillRect(x, y + height - 1, width, 1, ' ', panel.textColor, panel.borderColor);
+        buffer.fillRect(x, y, 1, height, ' ', panel.textColor, panel.borderColor);
+        buffer.fillRect(x + width - 1, y, 1, height, ' ', panel.textColor, panel.borderColor);
 
         if (width > 2 && height > 2) {
-          buffer.fillRect(x + 1, y + 1, width - 2, height - 2, ' ', panel.fgColor, panel.bgColor);
+          buffer.fillRect(x + 1, y + 1, width - 2, height - 2, ' ', panel.textColor, panel.bgColor);
         }
 
-        buffer.writeText(x + textpos, y, (plus2 == 2 ? [" ", ...trimStartArr(trimEndArr(text)), " "] : trimStartArr(trimEndArr(text))), panel.fgColor, panel.titleBgColor);
+        buffer.writeText(x + textpos, y, (plus2 == 2 ? [" ", ...trimStartArr(trimEndArr(text)), " "] : trimStartArr(trimEndArr(text))), panel.textColor, panel.titleBgColor);
       } else {
-        buffer.fillRect(x, y, width, height, ' ', el.fgColor, el.bgColor);
+        buffer.fillRect(x, y, width, height, ' ', el.bgColor, el.bgColor);
       }
 
       const children = allElements
@@ -77,17 +77,17 @@ function renderElementToBuffer(
       break;
     }
     case 'progressbar': {
-      buffer.fillRect(x, y, width, height, ' ', el.fgColor, el.bgColor);
+      buffer.fillRect(x, y, width, height, ' ', el.textColor, el.bgColor);
       const progressWidth = Math.round(width / 100 * el.progress);
       const progressHeight = Math.round(height / 100 * el.progress);
 
       if (el.orientation.startsWith("v")) {
         buffer.fillRect(x, y + (el.orientation == "vbtt" ? height - progressHeight : 0), width, progressHeight, ' ', el.progressColor, el.progressColor);
-        buffer.writeText(x, y + Math.floor(height / 2), alignText(eText, width, el.textAlign), el.fgColor, 50 <= el.progress ? el.progressColor : el.bgColor);
+        buffer.writeText(x, y + Math.floor(height / 2), alignText(eText, width, el.textAlign), el.textColor, 50 <= el.progress ? el.progressColor : el.bgColor);
       } else {
         buffer.fillRect(x + (el.orientation == "hrtl" ? width - progressWidth : 0), y, progressWidth, height, ' ', el.progressColor, el.progressColor);
         alignText(eText, width, el.textAlign).slice(0, width).forEach((char, i) => {
-          buffer.writeText(x + i, y + Math.floor(height / 2), [char], el.fgColor, (el.orientation == "hrtl" ? (i >= width - progressWidth) : (i < progressWidth)) ? el.progressColor : el.bgColor);
+          buffer.writeText(x + i, y + Math.floor(height / 2), [char], el.textColor, (el.orientation == "hrtl" ? (i >= width - progressWidth) : (i < progressWidth)) ? el.progressColor : el.bgColor);
         });
       }
 
@@ -113,7 +113,7 @@ function renderElementToBuffer(
 
       if (el.checked) {
         const icon = el.checkIcon || 'x';
-        buffer.writeText(x + Math.floor((boxSize - 1) / 2), y + Math.floor((boxSize - 1) / 2), [icon], el.checkColor, el.boxColor);
+        buffer.writeText(x + Math.floor((boxSize - 1) / 2), y + Math.floor((boxSize - 1) / 2), [icon], el.checkedColor, el.boxColor);
       }
 
       buffer.writeText(x + boxSize + 1, y + Math.floor(height / 2), alignText(eText, width - boxSize - 1, el.textAlign).slice(0, width - boxSize - 1), el.textColor, el.bgColor);
@@ -159,20 +159,20 @@ function renderChildAtPosition(
         const plus2 = width < eText.length + 4 ? 0 : 2;
         const textpos = (textsp[1] == 0 ? textsp[0] - 4 + Number(textsp[0] == 4) + (plus2 == 0 ? 3 : 0) + Number(textsp[0] == 5) : (textsp[0] == 0 ? (Number(width == (plus2 + Number(textsp[1] == 5) + eText.length + 2)) || plus2 || 1) : (textsp[0] - (plus2 == 2 ? 1 : 0))));
 
-        buffer.fillRect(x, y, textpos, 1, ' ', panel.fgColor, panel.borderColor);
-        buffer.fillRect(x + (textpos + eText.length + 2) + (textsp[0] != 2 && plus2 == 0 ? -2 : 0), y, width - (textpos + eText.length + 2) + (textsp[0] != 2 && plus2 == 0 ? 1 : 0), 1, ' ', panel.fgColor, panel.borderColor);
+        buffer.fillRect(x, y, textpos, 1, ' ', panel.textColor, panel.borderColor);
+        buffer.fillRect(x + (textpos + eText.length + 2) + (textsp[0] != 2 && plus2 == 0 ? -2 : 0), y, width - (textpos + eText.length + 2) + (textsp[0] != 2 && plus2 == 0 ? 1 : 0), 1, ' ', panel.textColor, panel.borderColor);
 
-        buffer.fillRect(x, y + height - 1, width, 1, ' ', panel.fgColor, panel.borderColor);
-        buffer.fillRect(x, y, 1, height, ' ', panel.fgColor, panel.borderColor);
-        buffer.fillRect(x + width - 1, y, 1, height, ' ', panel.fgColor, panel.borderColor);
+        buffer.fillRect(x, y + height - 1, width, 1, ' ', panel.textColor, panel.borderColor);
+        buffer.fillRect(x, y, 1, height, ' ', panel.textColor, panel.borderColor);
+        buffer.fillRect(x + width - 1, y, 1, height, ' ', panel.textColor, panel.borderColor);
 
         if (width > 2 && height > 2) {
-          buffer.fillRect(x + 1, y + 1, width - 2, height - 2, ' ', panel.fgColor, panel.bgColor);
+          buffer.fillRect(x + 1, y + 1, width - 2, height - 2, ' ', panel.textColor, panel.bgColor);
         }
 
-        buffer.writeText(x + textpos, y, (plus2 == 2 ? [" ", ...trimStartArr(trimEndArr(eText)), " "] : trimStartArr(trimEndArr(eText))), panel.fgColor, panel.titleBgColor);
+        buffer.writeText(x + textpos, y, (plus2 == 2 ? [" ", ...trimStartArr(trimEndArr(eText)), " "] : trimStartArr(trimEndArr(eText))), panel.textColor, panel.titleBgColor);
       } else {
-        buffer.fillRect(x, y, width, height, ' ', child.fgColor, child.bgColor);
+        buffer.fillRect(x, y, width, height, ' ', child.bgColor, child.bgColor);
       }
       const grandchildren = allElements
         .filter(c => c.parentId === child.id && c.visible)
