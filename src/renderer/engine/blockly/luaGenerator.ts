@@ -189,7 +189,7 @@ export function registerAllGenerators() {
     const y = gen.valueToCode(block, 'Y', Order.NONE);
     return `${gen.getIndent()}term.setCursorPos(${x}, ${y})\n${gen.getIndent()}term.write(${text})`;
   });
-  
+
   luaGenerator.addGenerator('ui_set_visible', (block, gen) => {
     const el = block.getFieldValue('ELEMENT');
     const bool = gen.valueToCode(block, 'BOOL', Order.NONE);
@@ -1106,6 +1106,14 @@ export function registerAllGenerators() {
   luaGenerator.addGenerator('text_length', (block, gen) => {
     const text = gen.valueToCode(block, 'VALUE', Order.HIGH);
     return [`#${text}`, Order.HIGH];
+  });
+
+  // =================================================================
+  // blocks: Color
+  // =================================================================
+
+  luaGenerator.addGenerator('color_picker', (block) => {
+    return [block.getFieldValue('COLOR') || 'white', Order.ATOMIC];
   });
 
   // =================================================================

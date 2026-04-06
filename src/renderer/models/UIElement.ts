@@ -136,6 +136,8 @@ export type UIElement =
 type OmitBase<T> = T extends UIElement ? Omit<T, 'id' | 'name' | 'zIndex'> : never;
 type UIElementDefaults = { [K in UIElementType]: OmitBase<Extract<UIElement, { type: K }>> };
 
+export const UI_ELEMENT_WITH_TEXT: UIElementType[] = ['label', 'button', 'checkbox', 'input', 'panel', 'progressbar'];
+
 export const UI_ELEMENT_DEFAULTS: UIElementDefaults = {
   label: {
     type: 'label',

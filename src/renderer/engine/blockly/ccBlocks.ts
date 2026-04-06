@@ -1,6 +1,6 @@
 import * as Blockly from 'blockly';
 import { useProjectStore } from '../../stores/projectStore';
-import { UIElementType } from '@/models/UIElement';
+import { UI_ELEMENT_WITH_TEXT, UIElement, UIElementType } from '@/models/UIElement';
 import { FieldColour } from '@blockly/field-colour';
 import { CC_COLORS } from '@/models/CCColors';
 
@@ -13,8 +13,18 @@ const SIDES: [string, string][] = [
   ['back', 'back'],
 ];
 
+export class FieldCCColor extends FieldColour {
+  protected override updateSize_(margin?: number) {
+    super.updateSize_(margin);
+    const constants = this.getConstants();
+    if (!constants) return;
+    this.size_.height = constants.FIELD_TEXT_HEIGHT;
+    this.positionBorderRect_();
+  }
+}
+
 function createColorField() {
-  return new FieldColour("white", undefined, {
+  return new FieldCCColor(CC_COLORS.white.hex, undefined, {
     colourOptions: Object.values(CC_COLORS).map(c => c.hex),
     colourTitles: Object.keys(CC_COLORS),
     columns: 4,
@@ -30,16 +40,35 @@ function SCREENS(): [string, string][] {
   return project.screens.map((s) => [s.name, s.name]);
 }
 
-function ELEMENTS(elementType: UIElementType | "any"): [string, string][] {
+function ELEMENTS(elementType: UIElementType[] | UIElementType | "any" = "any", filters: (value: UIElement) => boolean = () => true): [string, string][] {
   const store = useProjectStore.getState();
   const screen = store.getActiveScreen();
   if (!screen) return [['(no elements)', '']];
-  const elements = screen.uiElements.filter((el) => elementType === "any" || el.type === elementType);
-  if (elements.length === 0) return [[`(no ${elementType === "any" ? "element" : elementType}s)`, '']];
+  const elements = screen.uiElements.filter((el) => {
+    if (Array.isArray(elementType)) {
+      return elementType.includes(el.type) && filters(el);
+    }
+    return (elementType === "any" || el.type === elementType) && filters(el);
+  });
+  if (elements.length === 0) return [[`(no ${(elementType === "any" || Array.isArray(elementType)) ? "element" : elementType}s)`, '']];
   return elements.map((el) => [el.name, el.name]);
 }
 
 export function defineAllBlocks() {
+  // =====================================================================
+  // Blocks: Color
+  // =====================================================================
+
+  Blockly.Blocks['color_picker'] = {
+    init(this: Blockly.Block) {
+      this.appendDummyInput('COLOR')
+        .appendField(createColorField(), 'COLOR');
+      this.setOutput(true);
+      this.setStyle('color_blocks');
+      this.setTooltip('Color Picker block');
+    },
+  };
+
   // =====================================================================
   // 1. EVENTS
   // =====================================================================
@@ -188,26 +217,25 @@ export function defineAllBlocks() {
     init(this: Blockly.Block) {
       this.appendValueInput('TEXT').setCheck('String')
         .appendField('set')
-        .appendField(new Blockly.FieldTextInput('element1'), 'ELEMENT')
+        .appendField(new Blockly.FieldDropdown(ELEMENTS(UI_ELEMENT_WITH_TEXT)), 'ELEMENT')
         .appendField('text to');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('ui_blocks');
-      this.setInputsInline(true);
+      this.setInputsInline(false);
       this.setTooltip('Set the text content of a UI element');
     },
   };
 
   Blockly.Blocks['ui_set_color'] = {
     init(this: Blockly.Block) {
-      this.appendDummyInput()
+      this.appendValueInput('COLOR')
         .appendField('set')
         .appendField(new Blockly.FieldTextInput('element1'), 'ELEMENT')
         .appendField(new Blockly.FieldDropdown([
           ['background', 'bgColor'], ['foreground', 'fgColor'],
         ]), 'PROP')
-        .appendField('to')
-        .appendField(createColorField(), 'COLOR')
+        .appendField('to');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('ui_blocks');
@@ -419,9 +447,8 @@ export function defineAllBlocks() {
 
   Blockly.Blocks['term_setTextColor'] = {
     init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField('set text color')
-        .appendField(createColorField(), 'COLOR');
+      this.appendValueInput('COLOR')
+        .appendField('set text color');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('terminal_blocks');
@@ -431,9 +458,8 @@ export function defineAllBlocks() {
 
   Blockly.Blocks['term_setBgColor'] = {
     init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField('set background color')
-        .appendField(createColorField(), 'COLOR');
+      this.appendValueInput('COLOR')
+        .appendField('set background color');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('terminal_blocks');
@@ -646,11 +672,10 @@ export function defineAllBlocks() {
 
   Blockly.Blocks['rs_testBundledInput'] = {
     init(this: Blockly.Block) {
-      this.appendDummyInput()
+      this.appendValueInput('COLOR')
         .appendField('bundled')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
-        .appendField('has color')
-        .appendField(createColorField(), 'COLOR');
+        .appendField('has color');
       this.setOutput(true, 'Boolean');
       this.setStyle('redstone_blocks');
       this.setTooltip('Test if a bundled cable input includes a specific color');
@@ -1816,9 +1841,8 @@ export function defineAllBlocks() {
         .appendField('draw pixel at x:');
       this.appendValueInput('Y').setCheck('Number')
         .appendField('y:');
-      this.appendDummyInput()
-        .appendField('color')
-        .appendField(createColorField(), 'COLOR');
+      this.appendValueInput('COLOR')
+        .appendField('color');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('paintutils_blocks');
@@ -1837,9 +1861,8 @@ export function defineAllBlocks() {
         .appendField('to x:');
       this.appendValueInput('Y2').setCheck('Number')
         .appendField('y:');
-      this.appendDummyInput()
-        .appendField('color')
-        .appendField(createColorField(), 'COLOR');
+      this.appendValueInput('COLOR')
+        .appendField('color');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('paintutils_blocks');
@@ -1858,9 +1881,8 @@ export function defineAllBlocks() {
         .appendField('to x:');
       this.appendValueInput('Y2').setCheck('Number')
         .appendField('y:');
-      this.appendDummyInput()
-        .appendField('color')
-        .appendField(createColorField(), 'COLOR');
+      this.appendValueInput('COLOR')
+        .appendField('color');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('paintutils_blocks');
@@ -1879,9 +1901,8 @@ export function defineAllBlocks() {
         .appendField('to x2:');
       this.appendValueInput('Y2').setCheck('Number')
         .appendField('y2:');
-      this.appendDummyInput()
-        .appendField('color')
-        .appendField(createColorField(), 'COLOR');
+      this.appendValueInput('COLOR')
+        .appendField('color');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('paintutils_blocks');

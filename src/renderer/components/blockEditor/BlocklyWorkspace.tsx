@@ -9,7 +9,6 @@ import { useBlocklyStore } from '../../stores/blocklyStore';
 import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { usePromptStore } from '../shared/PromptDialog';
-import { registerFieldColour } from '@blockly/field-colour';
 
 let blocksRegistered = false;
 function ensureInit() {
@@ -140,6 +139,11 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
       colourSecondary: '#9C2751',
       colourTertiary: '#852145',
     },
+    color_blocks: {
+      colourPrimary: '#7D7D7D',
+      colourSecondary: '#6B6B6B',
+      colourTertiary: '#595959',
+    },
     list_blocks: {
       colourPrimary: '#49A6D4',
       colourSecondary: '#3D90BB',
@@ -178,6 +182,7 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
     loop_category: { colour: '#B18E35' },
     math_category: { colour: '#3F71B5' },
     text_category: { colour: '#B32D5E' },
+    color_category: { colour: '#7D7D7D' },
     list_category: { colour: '#49A6D4' },
     variable_category: { colour: '#D05F2D' },
     procedure_category: { colour: '#7C5385' },
@@ -327,8 +332,6 @@ export const BlocklyWorkspace: React.FC = () => {
       workspaceRef.current = ws;
 
       LexicalVariablesPlugin.init(ws);
-
-      registerFieldColour();
 
       ws.registerToolboxCategoryCallback('PROCEDURE', procedureFlyoutXml);
 

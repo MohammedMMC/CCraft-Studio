@@ -25,8 +25,8 @@ export const TOOLBOX = {
         { kind: 'block', type: 'ui_screen_select' },
         { kind: 'block', type: 'ui_navigate' },
         { kind: 'label', text: '--- Element ---' },
-        { kind: 'block', type: 'ui_set_text' },
-        { kind: 'block', type: 'ui_set_color' },
+        { kind: 'block', type: 'ui_set_text', inputs: { TEXT: { shadow: { type: 'text', fields: { TEXT: 'Hello, world!' } } } } },
+        { kind: 'block', type: 'ui_set_color', inputs: { COLOR: { shadow: { type: 'color_picker' } } } },
         { kind: 'block', type: 'ui_set_visible' },
         { kind: 'block', type: 'ui_show' },
         { kind: 'block', type: 'ui_hide' },
@@ -96,6 +96,17 @@ export const TOOLBOX = {
         { kind: 'block', type: 'text_length' },
       ],
     },
+
+    // Category: Colors
+    {
+      kind: 'category',
+      name: 'Colors',
+      categorystyle: 'color_category',
+      contents: [
+        { kind: 'block', type: 'color_picker' },
+      ]
+    },
+
     // Category: Lists
     {
       kind: 'category', name: 'Lists', categorystyle: 'list_category',
@@ -144,8 +155,8 @@ export const TOOLBOX = {
         { kind: 'block', type: 'term_getCursorX' },
         { kind: 'block', type: 'term_getCursorY' },
         { kind: 'label', text: '--- Colors ---' },
-        { kind: 'block', type: 'term_setTextColor' },
-        { kind: 'block', type: 'term_setBgColor' },
+        { kind: 'block', type: 'term_setTextColor', inputs: { COLOR: { shadow: { type: 'color_picker' } } }  },
+        { kind: 'block', type: 'term_setBgColor', inputs: { COLOR: { shadow: { type: 'color_picker' } } }  },
         { kind: 'block', type: 'term_getTextColor' },
         { kind: 'block', type: 'term_getBgColor' },
         { kind: 'label', text: '--- Advanced ---' },
@@ -171,7 +182,7 @@ export const TOOLBOX = {
         { kind: 'label', text: '--- Bundled ---' },
         { kind: 'block', type: 'rs_setBundledOutput' },
         { kind: 'block', type: 'rs_getBundledInput' },
-        { kind: 'block', type: 'rs_testBundledInput' },
+        { kind: 'block', type: 'rs_testBundledInput', inputs: { COLOR: { shadow: { type: 'color_picker' } } }  },
       ],
     },
 
@@ -342,10 +353,10 @@ export const TOOLBOX = {
     {
       kind: 'category', name: 'Paint Utils', categorystyle: 'paintutils_category',
       contents: [
-        { kind: 'block', type: 'paint_drawPixel' },
-        { kind: 'block', type: 'paint_drawLine' },
-        { kind: 'block', type: 'paint_drawBox' },
-        { kind: 'block', type: 'paint_drawFilledBox' },
+        { kind: 'block', type: 'paint_drawPixel', inputs: { COLOR: { shadow: { type: 'color_picker' } } }  },
+        { kind: 'block', type: 'paint_drawLine', inputs: { COLOR: { shadow: { type: 'color_picker' } } }  },
+        { kind: 'block', type: 'paint_drawBox', inputs: { COLOR: { shadow: { type: 'color_picker' } } }  },
+        { kind: 'block', type: 'paint_drawFilledBox', inputs: { COLOR: { shadow: { type: 'color_picker' } } }  },
         { kind: 'block', type: 'paint_drawImage' },
         { kind: 'block', type: 'paint_loadImage' },
       ],
