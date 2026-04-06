@@ -25,8 +25,8 @@ export const TOOLBOX = {
         { kind: 'block', type: 'ui_screen_select' },
         { kind: 'block', type: 'ui_navigate' },
         { kind: 'label', text: '--- Element ---' },
-        { kind: 'block', type: 'ui_set_text', inputs: { TEXT: { shadow: { type: 'text', fields: { TEXT: 'Hello, world!' } } } } },
-        { kind: 'block', type: 'ui_set_color', inputs: { COLOR: { shadow: { type: 'color_picker' } } } },
+        { kind: 'block', type: 'ui_set_text', inputs: { TEXT: { block: { type: 'text', fields: { TEXT: 'Hello, world!' } } } } },
+        { kind: 'block', type: 'ui_set_color', inputs: { COLOR: { block: { type: 'color_picker' } } } },
         { kind: 'block', type: 'ui_set_visible' },
         { kind: 'block', type: 'ui_show' },
         { kind: 'block', type: 'ui_hide' },
@@ -45,13 +45,13 @@ export const TOOLBOX = {
       contents: [
         { kind: 'block', type: 'controls_if' },
         { kind: 'block', type: 'controls_if', extraState: { hasElse: true } },
-        { kind: 'block', type: 'controls_repeat_ext', inputs: { TIMES: { shadow: { type: 'math_number', fields: { NUM: 10 } } } } },
+        { kind: 'block', type: 'controls_repeat_ext', inputs: { TIMES: { block: { type: 'math_number', fields: { NUM: 10 } } } } },
         { kind: 'block', type: 'controls_whileUntil' },
         {
           kind: 'block', type: 'controls_for', fields: { VAR: 'i' }, inputs: {
-            FROM: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
-            TO: { shadow: { type: 'math_number', fields: { NUM: 10 } } },
-            BY: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+            FROM: { block: { type: 'math_number', fields: { NUM: 1 } } },
+            TO: { block: { type: 'math_number', fields: { NUM: 10 } } },
+            BY: { block: { type: 'math_number', fields: { NUM: 1 } } },
           }
         },
         { kind: 'block', type: 'controls_forEach' },
@@ -79,8 +79,8 @@ export const TOOLBOX = {
         { kind: 'block', type: 'math_single' },
         {
           kind: 'block', type: 'math_random_int', inputs: {
-            FROM: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
-            TO: { shadow: { type: 'math_number', fields: { NUM: 100 } } },
+            FROM: { block: { type: 'math_number', fields: { NUM: 1 } } },
+            TO: { block: { type: 'math_number', fields: { NUM: 100 } } },
           }
         },
         { kind: 'block', type: 'math_change' },
@@ -155,8 +155,8 @@ export const TOOLBOX = {
         { kind: 'block', type: 'term_getCursorX' },
         { kind: 'block', type: 'term_getCursorY' },
         { kind: 'label', text: '--- Colors ---' },
-        { kind: 'block', type: 'term_setTextColor', inputs: { COLOR: { shadow: { type: 'color_picker' } } }  },
-        { kind: 'block', type: 'term_setBgColor', inputs: { COLOR: { shadow: { type: 'color_picker' } } }  },
+        { kind: 'block', type: 'term_setTextColor', inputs: { COLOR: { block: { type: 'color_picker' } } }  },
+        { kind: 'block', type: 'term_setBgColor', inputs: { COLOR: { block: { type: 'color_picker' } } }  },
         { kind: 'block', type: 'term_getTextColor' },
         { kind: 'block', type: 'term_getBgColor' },
         { kind: 'label', text: '--- Advanced ---' },
@@ -182,7 +182,7 @@ export const TOOLBOX = {
         { kind: 'label', text: '--- Bundled ---' },
         { kind: 'block', type: 'rs_setBundledOutput' },
         { kind: 'block', type: 'rs_getBundledInput' },
-        { kind: 'block', type: 'rs_testBundledInput', inputs: { COLOR: { shadow: { type: 'color_picker' } } }  },
+        { kind: 'block', type: 'rs_testBundledInput', inputs: { COLOR: { block: { type: 'color_picker' } } }  },
       ],
     },
 
@@ -353,10 +353,10 @@ export const TOOLBOX = {
     {
       kind: 'category', name: 'Paint Utils', categorystyle: 'paintutils_category',
       contents: [
-        { kind: 'block', type: 'paint_drawPixel', inputs: { COLOR: { shadow: { type: 'color_picker' } } }  },
-        { kind: 'block', type: 'paint_drawLine', inputs: { COLOR: { shadow: { type: 'color_picker' } } }  },
-        { kind: 'block', type: 'paint_drawBox', inputs: { COLOR: { shadow: { type: 'color_picker' } } }  },
-        { kind: 'block', type: 'paint_drawFilledBox', inputs: { COLOR: { shadow: { type: 'color_picker' } } }  },
+        { kind: 'block', type: 'paint_drawPixel', inputs: { COLOR: { block: { type: 'color_picker' } } }  },
+        { kind: 'block', type: 'paint_drawLine', inputs: { COLOR: { block: { type: 'color_picker' } } }  },
+        { kind: 'block', type: 'paint_drawBox', inputs: { COLOR: { block: { type: 'color_picker' } } }  },
+        { kind: 'block', type: 'paint_drawFilledBox', inputs: { COLOR: { block: { type: 'color_picker' } } }  },
         { kind: 'block', type: 'paint_drawImage' },
         { kind: 'block', type: 'paint_loadImage' },
       ],

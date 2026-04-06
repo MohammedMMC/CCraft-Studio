@@ -3,7 +3,6 @@ import * as Blockly from 'blockly';
 import { LexicalVariablesPlugin } from '@mit-app-inventor/blockly-block-lexical-variables';
 import { defineAllBlocks } from '../../engine/blockly/ccBlocks';
 import { luaGenerator, registerAllGenerators } from '../../engine/blockly/luaGenerator';
-import ModernTheme from '@blockly/theme-modern';
 import { TOOLBOX } from '../../engine/blockly/toolbox';
 import { useBlocklyStore } from '../../stores/blocklyStore';
 import { useProjectStore } from '../../stores/projectStore';
@@ -32,7 +31,7 @@ Blockly.utils.colour.setHsvSaturation(0.7);
 
 const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
   name: 'ccraftDark',
-  base: ModernTheme,
+  base: Blockly.Themes.Classic,
   blockStyles: {
     events_blocks: {
       colourPrimary: '#B18E35',
@@ -193,7 +192,7 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
     toolboxForegroundColour: '#cdd6f4',
     flyoutBackgroundColour: '#2a2a3c',
     flyoutForegroundColour: '#cdd6f4',
-    flyoutOpacity: 1,
+    flyoutOpacity: 0.9,
     scrollbarColour: '#45475a',
     insertionMarkerColour: '#fff',
     insertionMarkerOpacity: 0.3,
