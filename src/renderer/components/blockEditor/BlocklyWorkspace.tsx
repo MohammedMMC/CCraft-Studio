@@ -35,128 +35,78 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
   blockStyles: {
     events_blocks: {
       colourPrimary: '#B18E35',
-      colourSecondary: '#9A7B2E',
-      colourTertiary: '#836827',
     },
     ui_blocks: {
       colourPrimary: '#4EBD60',
-      colourSecondary: '#3DA34E',
-      colourTertiary: '#2E8B3C',
     },
     terminal_blocks: {
       colourPrimary: '#3F71B5',
-      colourSecondary: '#35619E',
-      colourTertiary: '#2B5187',
     },
     redstone_blocks: {
       colourPrimary: '#E05050',
-      colourSecondary: '#CC3F3F',
-      colourTertiary: '#B33030',
     },
     filesystem_blocks: {
       colourPrimary: '#C49642',
-      colourSecondary: '#AD8438',
-      colourTertiary: '#96722E',
     },
     http_blocks: {
       colourPrimary: '#49A6D4',
-      colourSecondary: '#3D90BB',
-      colourTertiary: '#327AA2',
     },
     peripheral_blocks: {
       colourPrimary: '#7C5385',
-      colourSecondary: '#6B4673',
-      colourTertiary: '#5A3A61',
     },
     turtle_blocks: {
       colourPrimary: '#59B85A',
-      colourSecondary: '#4AA34B',
-      colourTertiary: '#3C8E3D',
     },
     os_blocks: {
       colourPrimary: '#8B6FC0',
-      colourSecondary: '#7A5FAD',
-      colourTertiary: '#694F9A',
     },
     rednet_blocks: {
       colourPrimary: '#D05F2D',
-      colourSecondary: '#B85228',
-      colourTertiary: '#A04523',
     },
     textutils_blocks: {
       colourPrimary: '#B32D5E',
-      colourSecondary: '#9C2751',
-      colourTertiary: '#852145',
     },
     paintutils_blocks: {
       colourPrimary: '#E07070',
-      colourSecondary: '#CC5E5E',
-      colourTertiary: '#B34D4D',
     },
     window_blocks: {
       colourPrimary: '#3DA08E',
-      colourSecondary: '#348D7C',
-      colourTertiary: '#2B7A6B',
     },
     settings_blocks: {
       colourPrimary: '#7D7D7D',
-      colourSecondary: '#6B6B6B',
-      colourTertiary: '#595959',
     },
     gps_blocks: {
       colourPrimary: '#3F71B5',
-      colourSecondary: '#35619E',
-      colourTertiary: '#2B5187',
     },
     disk_blocks: {
       colourPrimary: '#B88040',
-      colourSecondary: '#A37038',
-      colourTertiary: '#8E6030',
     },
     utility_blocks: {
       colourPrimary: '#7D7D7D',
-      colourSecondary: '#6B6B6B',
-      colourTertiary: '#595959',
     },
     logic_blocks: {
       colourPrimary: '#77AB41',
-      colourSecondary: '#689537',
-      colourTertiary: '#59802E',
     },
     loop_blocks: {
       colourPrimary: '#B18E35',
-      colourSecondary: '#9A7B2E',
-      colourTertiary: '#836827',
     },
     math_blocks: {
       colourPrimary: '#3F71B5',
-      colourSecondary: '#35619E',
-      colourTertiary: '#2B5187',
     },
     text_blocks: {
       colourPrimary: '#B32D5E',
-      colourSecondary: '#9C2751',
-      colourTertiary: '#852145',
     },
     color_blocks: {
       colourPrimary: '#7D7D7D',
-      colourSecondary: '#6B6B6B',
-      colourTertiary: '#595959',
     },
     list_blocks: {
       colourPrimary: '#49A6D4',
-      colourSecondary: '#3D90BB',
-      colourTertiary: '#327AA2',
     },
     variable_blocks: {
       colourPrimary: '#D05F2D',
-      colourSecondary: '#B85228',
-      colourTertiary: '#A04523',
     },
     procedure_blocks: {
       colourPrimary: '#7C5385',
-      colourSecondary: '#6B4673',
-      colourTertiary: '#5A3A61',
     },
   },
   categoryStyles: {

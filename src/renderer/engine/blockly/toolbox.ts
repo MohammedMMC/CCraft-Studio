@@ -29,7 +29,7 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
         { kind: 'label', text: '--- Element ---' },
         { kind: 'block', type: 'ui_set_text', inputs: { TEXT: { block: { type: 'text', fields: { TEXT: 'Hello, world!' } } } } },
         { kind: 'block', type: 'ui_set_color', inputs: { COLOR: { block: { type: 'color_picker' } } } },
-        { kind: 'block', type: 'ui_set_visible' },
+        { kind: 'block', type: 'ui_set_visible', inputs: { BOOL: { block: { type: 'logic_boolean' } } } },
         { kind: 'block', type: 'ui_show' },
         { kind: 'block', type: 'ui_hide' },
         { kind: 'label', text: '--- Get Values ---' },
