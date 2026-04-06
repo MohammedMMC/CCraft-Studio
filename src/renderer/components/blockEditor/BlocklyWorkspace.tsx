@@ -9,6 +9,7 @@ import { useBlocklyStore } from '../../stores/blocklyStore';
 import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { usePromptStore } from '../shared/PromptDialog';
+import { registerFieldColour } from '@blockly/field-colour';
 
 let blocksRegistered = false;
 function ensureInit() {
@@ -326,6 +327,8 @@ export const BlocklyWorkspace: React.FC = () => {
       workspaceRef.current = ws;
 
       LexicalVariablesPlugin.init(ws);
+
+      registerFieldColour();
 
       ws.registerToolboxCategoryCallback('PROCEDURE', procedureFlyoutXml);
 

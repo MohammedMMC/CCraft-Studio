@@ -113,6 +113,10 @@ svg[display="none"] {
   color: black;
 }
 
+.blocklyFieldColour .blocklyFieldGrid {
+  gap: 6px;
+}
+
 /* CraftOS-PC */
 
 .CraftOSPC-corners {

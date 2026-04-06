@@ -21,11 +21,10 @@ export const TOOLBOX = {
     {
       kind: 'category', name: 'UI Actions', categorystyle: 'ui_category',
       contents: [
+        { kind: 'label', text: '--- Screen ---' },
         { kind: 'block', type: 'ui_screen_select' },
-        { kind: 'block', type: 'ui_draw_screen' },
         { kind: 'block', type: 'ui_navigate' },
-        { kind: 'block', type: 'ui_clear' },
-        { kind: 'label', text: '--- Element Properties ---' },
+        { kind: 'label', text: '--- Element ---' },
         { kind: 'block', type: 'ui_set_text' },
         { kind: 'block', type: 'ui_set_color' },
         { kind: 'block', type: 'ui_set_visible' },

@@ -149,10 +149,6 @@ export function registerAllGenerators() {
   // 2. UI ACTIONS
   // =================================================================
 
-  luaGenerator.addGenerator('ui_draw_screen', (_block, gen) => {
-    return `${gen.getIndent()}drawCurrentScreen()`;
-  });
-
   luaGenerator.addGenerator('ui_set_text', (block, gen) => {
     const el = block.getFieldValue('ELEMENT');
     const text = gen.valueToCode(block, 'TEXT', Order.NONE);
@@ -193,11 +189,7 @@ export function registerAllGenerators() {
     const y = gen.valueToCode(block, 'Y', Order.NONE);
     return `${gen.getIndent()}term.setCursorPos(${x}, ${y})\n${gen.getIndent()}term.write(${text})`;
   });
-
-  luaGenerator.addGenerator('ui_clear', (_block, gen) => {
-    return `${gen.getIndent()}term.clear()\n${gen.getIndent()}term.setCursorPos(1, 1)`;
-  });
-
+  
   luaGenerator.addGenerator('ui_set_visible', (block, gen) => {
     const el = block.getFieldValue('ELEMENT');
     const bool = gen.valueToCode(block, 'BOOL', Order.NONE);
