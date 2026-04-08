@@ -149,27 +149,11 @@ export function registerAllGenerators() {
   // 2. UI ACTIONS
   // =================================================================
 
-  luaGenerator.addGenerator('ui_set_text', (block, gen) => {
-    const el = block.getFieldValue('ELEMENT');
-    const text = gen.valueToCode(block, 'TEXT', Order.NONE);
-    return `${gen.getIndent()}getElement("${el}").text = ${text}\n${gen.getIndent()}drawCurrentScreen()`;
-  });
-
-  luaGenerator.addGenerator('ui_set_color', (block, gen) => {
+  luaGenerator.addGenerator('ui_set_prop', (block, gen) => {
     const el = block.getFieldValue('ELEMENT');
     const prop = block.getFieldValue('PROP');
     const color = block.getFieldValue('COLOR');
     return `${gen.getIndent()}getElement("${el}").${prop} = ${color}\n${gen.getIndent()}drawCurrentScreen()`;
-  });
-
-  luaGenerator.addGenerator('ui_show', (block, gen) => {
-    const el = block.getFieldValue('ELEMENT');
-    return `${gen.getIndent()}getElement("${el}").visible = true\n${gen.getIndent()}drawCurrentScreen()`;
-  });
-
-  luaGenerator.addGenerator('ui_hide', (block, gen) => {
-    const el = block.getFieldValue('ELEMENT');
-    return `${gen.getIndent()}getElement("${el}").visible = false\n${gen.getIndent()}drawCurrentScreen()`;
   });
 
   luaGenerator.addGenerator('ui_navigate', (block, gen) => {
@@ -183,20 +167,7 @@ export function registerAllGenerators() {
     return `${gen.getIndent()}getElement("${el}").value = ${val}\n${gen.getIndent()}drawCurrentScreen()`;
   });
 
-  luaGenerator.addGenerator('ui_write_at', (block, gen) => {
-    const text = gen.valueToCode(block, 'TEXT', Order.NONE);
-    const x = gen.valueToCode(block, 'X', Order.NONE);
-    const y = gen.valueToCode(block, 'Y', Order.NONE);
-    return `${gen.getIndent()}term.setCursorPos(${x}, ${y})\n${gen.getIndent()}term.write(${text})`;
-  });
-
-  luaGenerator.addGenerator('ui_set_visible', (block, gen) => {
-    const el = block.getFieldValue('ELEMENT');
-    const bool = gen.valueToCode(block, 'BOOL', Order.NONE);
-    return `${gen.getIndent()}getElement("${el}").visible = ${bool}\n${gen.getIndent()}drawCurrentScreen()`;
-  });
-
-  luaGenerator.addGenerator('ui_get_text', (block) => {
+  luaGenerator.addGenerator('ui_get_prop', (block) => {
     const el = block.getFieldValue('ELEMENT');
     return [`getElement("${el}").text`, Order.ATOMIC];
   });

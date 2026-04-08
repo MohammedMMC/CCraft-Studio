@@ -262,6 +262,30 @@ export const UI_ELEMENT_COLORS_NAMES = {
   titleBgColor: 'Title Background',
 };
 
+export const UI_ELEMENT_PROPS_NAMES = {
+  textAlign: 'Text Align',
+  text: 'Text',
+  display: 'Display',
+  flexDirection: 'Flex Direction',
+  gap: 'Gap',
+  gapUnit: 'Gap Unit',
+  alignItems: 'Align Items',
+  justifyContent: 'Justify Content',
+  gridTemplateCols: 'Grid Columns',
+  gridTemplateRows: 'Grid Rows',
+  padding: 'Padding',
+  paddingUnit: 'Padding Unit',
+  orientation: 'Orientation',
+  progress: 'Progress',
+  to: 'To',
+  from: 'From',
+  value: 'Value',
+  checked: 'Checked',
+  checkIcon: 'Check Icon',
+  placeholder: 'Placeholder',
+  visible: 'Visible',
+};
+
 export function resolveSize(
   el: UIElement,
   refWidth: number,
