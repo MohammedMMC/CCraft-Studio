@@ -248,7 +248,9 @@ export function defineAllBlocks() {
         .appendField('.')
         .appendField(new Blockly.FieldDropdown(function (this: Blockly.FieldDropdown) {
           const elementName = ELEMENTS()[0][0];
-          return [...ELEMENT_PROPS(elementName), ...ELEMENT_COLOR_PROPS(elementName)];
+          return elementName !== "(no elements)"
+            ? [...ELEMENT_PROPS(elementName), ...ELEMENT_COLOR_PROPS(elementName)]
+            : [['(no element)', '']];
         }), 'PROP')
         .appendField('to');
 
@@ -282,27 +284,26 @@ export function defineAllBlocks() {
         .appendField('.')
         .appendField(new Blockly.FieldDropdown(function (this: Blockly.FieldDropdown) {
           const elementName = ELEMENTS()[0][0];
-          return [...ELEMENT_PROPS(elementName), ...ELEMENT_COLOR_PROPS(elementName)];
+          return elementName !== "(no elements)"
+            ? [...ELEMENT_PROPS(elementName), ...ELEMENT_COLOR_PROPS(elementName)]
+            : [['(no element)', '']];
         }), 'PROP');
       this.setOutput(true, null);
       this.setStyle('ui_blocks');
       this.setTooltip('Get the text content of a UI element');
     },
     onchange(this: Blockly.Block, event: Abstract) {
-      console.log(event.type);
-      
       if (event.type !== Blockly.Events.BLOCK_CHANGE) return;
       const prop = this.getFieldValue('PROP');
       const elementName = this.getFieldValue('ELEMENT');
       if (!prop || !elementName) return;
-      
+
       const store = useProjectStore.getState();
       const screen = store.getActiveScreen();
       const element = screen?.uiElements.find(el => el.name === elementName);
       const propValue = element?.[prop as keyof UIElement];
       if (!element || !propValue) return;
-      
-      // this.setFieldValue('bgColor', 'PROP');
+
       this.setOutput(true, valueToType(propValue));
     }
   };
