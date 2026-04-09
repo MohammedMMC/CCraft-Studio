@@ -569,15 +569,24 @@ export function defineAllBlocks() {
   // 4. REDSTONE API
   // =====================================================================
 
-  Blockly.Blocks['rs_setOutput'] = {
+  Blockly.Blocks['logic_onoff'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('set redstone')
-        .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
-        .appendField('to')
         .appendField(new Blockly.FieldDropdown([
           ['on', 'true'], ['off', 'false'],
-        ]), 'VALUE');
+        ]), 'BOOL');
+      this.setOutput(true, 'Boolean');
+      this.setStyle('logic_blocks');
+      this.setTooltip(Blockly.Msg['LOGIC_BOOLEAN_TOOLTIP']);
+    },
+  };
+
+  Blockly.Blocks['rs_setOutput'] = {
+    init(this: Blockly.Block) {
+      this.appendValueInput('VALUE').setCheck('Boolean')
+        .appendField('set redstone')
+        .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
+        .appendField('to');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('redstone_blocks');
@@ -587,11 +596,10 @@ export function defineAllBlocks() {
 
   Blockly.Blocks['rs_setAnalogOutput'] = {
     init(this: Blockly.Block) {
-      this.appendDummyInput()
+      this.appendValueInput('VALUE').setCheck('Number')
         .appendField('set redstone')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
-        .appendField('strength to')
-        .appendField(new Blockly.FieldNumber(0, 0, 15, 1), 'VALUE');
+        .appendField('strength to');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('redstone_blocks');
@@ -608,7 +616,6 @@ export function defineAllBlocks() {
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('redstone_blocks');
-      this.setInputsInline(true);
       this.setTooltip('Set bundled cable output on a side');
     },
   };
@@ -616,7 +623,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['rs_getInput'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('redstone input on')
+        .appendField('get redstone input on')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setOutput(true, 'Boolean');
       this.setStyle('redstone_blocks');
@@ -627,7 +634,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['rs_getOutput'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('redstone output on')
+        .appendField('get redstone output on')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setOutput(true, 'Boolean');
       this.setStyle('redstone_blocks');
@@ -638,7 +645,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['rs_getAnalogInput'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('redstone strength on')
+        .appendField('get redstone strength on')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setOutput(true, 'Number');
       this.setStyle('redstone_blocks');
@@ -649,7 +656,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['rs_getAnalogOutput'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('redstone output strength on')
+        .appendField('get redstone output strength on')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setOutput(true, 'Number');
       this.setStyle('redstone_blocks');
@@ -657,10 +664,21 @@ export function defineAllBlocks() {
     },
   };
 
+  Blockly.Blocks['rs_getBundledOutput'] = {
+    init(this: Blockly.Block) {
+      this.appendDummyInput()
+        .appendField('get bundled output on')
+        .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
+      this.setOutput(true, 'Number');
+      this.setStyle('redstone_blocks');
+      this.setTooltip('Get bundled cable output on a side');
+    },
+  };
+
   Blockly.Blocks['rs_getBundledInput'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('bundled input on')
+        .appendField('get bundled input on')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setOutput(true, 'Number');
       this.setStyle('redstone_blocks');
@@ -671,7 +689,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['rs_testBundledInput'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('COLOR').setCheck('Color')
-        .appendField('bundled')
+        .appendField('test bundled')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
         .appendField('has color');
       this.setOutput(true, 'Boolean');
