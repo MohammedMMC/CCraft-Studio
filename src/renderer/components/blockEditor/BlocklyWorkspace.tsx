@@ -16,6 +16,25 @@ function ensureInit() {
   defineAllBlocks();
   registerAllGenerators();
 
+  // Changing Default Blocks
+  Blockly.Msg.TEXT_ISEMPTY_TITLE = 'is empty %1';
+  Blockly.Msg.LISTS_ISEMPTY_TITLE = 'is empty %1';
+  function changeBlockInit(blockName: string | string[], fn: (this: Blockly.Block) => void) {
+    const blockNames = Array.isArray(blockName) ? blockName : [blockName];
+    for (const name of blockNames) {
+      if (Blockly.Blocks[name] && Blockly.Blocks[name].init) {
+        const baseInit = Blockly.Blocks[name].init;
+        Blockly.Blocks[name].init = function (this: Blockly.Block) {
+          baseInit.call(this);
+          fn.call(this);
+        };
+      }
+    }
+  }
+  changeBlockInit(['text_length', 'text_reverse', 'lists_isEmpty', 'lists_reverse'], function () {
+    this.setInputsInline(false);
+  });
+
   Blockly.dialog.setPrompt((message, defaultValue, callback) => {
     usePromptStore.getState().open({
       title: 'Blockly',

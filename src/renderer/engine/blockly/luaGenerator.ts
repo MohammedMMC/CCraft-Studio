@@ -1104,13 +1104,6 @@ export function registerAllGenerators() {
     return `${gen.getIndent()}${safeName} = ${val}`;
   });
 
-  luaGenerator.addGenerator('math_change', (block, gen) => {
-    const name = block.getFieldValue('VAR') || 'x';
-    const safeName = name.replace(/[^a-zA-Z0-9_]/g, '_');
-    const val = gen.valueToCode(block, 'DELTA', Order.ADD);
-    return `${gen.getIndent()}${safeName} = ${safeName} + ${val}`;
-  });
-
   // =================================================================
   // Built-in Blockly blocks: Loops
   // =================================================================
