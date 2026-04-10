@@ -257,7 +257,7 @@ export function defineAllBlocks() {
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('ui_blocks');
-      this.setTooltip('Set the background or foreground color of a UI element');
+      this.setTooltip(`Set the ${UI_ELEMENT_PROPS_NAMES[this.getFieldValue('PROP') as keyof typeof UI_ELEMENT_PROPS_NAMES] || (UI_ELEMENT_COLORS_NAMES[this.getFieldValue('PROP') as keyof typeof UI_ELEMENT_COLORS_NAMES] + " Color")} property of "${this.getFieldValue('ELEMENT')}"`);
     },
     onchange(this: Blockly.Block, event: Abstract) {
       if (event.type !== Blockly.Events.BLOCK_CHANGE) return;
@@ -272,6 +272,7 @@ export function defineAllBlocks() {
       const propValue = element?.[prop as keyof UIElement];
       if (!element || !propValue) return;
 
+      this.setTooltip(`Set the ${UI_ELEMENT_PROPS_NAMES[prop as keyof typeof UI_ELEMENT_PROPS_NAMES] || (UI_ELEMENT_COLORS_NAMES[prop as keyof typeof UI_ELEMENT_COLORS_NAMES] + " Color")} property of "${elementName}"`);
       input.setCheck(valueToType(propValue));
     }
   };
@@ -290,7 +291,7 @@ export function defineAllBlocks() {
         }), 'PROP');
       this.setOutput(true, null);
       this.setStyle('ui_blocks');
-      this.setTooltip('Get the text content of a UI element');
+      this.setTooltip(`Get the ${UI_ELEMENT_PROPS_NAMES[this.getFieldValue('PROP') as keyof typeof UI_ELEMENT_PROPS_NAMES] || (UI_ELEMENT_COLORS_NAMES[this.getFieldValue('PROP') as keyof typeof UI_ELEMENT_COLORS_NAMES] + " Color")} property of "${this.getFieldValue('ELEMENT')}"`);
     },
     onchange(this: Blockly.Block, event: Abstract) {
       if (event.type !== Blockly.Events.BLOCK_CHANGE) return;
@@ -304,6 +305,7 @@ export function defineAllBlocks() {
       const propValue = element?.[prop as keyof UIElement];
       if (!element || !propValue) return;
 
+      this.setTooltip(`Get the ${UI_ELEMENT_PROPS_NAMES[prop as keyof typeof UI_ELEMENT_PROPS_NAMES] || (UI_ELEMENT_COLORS_NAMES[prop as keyof typeof UI_ELEMENT_COLORS_NAMES] + " Color")} property of "${elementName}"`);
       this.setOutput(true, valueToType(propValue));
     }
   };
