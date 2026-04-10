@@ -82,9 +82,6 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
     rednet_blocks: {
       colourPrimary: '#D05F2D',
     },
-    textutils_blocks: {
-      colourPrimary: '#B32D5E',
-    },
     paintutils_blocks: {
       colourPrimary: '#E07070',
     },
@@ -139,7 +136,6 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
     turtle_category: { colour: '#59B85A' },
     os_category: { colour: '#8B6FC0' },
     rednet_category: { colour: '#D05F2D' },
-    textutils_category: { colour: '#B32D5E' },
     paintutils_category: { colour: '#E07070' },
     window_category: { colour: '#3DA08E' },
     settings_category: { colour: '#7D7D7D' },

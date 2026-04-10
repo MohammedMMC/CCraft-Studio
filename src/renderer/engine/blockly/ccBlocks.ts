@@ -247,7 +247,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(ELEMENTS), 'ELEMENT')
         .appendField('.')
         .appendField(new Blockly.FieldDropdown(function (this: Blockly.FieldDropdown) {
-          const elementName = ELEMENTS()[0][0];
+          const elementName = this.getSourceBlock()?.getFieldValue('ELEMENT') || ELEMENTS()[0][0];
           return elementName !== "(no elements)"
             ? [...ELEMENT_PROPS(elementName), ...ELEMENT_COLOR_PROPS(elementName)]
             : [['(no element)', '']];
@@ -283,7 +283,7 @@ export function defineAllBlocks() {
         .appendField(new Blockly.FieldDropdown(ELEMENTS), 'ELEMENT')
         .appendField('.')
         .appendField(new Blockly.FieldDropdown(function (this: Blockly.FieldDropdown) {
-          const elementName = ELEMENTS()[0][0];
+          const elementName = this.getSourceBlock()?.getFieldValue('ELEMENT') || ELEMENTS()[0][0];
           return elementName !== "(no elements)"
             ? [...ELEMENT_PROPS(elementName), ...ELEMENT_COLOR_PROPS(elementName)]
             : [['(no element)', '']];
@@ -1797,7 +1797,7 @@ export function defineAllBlocks() {
       this.appendValueInput('VALUE')
         .appendField('serialize');
       this.setOutput(true, 'String');
-      this.setStyle('textutils_blocks');
+      this.setStyle('text_blocks');
       this.setTooltip('Convert a Lua value to a string representation');
     },
   };
@@ -1807,7 +1807,7 @@ export function defineAllBlocks() {
       this.appendValueInput('TEXT').setCheck('String')
         .appendField('unserialize');
       this.setOutput(true, null);
-      this.setStyle('textutils_blocks');
+      this.setStyle('text_blocks');
       this.setTooltip('Convert a serialized string back to a Lua value');
     },
   };
@@ -1817,7 +1817,7 @@ export function defineAllBlocks() {
       this.appendValueInput('VALUE')
         .appendField('to JSON');
       this.setOutput(true, 'String');
-      this.setStyle('textutils_blocks');
+      this.setStyle('text_blocks');
       this.setTooltip('Convert a Lua value to a JSON string');
     },
   };
@@ -1827,7 +1827,7 @@ export function defineAllBlocks() {
       this.appendValueInput('TEXT').setCheck('String')
         .appendField('from JSON');
       this.setOutput(true, null);
-      this.setStyle('textutils_blocks');
+      this.setStyle('text_blocks');
       this.setTooltip('Parse a JSON string into a Lua value');
     },
   };
@@ -1837,7 +1837,7 @@ export function defineAllBlocks() {
       this.appendValueInput('TEXT').setCheck('String')
         .appendField('URL encode');
       this.setOutput(true, 'String');
-      this.setStyle('textutils_blocks');
+      this.setStyle('text_blocks');
       this.setTooltip('URL-encode a string for safe use in URLs');
     },
   };
@@ -1850,7 +1850,7 @@ export function defineAllBlocks() {
         .appendField('rate');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setStyle('textutils_blocks');
+      this.setStyle('text_blocks');
       this.setInputsInline(true);
       this.setTooltip('Print text character by character at the given rate');
     },
@@ -1864,7 +1864,7 @@ export function defineAllBlocks() {
         .appendField('rate');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setStyle('textutils_blocks');
+      this.setStyle('text_blocks');
       this.setInputsInline(true);
       this.setTooltip('Write text character by character at the given rate (no newline)');
     },

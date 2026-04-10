@@ -107,6 +107,12 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
         { kind: 'block', type: 'text_trim' },
         { kind: 'block', type: 'text_charAt' },
         { kind: 'block', type: 'text_replace' },
+        { kind: 'label', text: '--- Utilities ---' },
+        { kind: 'block', type: 'textutils_serialize' },
+        { kind: 'block', type: 'textutils_unserialize' },
+        { kind: 'block', type: 'textutils_serializeJSON' },
+        { kind: 'block', type: 'textutils_unserializeJSON' },
+        { kind: 'block', type: 'textutils_urlEncode' },
       ],
     },
 
@@ -185,6 +191,9 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
         { kind: 'block', type: 'term_getWidth' },
         { kind: 'block', type: 'term_getHeight' },
         { kind: 'block', type: 'term_isColor' },
+        { kind: 'label', text: '--- Text Utilities ---' },
+        { kind: 'block', type: 'textutils_slowPrint' },
+        { kind: 'block', type: 'textutils_slowWrite' },
       ],
     },
 
@@ -358,21 +367,7 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
         { kind: 'block', type: 'rednet_lookup' },
       ],
     },
-
-    // Category: TextUtils
-    {
-      kind: 'category', name: 'Text Utils', categorystyle: 'textutils_category',
-      contents: [
-        { kind: 'block', type: 'textutils_serialize' },
-        { kind: 'block', type: 'textutils_unserialize' },
-        { kind: 'block', type: 'textutils_serializeJSON' },
-        { kind: 'block', type: 'textutils_unserializeJSON' },
-        { kind: 'block', type: 'textutils_urlEncode' },
-        { kind: 'block', type: 'textutils_slowPrint' },
-        { kind: 'block', type: 'textutils_slowWrite' },
-      ],
-    },
-
+    
     // Category: PaintUtils
     {
       kind: 'category', name: 'Paint Utils', categorystyle: 'paintutils_category',
