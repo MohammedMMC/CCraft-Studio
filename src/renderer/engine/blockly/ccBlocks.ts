@@ -512,27 +512,6 @@ export function defineAllBlocks() {
     },
   };
 
-  Blockly.Blocks['term_setTextScale'] = {
-    init(this: Blockly.Block) {
-      this.appendValueInput('SCALE').setCheck('Number')
-        .appendField('set text scale to');
-      this.setPreviousStatement(true, null);
-      this.setNextStatement(true, null);
-      this.setStyle('terminal_blocks');
-      this.setTooltip('Set the text scale of the terminal');
-    },
-  };
-
-  Blockly.Blocks['term_getTextScale'] = {
-    init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField('text scale');
-      this.setOutput(true, 'Number');
-      this.setStyle('terminal_blocks');
-      this.setTooltip('Get the text scale of the terminal');
-    },
-  };
-
   Blockly.Blocks['term_getCursorX'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()

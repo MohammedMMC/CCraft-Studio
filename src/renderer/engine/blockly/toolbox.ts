@@ -191,8 +191,6 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
         { kind: 'block', type: 'term_getWidth' },
         { kind: 'block', type: 'term_getHeight' },
         { kind: 'block', type: 'term_isColor' },
-        { kind: 'block', type: 'term_setTextScale', inputs: { SCALE: { block: { type: 'math_number', fields: { NUM: 1 } } } } },
-        { kind: 'block', type: 'term_getTextScale' },
         { kind: 'label', text: '--- Text Utilities ---' },
         { kind: 'block', type: 'textutils_slowPrint', inputs: { TEXT: { block: { type: 'text', fields: { TEXT: 'Hello, World!' } } }, RATE: { block: { type: 'math_number', fields: { NUM: 10 } } } } },
         { kind: 'block', type: 'textutils_slowWrite', inputs: { TEXT: { block: { type: 'text', fields: { TEXT: 'Hello, World!' } } }, RATE: { block: { type: 'math_number', fields: { NUM: 10 } } } } },
