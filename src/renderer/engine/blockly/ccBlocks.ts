@@ -358,7 +358,6 @@ export function defineAllBlocks() {
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('terminal_blocks');
-      this.setInputsInline(true);
       this.setTooltip('Write text at the current cursor position');
     },
   };
@@ -370,7 +369,6 @@ export function defineAllBlocks() {
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('terminal_blocks');
-      this.setInputsInline(true);
       this.setTooltip('Print a value to the terminal with a newline');
     },
   };
@@ -382,7 +380,6 @@ export function defineAllBlocks() {
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('terminal_blocks');
-      this.setInputsInline(true);
       this.setTooltip('Redirects terminal output (ex: monitor)');
     },
   };
@@ -422,9 +419,9 @@ export function defineAllBlocks() {
   Blockly.Blocks['term_setCursorPos'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('X').setCheck('Number')
-        .appendField('set cursor to x:');
+        .appendField('set cursor to x');
       this.appendValueInput('Y').setCheck('Number')
-        .appendField('y:');
+        .appendField('y');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('terminal_blocks');
@@ -440,7 +437,6 @@ export function defineAllBlocks() {
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('terminal_blocks');
-      this.setInputsInline(true);
       this.setTooltip('Enable or disable cursor blinking');
     },
   };
@@ -469,14 +465,13 @@ export function defineAllBlocks() {
 
   Blockly.Blocks['term_scroll'] = {
     init(this: Blockly.Block) {
-      this.appendValueInput('N').setCheck('Number')
+      this.appendValueInput('NUMBER').setCheck('Number')
         .appendField('scroll by');
       this.appendDummyInput()
         .appendField('lines');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('terminal_blocks');
-      this.setInputsInline(true);
       this.setTooltip('Scroll the terminal by N lines');
     },
   };
@@ -484,11 +479,11 @@ export function defineAllBlocks() {
   Blockly.Blocks['term_blit'] = {
     init(this: Blockly.Block) {
       this.appendValueInput('TEXT').setCheck('String')
-        .appendField('blit text:');
-      this.appendValueInput('FG').setCheck('String')
-        .appendField('fg:');
-      this.appendValueInput('BG').setCheck('String')
-        .appendField('bg:');
+        .appendField('blit text');
+      this.appendValueInput('FG').setCheck('Color')
+        .appendField('fg');
+      this.appendValueInput('BG').setCheck('Color')
+        .appendField('bg');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('terminal_blocks');
@@ -514,6 +509,27 @@ export function defineAllBlocks() {
       this.setOutput(true, 'Number');
       this.setStyle('terminal_blocks');
       this.setTooltip('Get the height of the terminal in characters');
+    },
+  };
+
+  Blockly.Blocks['term_setTextScale'] = {
+    init(this: Blockly.Block) {
+      this.appendValueInput('SCALE').setCheck('Number')
+        .appendField('set text scale to');
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setStyle('terminal_blocks');
+      this.setTooltip('Set the text scale of the terminal');
+    },
+  };
+
+  Blockly.Blocks['term_getTextScale'] = {
+    init(this: Blockly.Block) {
+      this.appendDummyInput()
+        .appendField('text scale');
+      this.setOutput(true, 'Number');
+      this.setStyle('terminal_blocks');
+      this.setTooltip('Get the text scale of the terminal');
     },
   };
 
