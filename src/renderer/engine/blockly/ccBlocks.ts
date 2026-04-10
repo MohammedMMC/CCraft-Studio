@@ -895,16 +895,17 @@ export function defineAllBlocks() {
 
   Blockly.Blocks['peripheral_call'] = {
     init(this: Blockly.Block) {
-      this.appendValueInput('ARGS')
+      this.appendDummyInput()
         .appendField('call')
         .appendField(new Blockly.FieldTextInput('methodName'), 'METHOD')
         .appendField('on')
-        .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
-        .appendField('with');
+        .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
+      this.appendValueInput('ARGS').setCheck(null)
+        .setAlign(Blockly.inputs.Align.RIGHT)
+        .appendField('peripheral');
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setStyle('peripheral_blocks');
-      this.setInputsInline(true);
       this.setTooltip('Call a method on a peripheral with arguments');
     },
   };
@@ -922,9 +923,8 @@ export function defineAllBlocks() {
 
   Blockly.Blocks['peripheral_find'] = {
     init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField('find peripheral')
-        .appendField(new Blockly.FieldTextInput('monitor'), 'TYPE');
+      this.appendValueInput('TYPE').setCheck('String')
+        .appendField('find peripheral');
       this.setOutput(true, null);
       this.setStyle('peripheral_blocks');
       this.setTooltip('Find the first connected peripheral of a given type');
@@ -939,6 +939,29 @@ export function defineAllBlocks() {
       this.setOutput(true, 'String');
       this.setStyle('peripheral_blocks');
       this.setTooltip('Get the type name of the peripheral on a side');
+    },
+  };
+
+  Blockly.Blocks['peripheral_hasType'] = {
+    init(this: Blockly.Block) {
+      this.appendValueInput('PERIPHERAL').setCheck(null)
+        .appendField('peripheral');
+      this.appendValueInput('TYPE').setCheck('String')
+        .setAlign(Blockly.inputs.Align.RIGHT)
+        .appendField('is type');
+      this.setOutput(true, 'Boolean');
+      this.setStyle('peripheral_blocks');
+      this.setTooltip('Check the peripheral type');
+    },
+  };
+
+  Blockly.Blocks['peripheral_getName'] = {
+    init(this: Blockly.Block) {
+      this.appendValueInput('PERIPHERAL').setCheck(null)
+        .appendField('name of peripheral');
+      this.setOutput(true, 'String');
+      this.setStyle('peripheral_blocks');
+      this.setTooltip('Get the name of the peripheral');
     },
   };
 
