@@ -14,6 +14,20 @@ const SIDES: [string, string][] = [
   ['back', 'back'],
 ];
 
+const ALIGNS: [string, string][] = [
+  ['start', 'start'],
+  ['center', 'center'],
+  ['end', 'end'],
+  ['space between', 'space-between'],
+];
+
+const TEXT_ALIGNS: [string, string][] = [
+  ['left', 'left'],
+  ['center', 'center'],
+  ['right', 'right']
+];
+
+
 export class FieldCCColor extends FieldColour {
   protected override updateSize_(margin?: number) {
     super.updateSize_(margin);
@@ -76,12 +90,91 @@ function ELEMENT_PROPS(elementName: string): [string, string][] {
 }
 
 function valueToType(value: any) {
-  return typeof value === 'boolean' ? 'Boolean'
-    : typeof value === 'number' ? 'Number'
-      : typeof value === 'string' && value in CC_COLORS ? 'Color' : 'String'
+  if (typeof value === 'boolean') return 'Boolean';
+  if (typeof value === 'number') return 'Number';
+  if (typeof value !== 'string') return null;
+  if (value in CC_COLORS) return 'Color';
+  if ([...ALIGNS, ...TEXT_ALIGNS].map(v => v[0]).includes(value)) return 'Align';
+  return 'String';
 }
 
 export function defineAllBlocks() {
+  // =====================================================================
+  // Blocks: Extra
+  // =====================================================================
+
+  Blockly.Blocks['helpers_onoff'] = {
+    init(this: Blockly.Block) {
+      this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown([
+          ['on', 'true'], ['off', 'false'],
+        ]), 'BOOL');
+      this.setOutput(true, 'Boolean');
+      this.setStyle('logic_blocks');
+      this.setTooltip(Blockly.Msg['LOGIC_BOOLEAN_TOOLTIP']);
+    },
+  };
+
+  Blockly.Blocks['helpers_sides'] = {
+    init(this: Blockly.Block) {
+      this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
+      this.setOutput(true, 'Side');
+      this.setStyle('text_blocks');
+      this.setTooltip('Select side field');
+    },
+  };
+
+  Blockly.Blocks['helpers_units'] = {
+    init(this: Blockly.Block) {
+      this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown([
+          ['px', 'px'], ['%', '%'], ['full', 'fill'],
+        ]), 'SIZE_UNIT');
+      this.setOutput(true, 'SizeUnit');
+      this.setStyle('text_blocks');
+      this.setTooltip('Select size unit field');
+    },
+  };
+
+  Blockly.Blocks['helpers_align'] = {
+    init(this: Blockly.Block) {
+      this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown([...new Map([...ALIGNS, ...TEXT_ALIGNS])]), 'ALIGN');
+      this.setOutput(true, 'Align');
+      this.setStyle('text_blocks');
+      this.setTooltip('Select size unit field');
+    },
+    onchange(this: Blockly.Block, event: Abstract) {
+      if (![Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE].includes(event.type as any)) return;
+      if ((event as any).reason && (event as any).reason[0] !== "connect") return;
+
+      const propField = this.getParent()?.getField('PROP')?.getValue();
+      const alignField = this.getField('ALIGN') as Blockly.FieldDropdown | null;
+
+      if (!propField || !alignField) return;
+
+      const currentOption = alignField.getValue();
+      let newOptions: [string, string][] | null = null;
+
+      if (propField === 'alignItems') {
+        newOptions = ALIGNS.filter(([_, v]) => v !== 'space-between');
+      } else if (propField === 'justifyContent') {
+        newOptions = ALIGNS;
+      } else if (propField === 'textAlign') {
+        newOptions = TEXT_ALIGNS;
+      }
+
+      if (!newOptions) return;
+
+      alignField.setOptions(newOptions);
+      if (typeof currentOption === 'string' && newOptions.flat().includes(currentOption)) {
+        alignField.setValue(currentOption);
+      }
+    }
+  };
+
+
   // =====================================================================
   // Blocks: Color
   // =====================================================================
@@ -270,7 +363,7 @@ export function defineAllBlocks() {
       const screen = store.getActiveScreen();
       const element = screen?.uiElements.find(el => el.name === elementName);
       const propValue = element?.[prop as keyof UIElement];
-      if (!element || !propValue) return;
+      if (!element || typeof propValue === 'undefined') return;
 
       this.setTooltip(`Set the ${UI_ELEMENT_PROPS_NAMES[prop as keyof typeof UI_ELEMENT_PROPS_NAMES] || (UI_ELEMENT_COLORS_NAMES[prop as keyof typeof UI_ELEMENT_COLORS_NAMES] + " Color")} property of "${elementName}"`);
       input.setCheck(valueToType(propValue));
@@ -303,7 +396,7 @@ export function defineAllBlocks() {
       const screen = store.getActiveScreen();
       const element = screen?.uiElements.find(el => el.name === elementName);
       const propValue = element?.[prop as keyof UIElement];
-      if (!element || !propValue) return;
+      if (!element || typeof propValue === 'undefined') return;
 
       this.setTooltip(`Get the ${UI_ELEMENT_PROPS_NAMES[prop as keyof typeof UI_ELEMENT_PROPS_NAMES] || (UI_ELEMENT_COLORS_NAMES[prop as keyof typeof UI_ELEMENT_COLORS_NAMES] + " Color")} property of "${elementName}"`);
       this.setOutput(true, valueToType(propValue));
@@ -535,7 +628,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['term_getTextColor'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('current text color');
+        .appendField('text color');
       this.setOutput(true, 'Number');
       this.setStyle('terminal_blocks');
       this.setTooltip('Get the current terminal text color');
@@ -545,7 +638,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['term_getBgColor'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
-        .appendField('current background color');
+        .appendField('background color');
       this.setOutput(true, 'Number');
       this.setStyle('terminal_blocks');
       this.setTooltip('Get the current terminal background color');
@@ -565,18 +658,6 @@ export function defineAllBlocks() {
   // =====================================================================
   // 4. REDSTONE API
   // =====================================================================
-
-  Blockly.Blocks['logic_onoff'] = {
-    init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField(new Blockly.FieldDropdown([
-          ['on', 'true'], ['off', 'false'],
-        ]), 'BOOL');
-      this.setOutput(true, 'Boolean');
-      this.setStyle('logic_blocks');
-      this.setTooltip(Blockly.Msg['LOGIC_BOOLEAN_TOOLTIP']);
-    },
-  };
 
   Blockly.Blocks['rs_setOutput'] = {
     init(this: Blockly.Block) {
