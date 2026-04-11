@@ -5,7 +5,7 @@ import { FieldColour } from '@blockly/field-colour';
 import { CC_COLORS } from '@/models/CCColors';
 import { Abstract } from 'node_modules/blockly/core/events/events_abstract';
 
-const SIDES: [string, string][] = [
+export const SIDES: [string, string][] = [
   ['left', 'left'],
   ['right', 'right'],
   ['top', 'top'],
@@ -14,14 +14,14 @@ const SIDES: [string, string][] = [
   ['back', 'back'],
 ];
 
-const ALIGNS: [string, string][] = [
+export const ALIGNS: [string, string][] = [
   ['start', 'start'],
   ['center', 'center'],
   ['end', 'end'],
   ['space between', 'space-between'],
 ];
 
-const TEXT_ALIGNS: [string, string][] = [
+export const TEXT_ALIGNS: [string, string][] = [
   ['left', 'left'],
   ['center', 'center'],
   ['right', 'right']
@@ -38,7 +38,7 @@ export class FieldCCColor extends FieldColour {
   }
 }
 
-function createColorField() {
+export function createColorField() {
   return new FieldCCColor(CC_COLORS.white.hex, undefined, {
     colourOptions: Object.values(CC_COLORS).map(c => c.hex),
     colourTitles: Object.keys(CC_COLORS),
@@ -47,7 +47,7 @@ function createColorField() {
   });
 }
 
-function SCREENS(): [string, string][] {
+export function SCREENS(): [string, string][] {
   const project = useProjectStore.getState().project;
   if (!project || project.screens.length === 0) {
     return [['(no screens)', '']];
@@ -55,7 +55,7 @@ function SCREENS(): [string, string][] {
   return project.screens.map((s) => [s.name, s.name]);
 }
 
-function ELEMENTS(elementType: UIElementType[] | UIElementType | "any" = "any", filters: (value: UIElement) => boolean = () => true): [string, string][] {
+export function ELEMENTS(elementType: UIElementType[] | UIElementType | "any" = "any", filters: (value: UIElement) => boolean = () => true): [string, string][] {
   const store = useProjectStore.getState();
   const screen = store.getActiveScreen();
   if (!screen) return [['(no elements)', '']];
@@ -69,7 +69,7 @@ function ELEMENTS(elementType: UIElementType[] | UIElementType | "any" = "any", 
   return elements.map((el) => [el.name, el.name]);
 }
 
-function ELEMENT_COLOR_PROPS(elementName: string): [string, string][] {
+export function ELEMENT_COLOR_PROPS(elementName: string): [string, string][] {
   const screen = useProjectStore.getState().getActiveScreen();
   if (!screen) return [['', '']];
   const element = screen.uiElements.find((el) => el.name === elementName);
@@ -79,7 +79,7 @@ function ELEMENT_COLOR_PROPS(elementName: string): [string, string][] {
     .map((key) => [UI_ELEMENT_COLORS_NAMES[key as keyof typeof UI_ELEMENT_COLORS_NAMES].replace(/\ /g, '') + "Color", key]);
 }
 
-function ELEMENT_PROPS(elementName: string): [string, string][] {
+export function ELEMENT_PROPS(elementName: string): [string, string][] {
   const screen = useProjectStore.getState().getActiveScreen();
   if (!screen) return [['', '']];
   const element = screen.uiElements.find((el) => el.name === elementName);
@@ -89,7 +89,7 @@ function ELEMENT_PROPS(elementName: string): [string, string][] {
     .map((key) => [UI_ELEMENT_PROPS_NAMES[key as keyof typeof UI_ELEMENT_PROPS_NAMES].replace(/\ /g, ''), key]);
 }
 
-function valueToType(value: any) {
+export function valueToType(value: any) {
   if (typeof value === 'boolean') return 'Boolean';
   if (typeof value === 'number') return 'Number';
   if (typeof value !== 'string') return null;
@@ -220,151 +220,6 @@ export function defineAllBlocks() {
         alignField.setValue(currentOption);
       }
     }
-  };
-
-
-  // =====================================================================
-  // Blocks: Color
-  // =====================================================================
-
-  Blockly.Blocks['color_picker'] = {
-    init(this: Blockly.Block) {
-      this.appendDummyInput('COLOR')
-        .appendField(createColorField(), 'COLOR');
-      this.setOutput(true, "Color");
-      this.setStyle('color_blocks');
-      this.setTooltip('Color Picker block');
-    },
-  };
-
-  // =====================================================================
-  // 1. EVENTS
-  // =====================================================================
-
-  Blockly.Blocks['event_screen_load'] = {
-    init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField('when this screen loads');
-      this.appendStatementInput('DO')
-        .appendField("do");
-      this.setStyle('events_blocks');
-      this.setTooltip('Runs when this screen is first displayed');
-      this.setDeletable(true);
-    },
-  };
-
-  Blockly.Blocks['event_button_click'] = {
-    init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField('when button')
-        .appendField(new Blockly.FieldDropdown(ELEMENTS('button')), 'BUTTON')
-        .appendField('is clicked');
-      this.appendStatementInput('DO')
-        .appendField("do");
-      this.setStyle('events_blocks');
-      this.setTooltip('Runs when a button element is clicked');
-    },
-  };
-
-  Blockly.Blocks['event_button_focus'] = {
-    init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField('when button')
-        .appendField(new Blockly.FieldDropdown(ELEMENTS('button')), 'BUTTON')
-        .appendField('is focused');
-      this.appendStatementInput('DO')
-        .appendField("do");
-      this.setStyle('events_blocks');
-      this.setTooltip('Runs while a button is held down (focused)');
-    },
-  };
-
-  Blockly.Blocks['event_button_release'] = {
-    init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField('when button')
-        .appendField(new Blockly.FieldDropdown(ELEMENTS('button')), 'BUTTON')
-        .appendField('is released');
-      this.appendStatementInput('DO')
-        .appendField("do");
-      this.setStyle('events_blocks');
-      this.setTooltip('Runs when a button is released after being clicked');
-    },
-  };
-
-  Blockly.Blocks['event_key_press'] = {
-    init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField('when key')
-        .appendField(new Blockly.FieldDropdown([
-          ['any', 'any'], ['enter', 'enter'], ['space', 'space'],
-          ['up', 'up'], ['down', 'down'], ['left', 'left'], ['right', 'right'],
-          ['backspace', 'backspace'], ['tab', 'tab'],
-          ['a', 'a'], ['b', 'b'], ['c', 'c'], ['d', 'd'], ['e', 'e'],
-          ['f', 'f'], ['g', 'g'], ['h', 'h'], ['i', 'i'], ['j', 'j'],
-          ['k', 'k'], ['l', 'l'], ['m', 'm'], ['n', 'n'], ['o', 'o'],
-          ['p', 'p'], ['q', 'q'], ['r', 'r'], ['s', 's'], ['t', 't'],
-          ['u', 'u'], ['v', 'v'], ['w', 'w'], ['x', 'x'], ['y', 'y'],
-          ['z', 'z'],
-          ['1', '1'], ['2', '2'], ['3', '3'], ['4', '4'], ['5', '5'],
-          ['6', '6'], ['7', '7'], ['8', '8'], ['9', '9'], ['0', '0'],
-        ]), 'KEY')
-        .appendField('is pressed');
-      this.appendStatementInput('DO')
-        .appendField("do");
-      this.setStyle('events_blocks');
-      this.setTooltip('Runs when a keyboard key is pressed');
-    },
-  };
-
-  Blockly.Blocks['event_timer'] = {
-    init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField('Every')
-        .appendField(new Blockly.FieldNumber(1, 0.05), 'INTERVAL')
-        .appendField('seconds');
-      this.appendStatementInput('DO')
-        .appendField("do");
-      this.setStyle('events_blocks');
-      this.setTooltip('Runs repeatedly at a timed interval');
-    },
-  };
-
-  Blockly.Blocks['event_redstone'] = {
-    init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField('when redstone input changes');
-      this.appendStatementInput('DO')
-        .appendField("do");
-      this.setStyle('events_blocks');
-      this.setTooltip('Runs when any redstone signal changes');
-    },
-  };
-
-  Blockly.Blocks['event_modem_message'] = {
-    init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField('when modem receives message');
-      this.appendDummyInput()
-        .setAlign(Blockly.inputs.Align.RIGHT)
-        .appendField('channel')
-        .appendField(new Blockly.FieldNumber(1, 0, 65535), 'CHANNEL');
-      this.appendStatementInput('DO')
-        .appendField("do");
-      this.setStyle('events_blocks');
-      this.setTooltip('Runs when a modem message is received on the specified channel');
-    },
-  };
-
-  Blockly.Blocks['event_any'] = {
-    init(this: Blockly.Block) {
-      this.appendDummyInput()
-        .appendField('when any event occurs');
-      this.appendStatementInput('DO')
-        .appendField("do");
-      this.setStyle('events_blocks');
-      this.setTooltip('Runs when any OS event occurs. Use os.pullEvent() inside to get event details.');
-    },
   };
 
   // =====================================================================

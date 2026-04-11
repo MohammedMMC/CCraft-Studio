@@ -1,32 +1,6 @@
 import * as Blockly from 'blockly';
-import { eventsBlocksGenerators } from './blocks/custom/events';
-import { uiActionsBlocksGenerators } from './blocks/custom/uiActions';
-import { terminalBlocksGenerators } from './blocks/custom/terminal';
-import { redstoneBlocksGenerators } from './blocks/custom/redstone';
-import { filesBlocksGenerators } from './blocks/custom/files';
-import { httpBlocksGenerators } from './blocks/custom/http';
-import { peripheralBlocksGenerators } from './blocks/custom/peripheral';
-import { turtleBlocksGenerators } from './blocks/custom/turtle';
-import { systemBlocksGenerators } from './blocks/custom/system';
-import { rednetBlocksGenerators } from './blocks/custom/rednet';
-import { textUtilsBlocksGenerators } from './blocks/custom/textUtils';
-import { paintUtilsBlocksGenerators } from './blocks/custom/paintUtils';
-import { windowBlocksGenerators } from './blocks/custom/window';
-import { settingsBlocksGenerators } from './blocks/custom/settings';
-import { gpsBlocksGenerators } from './blocks/custom/gps';
-import { diskBlocksGenerators } from './blocks/custom/disk';
-import { utilityBlocksGenerators } from './blocks/custom/utility';
-import { logicBlocksGenerators } from './blocks/main/logic';
-import { mathBlocksGenerators } from './blocks/main/math';
-import { textBlocksGenerators } from './blocks/main/text';
-import { colorsBlocksGenerators } from './blocks/main/colors';
-import { variablesBlocksGenerators } from './blocks/main/variables';
-import { controlBlocksGenerators } from './blocks/main/control';
-import { listsBlocksGenerators } from './blocks/main/lists';
-import { functionsBlocksGenerators } from './blocks/main/functions';
-import { pluginsBlocksGenerators } from './blocks/main/plugins';
 
-// Lua order of operations (precedence)
+// Lua order of operations
 export const Order = {
   ATOMIC: 0,
   HIGH: 1,       // unary operators: not, #, -
@@ -109,39 +83,3 @@ class LuaGen {
 }
 
 export const luaGenerator = new LuaGen();
-
-export function registerAllGenerators() {
-  registerGenerators(eventsBlocksGenerators);
-  registerGenerators(uiActionsBlocksGenerators);
-  registerGenerators(terminalBlocksGenerators);
-  registerGenerators(redstoneBlocksGenerators);
-  registerGenerators(filesBlocksGenerators);
-  registerGenerators(httpBlocksGenerators);
-  registerGenerators(peripheralBlocksGenerators);
-  registerGenerators(turtleBlocksGenerators);
-  registerGenerators(systemBlocksGenerators);
-  registerGenerators(rednetBlocksGenerators);
-  registerGenerators(textUtilsBlocksGenerators);
-  registerGenerators(paintUtilsBlocksGenerators);
-  registerGenerators(windowBlocksGenerators);
-  registerGenerators(settingsBlocksGenerators);
-  registerGenerators(gpsBlocksGenerators);
-  registerGenerators(diskBlocksGenerators);
-  registerGenerators(utilityBlocksGenerators);
-
-  registerGenerators(logicBlocksGenerators);
-  registerGenerators(mathBlocksGenerators);
-  registerGenerators(textBlocksGenerators);
-  registerGenerators(colorsBlocksGenerators);
-  registerGenerators(variablesBlocksGenerators);
-  registerGenerators(controlBlocksGenerators);
-  registerGenerators(listsBlocksGenerators);
-  registerGenerators(functionsBlocksGenerators);
-  registerGenerators(pluginsBlocksGenerators);
-}
-
-function registerGenerators(generators: Record<string, GeneratorFunc>) {
-  for (const key in generators) {
-    luaGenerator.addGenerator(key, generators[key]);
-  }
-}
