@@ -1,4 +1,4 @@
-import { GeneratorFunc, Order } from "../luaGenerator";
+import { GeneratorFunc, Order } from "../../luaGenerator";
 
 export const terminalBlocksGenerators: Record<string, GeneratorFunc> = {
     'term_write': (block, gen) => {

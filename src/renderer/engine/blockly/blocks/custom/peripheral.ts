@@ -1,4 +1,4 @@
-import { GeneratorFunc, Order } from "../luaGenerator";
+import { GeneratorFunc, Order } from "../../luaGenerator";
 
 export const peripheralBlocksGenerators: Record<string, GeneratorFunc> = {
     'peripheral_call': (block, gen) => {

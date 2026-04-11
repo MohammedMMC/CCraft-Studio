@@ -1,4 +1,4 @@
-import { GeneratorFunc, Order } from "../luaGenerator";
+import { GeneratorFunc, Order } from "../../luaGenerator";
 
 const turtleSimpleMoves = [
     'forward', 'back', 'up', 'down', 'turnLeft', 'turnRight',

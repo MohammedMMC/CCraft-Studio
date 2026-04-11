@@ -1,4 +1,4 @@
-import { GeneratorFunc, Order } from "../luaGenerator";
+import { GeneratorFunc, Order } from "../../luaGenerator";
 
 export const uiActionsBlocksGenerators: Record<string, GeneratorFunc> = {
     'ui_set_prop': (block, gen) => {

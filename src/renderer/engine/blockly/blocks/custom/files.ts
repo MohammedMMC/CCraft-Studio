@@ -1,4 +1,4 @@
-import { GeneratorFunc, Order } from "../luaGenerator";
+import { GeneratorFunc, Order } from "../../luaGenerator";
 
 export const filesBlocksGenerators: Record<string, GeneratorFunc> = {
     'fs_writeFile': (block, gen) => {

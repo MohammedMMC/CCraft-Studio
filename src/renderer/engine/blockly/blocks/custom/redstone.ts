@@ -1,4 +1,4 @@
-import { GeneratorFunc, Order } from "../luaGenerator";
+import { GeneratorFunc, Order } from "../../luaGenerator";
 
 export const redstoneBlocksGenerators: Record<string, GeneratorFunc> = {
     'rs_setOutput': (block, gen) => {

@@ -1,4 +1,4 @@
-import { GeneratorFunc } from "../luaGenerator";
+import { GeneratorFunc } from "../../luaGenerator";
 
 export const eventsBlocksGenerators: Record<string, GeneratorFunc> = {
     'event_screen_load': (block, gen) => {

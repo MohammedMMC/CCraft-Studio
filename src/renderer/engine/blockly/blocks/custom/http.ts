@@ -1,4 +1,4 @@
-import { GeneratorFunc, Order } from "../luaGenerator";
+import { GeneratorFunc, Order } from "../../luaGenerator";
 
 export const httpBlocksGenerators: Record<string, GeneratorFunc> = {
     'http_postRequest': (block, gen) => {
