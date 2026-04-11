@@ -1,6 +1,6 @@
 import { Block } from "../../blocksRegistery";
 import { createColorField } from "../../ccBlocks";
-import { GeneratorFunc, Order } from "../../luaGenerator";
+import { Order } from "../../luaGenerator";
 
 export const colorsBlocks: Block = {
     'color_picker': {

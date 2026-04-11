@@ -1,5 +1,5 @@
 import { Block } from "../../blocksRegistery";
-import { GeneratorFunc, Order } from "../../luaGenerator";
+import { Order } from "../../luaGenerator";
 
 export const controlBlocks: Block = {
     'controls_repeat_ext': {
