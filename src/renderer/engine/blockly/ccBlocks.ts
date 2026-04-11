@@ -118,6 +118,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['helpers_sides'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
+        .appendField('side')
         .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
       this.setOutput(true, 'Side');
       this.setStyle('text_blocks');
@@ -128,6 +129,7 @@ export function defineAllBlocks() {
   Blockly.Blocks['helpers_units'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
+        .appendField('unit')
         .appendField(new Blockly.FieldDropdown([
           ['px', 'px'], ['%', '%'], ['full', 'fill'],
         ]), 'SIZE_UNIT');
@@ -137,13 +139,53 @@ export function defineAllBlocks() {
     },
   };
 
+  Blockly.Blocks['helpers_display'] = {
+    init(this: Blockly.Block) {
+      this.appendDummyInput()
+        .appendField('display')
+        .appendField(new Blockly.FieldDropdown([
+          ['flex', 'flex'], ['grid', 'grid'],
+        ]), 'DISPLAY');
+      this.setOutput(true, 'Display');
+      this.setStyle('text_blocks');
+      this.setTooltip('Select display type field');
+    },
+  };
+
+  Blockly.Blocks['helpers_flexDirection'] = {
+    init(this: Blockly.Block) {
+      this.appendDummyInput()
+        .appendField('flex direction')
+        .appendField(new Blockly.FieldDropdown([
+          ['row', 'row'], ['column', 'column'],
+        ]), 'FLEX_DIRECTION');
+      this.setOutput(true, 'FlexDirection');
+      this.setStyle('text_blocks');
+      this.setTooltip('Select flex direction field');
+    },
+  };
+
+  Blockly.Blocks['helpers_orientation'] = {
+    init(this: Blockly.Block) {
+      this.appendDummyInput()
+        .appendField('orientation')
+        .appendField(new Blockly.FieldDropdown([
+          ['Horizontal LTR', 'hltr'], ['Horizontal RTL', 'hrtl'], ['Vertical TTB', 'vttb'], ['Vertical BTT', 'vbtt'],
+        ]), 'ORIENTATION');
+      this.setOutput(true, 'Orientation');
+      this.setStyle('text_blocks');
+      this.setTooltip('Select orientation field');
+    },
+  };
+
   Blockly.Blocks['helpers_align'] = {
     init(this: Blockly.Block) {
       this.appendDummyInput()
+        .appendField('align')
         .appendField(new Blockly.FieldDropdown([...new Map([...ALIGNS, ...TEXT_ALIGNS])]), 'ALIGN');
       this.setOutput(true, 'Align');
       this.setStyle('text_blocks');
-      this.setTooltip('Select size unit field');
+      this.setTooltip('Select align field');
     },
     onchange(this: Blockly.Block, event: Abstract) {
       if (![Blockly.Events.BLOCK_MOVE, Blockly.Events.BLOCK_CHANGE].includes(event.type as any)) return;
@@ -155,6 +197,7 @@ export function defineAllBlocks() {
       if (!propField || !alignField) return;
 
       const currentOption = alignField.getValue();
+      const oldOptions = alignField.getOptions();
       let newOptions: [string, string][] | null = null;
 
       if (propField === 'alignItems') {
@@ -167,8 +210,13 @@ export function defineAllBlocks() {
 
       if (!newOptions) return;
 
-      alignField.setOptions(newOptions);
-      if (typeof currentOption === 'string' && newOptions.flat().includes(currentOption)) {
+      if (!(oldOptions.length === newOptions.length
+        && oldOptions.every((item, index) =>
+          item[0] === newOptions[index][0] && item[1] === newOptions[index][1]
+        )
+      )) alignField.setOptions(newOptions);
+
+      if (typeof currentOption === 'string' && newOptions.flat().includes(currentOption) && !(alignField.getValue() === currentOption)) {
         alignField.setValue(currentOption);
       }
     }
