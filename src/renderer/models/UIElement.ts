@@ -6,6 +6,8 @@ export type ContainerDisplay = 'flex' | 'grid';
 export type FlexDirection = 'row' | 'column';
 export type AlignItems = 'start' | 'center' | 'end';
 export type JustifyContent = 'start' | 'center' | 'end' | 'space-between';
+export type TextAlign = 'left' | 'center' | 'right';
+export type Orientation = 'hltr' | 'hrtl' | 'vttb' | 'vbtt';
 
 export interface BaseElement {
   id: string;
@@ -36,14 +38,14 @@ export type UIElementType =
 export interface LabelElement extends BaseElement {
   type: 'label';
   text: string;
-  textAlign: 'left' | 'center' | 'right';
+  textAlign: TextAlign;
   textColor: CCColor;
 }
 
 export interface ButtonElement extends BaseElement {
   type: 'button';
   text: string;
-  textAlign: 'left' | 'center' | 'right';
+  textAlign: TextAlign;
   focusBgColor: CCColor;
   focusTextColor: CCColor;
   textColor: CCColor;
@@ -66,7 +68,7 @@ export interface ContainerElement extends BaseElement {
 export interface PanelElement extends BaseElement {
   type: 'panel';
   text: string;
-  textAlign: 'left' | 'center' | 'right';
+  textAlign: TextAlign;
   borderColor: CCColor;
   titleBgColor: CCColor;
   display: ContainerDisplay;
@@ -85,8 +87,8 @@ export interface PanelElement extends BaseElement {
 export interface ProgressBarElement extends BaseElement {
   type: 'progressbar';
   text: string;
-  textAlign: 'left' | 'center' | 'right';
-  orientation: 'hltr' | 'hrtl' | 'vttb' | 'vbtt',
+  textAlign: TextAlign;
+  orientation: Orientation;
   progressColor: CCColor;
   progress: number;
   textColor: CCColor;
@@ -99,7 +101,7 @@ export interface SliderElement extends BaseElement {
   to: number,
   from: number,
   value: number,
-  orientation: 'hltr' | 'hrtl' | 'vttb' | 'vbtt',
+  orientation: Orientation,
 }
 
 export interface CheckboxElement extends BaseElement {
@@ -110,7 +112,7 @@ export interface CheckboxElement extends BaseElement {
   checkedColor: CCColor;
   checkIcon: string;
   checked: boolean;
-  textAlign: 'left' | 'center' | 'right';
+  textAlign: TextAlign;
 }
 
 export interface InputElement extends BaseElement {
@@ -119,7 +121,7 @@ export interface InputElement extends BaseElement {
   placeholder: string;
   textColor: CCColor;
   placeholderColor: CCColor;
-  textAlign: 'left' | 'center' | 'right';
+  textAlign: TextAlign;
 }
 
 export type UIElement =

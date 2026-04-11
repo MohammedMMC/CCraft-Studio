@@ -354,11 +354,17 @@ export function defineAllBlocks() {
     },
     onchange(this: Blockly.Block, event: Abstract) {
       if (event.type !== Blockly.Events.BLOCK_CHANGE) return;
+      const propField = this.getField('PROP') as Blockly.FieldDropdown | null;
       const input = this.getInput('VALUE');
-      const prop = this.getFieldValue('PROP');
+      const prop = propField?.getValue();
       const elementName = this.getFieldValue('ELEMENT');
       if (!input || !prop || !elementName) return;
 
+      // Update PROP dropdown options
+      const propOptions = propField?.getOptions() || [];
+      propField?.setValue(propOptions.flat().includes(prop) ? prop : propOptions[0][1]);
+
+      // Update Check
       const store = useProjectStore.getState();
       const screen = store.getActiveScreen();
       const element = screen?.uiElements.find(el => el.name === elementName);
@@ -388,10 +394,16 @@ export function defineAllBlocks() {
     },
     onchange(this: Blockly.Block, event: Abstract) {
       if (event.type !== Blockly.Events.BLOCK_CHANGE) return;
-      const prop = this.getFieldValue('PROP');
+      const propField = this.getField('PROP') as Blockly.FieldDropdown | null;
+      const prop = propField?.getValue();
       const elementName = this.getFieldValue('ELEMENT');
       if (!prop || !elementName) return;
 
+      // Update PROP dropdown options
+      const propOptions = propField?.getOptions() || [];
+      propField?.setValue(propOptions.flat().includes(prop) ? prop : propOptions[0][1]);
+
+      // Update Check
       const store = useProjectStore.getState();
       const screen = store.getActiveScreen();
       const element = screen?.uiElements.find(el => el.name === elementName);
