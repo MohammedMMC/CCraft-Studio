@@ -82,6 +82,8 @@ export function generateLogicFile(project: CCProject, screenName: string, blockC
     '-- =============================================',
   ];
   lines.push('');
+  lines.push(`local screen = getScreen("${sanitize(screenName)}")`);
+  lines.push('');
   lines.push(parseEventCode(blockCode, sanitize(screenName)));
   return generateHeader(project.name, project.author) + lines.join('\n');
 }

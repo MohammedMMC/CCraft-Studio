@@ -15,6 +15,12 @@ end
 
 function Button:onClickEvent(x, y)
     self.isFocused = true
+    if(self.events["button_click"]) then
+        self.events["button_click"](x, y)
+    end
+    if(self.events["button_focus"]) then
+        self.events["button_focus"](x, y)
+    end
     -- local h = handlers[currentScreen]
     -- if h and h.onButtonFocus[self.name] then
     --     h.onButtonFocus[self.name](mx, my, button)
@@ -26,6 +32,9 @@ end
 
 function Button:onReleaseEvent(x, y)
     self.isFocused = false
+    if(self.events["button_release"]) then
+        self.events["button_release"](x, y)
+    end
     -- local h = handlers[currentScreen]
     -- if h and h.onButtonRelease[self.name] then
     --     h.onButtonRelease[self.name](mx, my, button)

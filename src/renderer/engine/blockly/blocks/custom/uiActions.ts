@@ -66,8 +66,8 @@ export const uiActionsBlocks: Block = {
         generator: (block, gen) => {
             const el = block.getFieldValue('ELEMENT');
             const prop = block.getFieldValue('PROP');
-            const color = block.getFieldValue('COLOR');
-            return `${gen.getIndent()}getElement("${el}").${prop} = ${color}\n${gen.getIndent()}drawCurrentScreen()`;
+            const value = gen.valueToCode(block, 'VALUE', Order.NONE);
+            return `${gen.getIndent()}screen:getChild("${el}").${prop} = ${value}`;
         }
     },
     'ui_get_prop': {
@@ -111,7 +111,8 @@ export const uiActionsBlocks: Block = {
         },
         generator: (block, gen) => {
             const el = block.getFieldValue('ELEMENT');
-            return [`getElement("${el}").text`, Order.ATOMIC];
+            const prop = block.getFieldValue('PROP');
+            return [`screen:getChild("${el}").${prop}`, Order.ATOMIC];
         }
     },
     'ui_navigate': {

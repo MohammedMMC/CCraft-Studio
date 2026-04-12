@@ -11,6 +11,8 @@ function BaseObject:new(name, props)
     obj.monitor = nil
     obj.screen = nil
 
+    obj.events = {}
+
     for pn, pi in pairs(props) do
         obj[pn] = pi
     end
@@ -100,7 +102,7 @@ function BaseObject.alignText(text, width, align)
 
     local pad = width - len
     local isArray = type(text) == "table"
-    
+
     if align == "center" then
         local left = math.floor(pad / 2)
         local right = pad - left
@@ -139,7 +141,13 @@ function BaseObject:checkTouch(x, y)
     return x >= self.x and x < self.x + self.width and y >= self.y and y < self.y + self.height
 end
 
--- function BaseObject:onEvent(event, p1, p2, p3, p4, p5)end
+function BaseObject:onEvent(event, p1, p2, p3, p4, p5)
+    local executeEvent = self.events[event];
+    if (executeEvent ~= nil) then
+        executeEvent(p1, p2, p3, p4, p5)
+    end
+end
+
 -- function BaseObject:onReleaseEvent(x,y)end
 -- function BaseObject:onClickEvent(x,y)end
 -- function BaseObject:onDragEvent(x,y)end

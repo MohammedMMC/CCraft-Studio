@@ -10,7 +10,6 @@ function Screen:new(name, props)
 
     obj.onLoad = function() end
 
-
     obj.name = name
     obj.autoMonitor = false
     obj.drawOrder = {}

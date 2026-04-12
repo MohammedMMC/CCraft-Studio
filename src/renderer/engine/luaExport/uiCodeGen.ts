@@ -79,7 +79,7 @@ export function generateUICode(
   lines.push('');
 
   const allVisible = elements.filter(e => e.visible && posMap.has(e.id));
-  
+
   for (const el of allVisible) {
     lines.push(...generateComponentInstance(safeName, el, posMap.get(el.id)!, elements));
     lines.push('');
@@ -185,15 +185,15 @@ export function parseEventCode(code: string, screenName: string): string {
 
 export function wrapEvent(screen: string, event: string, meta: string, body: string): string {
   const ib = body.split('\n').map(l => '  ' + l).join('\n');
-  const eMeta = escapeLuaString(meta);
+  const eMeta = sanitize(escapeLuaString(meta));
   switch (event) {
     case 'screen_load': {
-      const targetScreen = meta ? sanitize(meta) : screen;
       return `screen.onLoad = function()\n${ib}\nend`;
     }
-    case 'button_click': return `handlers["${screen}"].onButtonClick["${eMeta}"] = function(mx, my, button)\n${ib}\nend`;
-    case 'button_focus': return `handlers["${screen}"].onButtonFocus["${eMeta}"] = function(mx, my, button)\n${ib}\nend`;
-    case 'button_release': return `handlers["${screen}"].onButtonRelease["${eMeta}"] = function(mx, my, button)\n${ib}\nend`;
+    case 'button_click': return `screen:getChild("${eMeta}").events["button_click"] = function(x, y)\n${ib}\nend`;
+    case 'button_focus': return `screen:getChild("${eMeta}").events["button_focus"] = function(x, y)\n${ib}\nend`;
+    case 'button_release': return `screen:getChild("${eMeta}").events["button_release"] = function(x, y)\n${ib}\nend`;
+
     case 'key_press': return `handlers["${screen}"].onKeyPress["${eMeta}"] = function(key)\n${ib}\nend`;
     case 'timer': return `handlers["${screen}"].onTimer["t_${eMeta}"] = function(timerId)\n${ib}\nend`;
     case 'redstone': return `handlers["${screen}"].onRedstone = function()\n${ib}\nend`;
