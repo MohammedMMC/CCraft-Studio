@@ -189,7 +189,7 @@ export function wrapEvent(screen: string, event: string, meta: string, body: str
   switch (event) {
     case 'screen_load': {
       const targetScreen = meta ? sanitize(meta) : screen;
-      return `handlers["${targetScreen}"].onLoad = function()\n${ib}\nend`;
+      return `screen.onLoad = function()\n${ib}\nend`;
     }
     case 'button_click': return `handlers["${screen}"].onButtonClick["${eMeta}"] = function(mx, my, button)\n${ib}\nend`;
     case 'button_focus': return `handlers["${screen}"].onButtonFocus["${eMeta}"] = function(mx, my, button)\n${ib}\nend`;

@@ -1,9 +1,7 @@
-import * as Blockly from 'blockly';
 import { useProjectStore } from '../../stores/projectStore';
 import { UI_ELEMENT_COLORS_NAMES, UI_ELEMENT_PROPS_NAMES, UI_ELEMENT_WITH_TEXT, UIElement, UIElementType } from '@/models/UIElement';
 import { FieldColour } from '@blockly/field-colour';
 import { CC_COLORS } from '@/models/CCColors';
-import { Abstract } from 'node_modules/blockly/core/events/events_abstract';
 
 export const SIDES: [string, string][] = [
   ['left', 'left'],

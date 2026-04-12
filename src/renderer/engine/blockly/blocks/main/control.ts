@@ -3,7 +3,6 @@ import { Order } from "../../luaGenerator";
 
 export const controlBlocks: Block = {
     'controls_repeat_ext': {
-        block: {},
         generator: (block, gen) => {
             const times = gen.valueToCode(block, 'TIMES', Order.NONE);
             gen.indent();
@@ -13,7 +12,6 @@ export const controlBlocks: Block = {
         }
     },
     'controls_whileUntil': {
-        block: {},
         generator: (block, gen) => {
             const mode = block.getFieldValue('MODE');
             let cond = gen.valueToCode(block, 'BOOL', Order.NONE);
@@ -25,7 +23,6 @@ export const controlBlocks: Block = {
         }
     },
     'controls_for': {
-        block: {},
         generator: (block, gen) => {
             const varName = (block.getFieldValue('VAR') || 'i').replace(/[^a-zA-Z0-9_]/g, '_');
             const from = gen.valueToCode(block, 'FROM', Order.NONE);
@@ -38,7 +35,6 @@ export const controlBlocks: Block = {
         }
     },
     'controls_forEach': {
-        block: {},
         generator: (block, gen) => {
             const varName = (block.getFieldValue('VAR') || 'item').replace(/[^a-zA-Z0-9_]/g, '_');
             const list = gen.valueToCode(block, 'LIST', Order.NONE);
@@ -49,14 +45,12 @@ export const controlBlocks: Block = {
         }
     },
     'controls_flow_statements': {
-        block: {},
         generator: (block, gen) => {
             const flow = block.getFieldValue('FLOW');
             return `${gen.getIndent()}${flow === 'BREAK' ? 'break' : 'return'}`;
         }
     },
     'controls_if': {
-        block: {},
         generator: (block, gen) => {
             let code = '';
             let n = 0;

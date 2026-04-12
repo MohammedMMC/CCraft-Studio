@@ -1,16 +1,14 @@
 import { Block } from "../../blocksRegistery";
-import { GeneratorFunc, Order } from "../../luaGenerator";
+import { Order } from "../../luaGenerator";
 
 export const textBlocks: Block = {
     'text': {
-        block: {},
         generator: (block, gen) => {
             const val = (block.getFieldValue('TEXT') || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
             return [`"${val}"`, Order.ATOMIC];
         }
     },
     'text_join': {
-        block: {},
         generator: (block, gen) => {
             const count = (block as any).itemCount_ || 2;
             const parts: string[] = [];
@@ -21,7 +19,6 @@ export const textBlocks: Block = {
         }
     },
     'text_length': {
-        block: {},
         generator: (block, gen) => {
             const text = gen.valueToCode(block, 'VALUE', Order.HIGH);
             return [`#${text}`, Order.HIGH];

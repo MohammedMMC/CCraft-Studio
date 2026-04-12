@@ -8,6 +8,9 @@ Screen.__index = Screen
 function Screen:new(name, props)
     local obj = setmetatable({}, self)
 
+    obj.onLoad = function() end
+
+
     obj.name = name
     obj.autoMonitor = false
     obj.drawOrder = {}
@@ -81,4 +84,6 @@ function Screen:draw()
     for _, name in ipairs(self.drawOrder) do
         self:getChild(name):draw()
     end
+
+    self.onLoad()
 end

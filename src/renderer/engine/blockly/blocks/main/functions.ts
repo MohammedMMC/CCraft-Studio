@@ -1,9 +1,8 @@
 import { Block } from "../../blocksRegistery";
-import { GeneratorFunc, Order } from "../../luaGenerator";
+import { Order } from "../../luaGenerator";
 
 export const functionsBlocks: Block = {
     'procedures_defnoreturn': {
-        block: {},
         generator: (block, gen) => {
             const name = (block.getFieldValue('NAME') || 'myFunc').replace(/[^a-zA-Z0-9_]/g, '_');
             const args = ((block as any).arguments_ || [])
@@ -16,7 +15,6 @@ export const functionsBlocks: Block = {
         }
     },
     'procedures_defreturn': {
-        block: {},
         generator: (block, gen) => {
             const name = (block.getFieldValue('NAME') || 'myFunc').replace(/[^a-zA-Z0-9_]/g, '_');
             const args = ((block as any).arguments_ || [])
@@ -30,7 +28,6 @@ export const functionsBlocks: Block = {
         }
     },
     'procedures_callnoreturn': {
-        block: {},
         generator: (block, gen) => {
             const name = (block.getFieldValue('PROCNAME') || block.getFieldValue('NAME') || 'myFunc').replace(/[^a-zA-Z0-9_]/g, '_');
             const args: string[] = [];
@@ -41,7 +38,6 @@ export const functionsBlocks: Block = {
         }
     },
     'procedures_callreturn': {
-        block: {},
         generator: (block, gen) => {
             const name = (block.getFieldValue('PROCNAME') || block.getFieldValue('NAME') || 'myFunc').replace(/[^a-zA-Z0-9_]/g, '_');
             const args: string[] = [];

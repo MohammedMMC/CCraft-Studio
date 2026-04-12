@@ -1,9 +1,8 @@
 import { Block } from "../../blocksRegistery";
-import { GeneratorFunc, Order } from "../../luaGenerator";
+import { Order } from "../../luaGenerator";
 
 export const pluginsBlocks: Block = {
     'global_declaration': {
-        block: {},
         generator: (block, gen) => {
             const name = sanitizeVar(block.getFieldValue('NAME') || 'myVar');
             const value = gen.valueToCode(block, 'VALUE', Order.NONE);
@@ -11,14 +10,12 @@ export const pluginsBlocks: Block = {
         }
     },
     'lexical_variable_get': {
-        block: {},
         generator: (block, gen) => {
             const name = sanitizeVar(block.getFieldValue('VAR') || 'x');
             return [name, Order.ATOMIC];
         }
     },
     'lexical_variable_set': {
-        block: {},
         generator: (block, gen) => {
             const name = sanitizeVar(block.getFieldValue('VAR') || 'x');
             const value = gen.valueToCode(block, 'VALUE', Order.NONE);
@@ -26,7 +23,6 @@ export const pluginsBlocks: Block = {
         }
     },
     'local_declaration_statement': {
-        block: {},
         generator: (block, gen) => {
             const lines: string[] = [];
             for (let i = 0; block.getInput('DECL' + i); i++) {
@@ -41,7 +37,6 @@ export const pluginsBlocks: Block = {
         }
     },
     'local_declaration_expression': {
-        block: {},
         generator: (block, gen) => {
             const decls: string[] = [];
             for (let i = 0; block.getInput('DECL' + i); i++) {
@@ -56,7 +51,6 @@ export const pluginsBlocks: Block = {
         }
     },
     'simple_local_declaration_statement': {
-        block: {},
         generator: (block, gen) => {
             const varName = sanitizeVar(block.getFieldValue('VAR') || 'x');
             const value = gen.valueToCode(block, 'DECL', Order.NONE);
@@ -67,7 +61,6 @@ export const pluginsBlocks: Block = {
         }
     },
     'controls_do_then_return': {
-        block: {},
         generator: (block, gen) => {
             gen.indent();
             const stm = gen.statementToCode(block, 'STM');

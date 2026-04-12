@@ -1,9 +1,8 @@
 import { Block } from "../../blocksRegistery";
-import { GeneratorFunc, Order } from "../../luaGenerator";
+import { Order } from "../../luaGenerator";
 
 export const variablesBlocks: Block = {
     'variables_get': {
-        block: {},
         generator: (block, gen) => {
             const name = block.getFieldValue('VAR') || 'x';
             const safeName = name.replace(/[^a-zA-Z0-9_]/g, '_');
@@ -11,7 +10,6 @@ export const variablesBlocks: Block = {
         }
     },
     'variables_set': {
-        block: {},
         generator: (block, gen) => {
             const name = block.getFieldValue('VAR') || 'x';
             const safeName = name.replace(/[^a-zA-Z0-9_]/g, '_');

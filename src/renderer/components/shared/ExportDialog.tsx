@@ -73,7 +73,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
   }, [minify, mode]);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Export Lua Program" width="max-w-2xl">
+    <Modal isOpen={isOpen} onClose={onClose} title="Export Lua Program" width="max-w-2xl max-h-screen">
       <div className="space-y-5">
         {/* Export Mode */}
         <div>
@@ -81,11 +81,10 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => setMode('full')}
-              className={`p-3 rounded border text-left transition-all ${
-                mode === 'full'
-                  ? 'border-app-accent bg-app-accent/10'
-                  : 'border-app-border bg-app-bg hover:bg-app-hover'
-              }`}
+              className={`p-3 rounded border text-left transition-all ${mode === 'full'
+                ? 'border-app-accent bg-app-accent/10'
+                : 'border-app-border bg-app-bg hover:bg-app-hover'
+                }`}
             >
               <div className="text-sm font-medium text-app-text-bright">Full Export</div>
               <div className="text-[10px] text-app-text-dim mt-1">
@@ -94,11 +93,10 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
             </button>
             <button
               onClick={() => setMode('uiOnly')}
-              className={`p-3 rounded border text-left transition-all ${
-                mode === 'uiOnly'
-                  ? 'border-app-accent bg-app-accent/10'
-                  : 'border-app-border bg-app-bg hover:bg-app-hover'
-              }`}
+              className={`p-3 rounded border text-left transition-all ${mode === 'uiOnly'
+                ? 'border-app-accent bg-app-accent/10'
+                : 'border-app-border bg-app-bg hover:bg-app-hover'
+                }`}
             >
               <div className="text-sm font-medium text-app-text-bright">UI Only</div>
               <div className="text-[10px] text-app-text-dim mt-1">
@@ -122,65 +120,66 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
           </label>
         </div>
 
-        {/* File structure info */}
-        <div className="bg-app-bg border border-app-border rounded p-3">
-          <div className="text-xs text-app-text-dim mb-1">Export structure:</div>
-          <div className="text-[11px] text-app-text font-mono space-y-0.5">
-            <div>components/</div>
-            <div key="0" className="pl-4">...</div>
-            {mode === 'full' && (
-              <>
-                <div>logic/</div>
-                {project.screens.map(s => (
-                  <div key={s.id} className="pl-4">{s.name.replace(/[^a-zA-Z0-9_]/g, '_')}.lua</div>
-                ))}
-              </>
-            )}
-            <div>screens/</div>
-            {project.screens.map(s => (
-              <div key={s.id} className="pl-4">{s.name.replace(/[^a-zA-Z0-9_]/g, '_')}.lua</div>
-            ))}
-            <div>utils/</div>
-            <div key="1" className="pl-4">vars.lua</div>
-            <div key="2" className="pl-4">functions.lua</div>
-            <div key="3" className="pl-4">handlers.lua</div>
-            <div>startup.lua</div>
+        <div className="flex flex-row gap-3 h-96 min-h-0 overflow-hidden">
+          {/* File structure info */}
+          <div className={"bg-app-bg border border-app-border rounded overflow-auto p-3" + (showPreview ? " w-1/4" : " w-full")}>
+            <div className="text-xs text-app-text-dim mb-2">Export structure:</div>
+            <div className="text-[11px] text-app-text font-mono space-y-0.5">
+              <div>components/</div>
+              <div className="pl-4">...</div>
+              {(mode === 'full') && (previewFiles.filter(f => f.path.startsWith('logic/')).length > 0) && (
+                <>
+                  <div>logic/</div>
+                  {previewFiles.filter(f => f.path.startsWith('logic/')).map(f => (
+                    <div key={f.path} className="pl-4">{f.path.split('/').pop()}</div>
+                  ))}
+                </>
+              )}
+              <div>screens/</div>
+              {previewFiles.filter(f => f.path.startsWith('screens/')).map(f => (
+                <div key={f.path} className="pl-4">{f.path.split('/').pop()}</div>
+              ))}
+              <div>utils/</div>
+              <div className="pl-4">vars.lua</div>
+              <div className="pl-4">functions.lua</div>
+              <div className="pl-4">handlers.lua</div>
+              <div>startup.lua</div>
+            </div>
           </div>
-        </div>
 
-        {/* Preview */}
-        {showPreview && previewFiles.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-1 overflow-x-auto">
-                {previewFiles.map((f, i) => (
-                  <button
-                    key={f.path}
-                    onClick={() => setActivePreviewIdx(i)}
-                    className={`px-2 py-0.5 text-[10px] rounded whitespace-nowrap ${
-                      i === activePreviewIdx
+          {/* Preview */}
+          {showPreview && previewFiles.length > 0 && (
+            <div className="w-3/4 h-full min-h-0 flex flex-col">
+              <div className="flex items-center justify-between mb-1 shrink-0">
+                <div className="flex items-center gap-1 overflow-x-auto">
+                  {previewFiles.filter(f => !f.path.includes('components')).reverse().map((f) => (
+                    <button
+                      key={f.path}
+                      onClick={() => setActivePreviewIdx(previewFiles.indexOf(f))}
+                      className={`px-2 py-0.5 text-[10px] rounded whitespace-nowrap ${previewFiles.indexOf(f) === activePreviewIdx
                         ? 'bg-app-accent text-app-bg'
                         : 'bg-app-bg text-app-text-dim hover:text-app-text'
-                    }`}
-                  >
-                    {f.path}
-                  </button>
-                ))}
+                        }`}
+                    >
+                      {f.path}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(previewFiles[activePreviewIdx].content);
+                  }}
+                  className="text-[10px] text-app-accent hover:text-app-accent/80 ml-2 whitespace-nowrap"
+                >
+                  Copy
+                </button>
               </div>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(previewFiles[activePreviewIdx].content);
-                }}
-                className="text-[10px] text-app-accent hover:text-app-accent/80 ml-2 whitespace-nowrap"
-              >
-                Copy
-              </button>
+              <pre className="flex-1 min-h-0 bg-app-bg border border-app-border rounded p-3 text-[11px] text-app-text font-mono overflow-auto whitespace-pre">
+                {previewFiles[activePreviewIdx].content}
+              </pre>
             </div>
-            <pre className="bg-app-bg border border-app-border rounded p-3 text-[11px] text-app-text font-mono max-h-80 overflow-auto whitespace-pre">
-              {previewFiles[activePreviewIdx].content}
-            </pre>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Actions */}
         <div className="flex justify-between pt-2 border-t border-app-border">

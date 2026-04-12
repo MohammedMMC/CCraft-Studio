@@ -29,7 +29,7 @@ import { functionsBlocks } from './blocks/main/functions';
 import { pluginsBlocks } from './blocks/main/plugins';
 
 export type Block = Record<string, {
-    block: {
+    block?: {
         init?(this: Blockly.Block): void;
         onchange?(this: Blockly.Block, event: Blockly.Events.Abstract): void;
     }, generator: GeneratorFunc

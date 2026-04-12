@@ -1,9 +1,8 @@
 import { Block } from "../../blocksRegistery";
-import { GeneratorFunc, Order } from "../../luaGenerator";
+import { Order } from "../../luaGenerator";
 
 export const listsBlocks: Block = {
     'lists_create_with': {
-        block: {},
         generator: (block, gen) => {
             const count = (block as any).itemCount_ || 0;
             const items: string[] = [];
@@ -14,14 +13,12 @@ export const listsBlocks: Block = {
         }
     },
     'lists_length': {
-        block: {},
         generator: (block, gen) => {
             const list = gen.valueToCode(block, 'VALUE', Order.HIGH);
             return [`#${list}`, Order.HIGH];
         }
     },
     'lists_getIndex': {
-        block: {},
         generator: (block, gen) => {
             const list = gen.valueToCode(block, 'VALUE', Order.ATOMIC);
             const index = gen.valueToCode(block, 'AT', Order.NONE);

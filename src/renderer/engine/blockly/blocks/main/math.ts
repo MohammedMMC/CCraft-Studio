@@ -1,15 +1,13 @@
 import { Block } from "../../blocksRegistery";
-import { GeneratorFunc, Order } from "../../luaGenerator";
+import { Order } from "../../luaGenerator";
 
 export const mathBlocks: Block = {
     'math_number': {
-        block: {},
         generator: (block, gen) => {
             return [String(block.getFieldValue('NUM')), Order.ATOMIC];
         }
     },
     'math_arithmetic': {
-        block: {},
         generator: (block, gen) => {
             const ops: Record<string, [string, number]> = {
                 ADD: ['+', Order.ADD], MINUS: ['-', Order.ADD],
@@ -23,7 +21,6 @@ export const mathBlocks: Block = {
         }
     },
     'math_single': {
-        block: {},
         generator: (block, gen) => {
             const opMap: Record<string, string> = {
                 ROOT: 'math.sqrt', ABS: 'math.abs', NEG: '-',
@@ -37,7 +34,6 @@ export const mathBlocks: Block = {
         }
     },
     'math_random_int': {
-        block: {},
         generator: (block, gen) => {
             const a = gen.valueToCode(block, 'FROM', Order.NONE);
             const b = gen.valueToCode(block, 'TO', Order.NONE);
