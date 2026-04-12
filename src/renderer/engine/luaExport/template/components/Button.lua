@@ -21,13 +21,6 @@ function Button:onClickEvent(x, y)
     if(self.events["button_focus"]) then
         self.events["button_focus"](x, y)
     end
-    -- local h = handlers[currentScreen]
-    -- if h and h.onButtonFocus[self.name] then
-    --     h.onButtonFocus[self.name](mx, my, button)
-    -- end
-    -- if h and h.onButtonClick[self.name] then
-    --     h.onButtonClick[self.name](mx, my, button)
-    -- end
 end
 
 function Button:onReleaseEvent(x, y)
@@ -35,10 +28,6 @@ function Button:onReleaseEvent(x, y)
     if(self.events["button_release"]) then
         self.events["button_release"](x, y)
     end
-    -- local h = handlers[currentScreen]
-    -- if h and h.onButtonRelease[self.name] then
-    --     h.onButtonRelease[self.name](mx, my, button)
-    -- end
 end
 
 function Button:drawElement()

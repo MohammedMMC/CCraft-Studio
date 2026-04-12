@@ -160,7 +160,6 @@ export function setupCraftPCIPC(): void {
         }
 
         proc?.kill();
-        console.log("CRAFTOS PIDDDDD: ", proc?.pid);
         proc = null;
 
         if (socket?.readyState === WebSocket.OPEN) {
@@ -169,7 +168,10 @@ export function setupCraftPCIPC(): void {
         socket = null;
 
         protocolState = {};
-        craftpcHelpers.setBinaryChecksum(false);
+        leftover = Buffer.alloc(0);
+        lastV11Check = 0;
+        protocolState.isVersion11 = false;
+        protocolState.useBinaryChecksum = false;
     });
 
     ipcMain.handle('craftpc:exportProject', async (_event, data: { files: { path: string; content: string }[], path: string, isRemote: boolean, windowId: number, computerId: number, projectName: string }) => {

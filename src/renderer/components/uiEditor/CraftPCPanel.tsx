@@ -175,8 +175,12 @@ export const CraftPCPanel: React.FC = () => {
         projectName: project?.name || "CCProject",
         windowId: windowId.current
       }).catch(async (err) => {
-        await startLocalSession();
-        reloadFiles();
+        if (currentSessionType == "remote") {
+          await startRemoteSession();
+        } else {
+          await startLocalSession();
+        }
+        setTimeout(reloadFiles, 300);
       }).then(() => {
         window.electronAPI.craftpc.startTestingApp({
           computerId: computerId.current,

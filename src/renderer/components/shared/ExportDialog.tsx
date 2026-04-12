@@ -70,7 +70,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
       setPreviewFiles(files);
       setActivePreviewIdx(0);
     }
-  }, [minify, mode]);
+  }, [minify, mode, isOpen]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Export Lua Program" width="max-w-2xl max-h-screen">

@@ -12,13 +12,29 @@ export const eventsBlocks: Block = {
                 this.appendStatementInput('DO')
                     .appendField("do");
                 this.setStyle('events_blocks');
-                this.setTooltip('Runs when this screen is first displayed');
-                this.setDeletable(false);
+                this.setTooltip('Runs when this screen is first displayed (runs once)');
+                this.setDeletable(true);
             },
         },
         generator: (block, gen) => {
             const body = gen.statementToCode(block, 'DO');
             return `-- [EVENT:screen_load]\n${body}\n-- [/EVENT:screen_load]`;
+        }
+    },
+    'event_screen_update': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField('when this screen updates');
+                this.appendStatementInput('DO')
+                    .appendField("do");
+                this.setStyle('events_blocks');
+                this.setTooltip('Runs when this screen is updated');
+            },
+        },
+        generator: (block, gen) => {
+            const body = gen.statementToCode(block, 'DO');
+            return `-- [EVENT:screen_update]\n${body}\n-- [/EVENT:screen_update]`;
         }
     },
     'event_button_click': {

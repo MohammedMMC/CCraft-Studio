@@ -7,7 +7,8 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
     {
       kind: 'category', name: 'Events', categorystyle: 'events_category',
       contents: [
-        // { kind: 'block', type: 'event_screen_load' },
+        { kind: 'block', type: 'event_screen_load' },
+        { kind: 'block', type: 'event_screen_update' },
         { kind: 'block', type: 'event_button_click' },
         { kind: 'block', type: 'event_button_focus' },
         { kind: 'block', type: 'event_button_release' },

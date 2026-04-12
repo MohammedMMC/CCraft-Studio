@@ -8,7 +8,9 @@ Screen.__index = Screen
 function Screen:new(name, props)
     local obj = setmetatable({}, self)
 
-    obj.onLoad = function() end
+    obj.onUpdate = function() end
+    obj.onceLoaded = null
+    obj.onceLoadedRunned = false
 
     obj.name = name
     obj.autoMonitor = false
@@ -84,5 +86,9 @@ function Screen:draw()
         self:getChild(name):draw()
     end
 
-    self.onLoad()
+    self.onUpdate()
+    if (not self.onceLoadedRunned and self.onceLoaded) then
+        self.onceLoadedRunned = true
+        self.onceLoaded()
+    end
 end

@@ -187,9 +187,9 @@ export function wrapEvent(screen: string, event: string, meta: string, body: str
   const ib = body.split('\n').map(l => '  ' + l).join('\n');
   const eMeta = sanitize(escapeLuaString(meta));
   switch (event) {
-    case 'screen_load': {
-      return `screen.onLoad = function()\n${ib}\nend`;
-    }
+    case 'screen_load': return `screen.onceLoaded = function()\n${ib}\nend`;
+    case 'screen_update': return `screen.onUpdate = function()\n${ib}\nend`;
+    
     case 'button_click': return `screen:getChild("${eMeta}").events["button_click"] = function(x, y)\n${ib}\nend`;
     case 'button_focus': return `screen:getChild("${eMeta}").events["button_focus"] = function(x, y)\n${ib}\nend`;
     case 'button_release': return `screen:getChild("${eMeta}").events["button_release"] = function(x, y)\n${ib}\nend`;
