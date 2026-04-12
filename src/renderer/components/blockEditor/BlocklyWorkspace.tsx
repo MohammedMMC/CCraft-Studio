@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import * as Blockly from 'blockly';
 import { LexicalVariablesPlugin } from '@mit-app-inventor/blockly-block-lexical-variables';
-import { defineAllBlocks } from '../../engine/blockly/ccBlocks';
-import { luaGenerator, registerAllGenerators } from '../../engine/blockly/luaGenerator';
+import { registerAllBlocks } from '@/engine/blockly/blocksRegistery';
+import { luaGenerator } from '../../engine/blockly/luaGenerator';
 import { TOOLBOX } from '../../engine/blockly/toolbox';
 import { useBlocklyStore } from '../../stores/blocklyStore';
 import { useProjectStore } from '../../stores/projectStore';
@@ -13,8 +13,7 @@ let blocksRegistered = false;
 function ensureInit() {
   if (blocksRegistered) return;
   blocksRegistered = true;
-  defineAllBlocks();
-  registerAllGenerators();
+  registerAllBlocks();
 
   // Changing Default Blocks
   Blockly.Msg.TEXT_ISEMPTY_TITLE = 'is empty %1';

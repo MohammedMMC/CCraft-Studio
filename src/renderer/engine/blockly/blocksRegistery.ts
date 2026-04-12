@@ -68,6 +68,6 @@ export function registerAllBlocks() {
 function registerBlocks(block: Block) {
     for (const key in block) {
         luaGenerator.addGenerator(key, block[key].generator);
-        Blockly.Blocks[key] = block[key].block;
+        if (block[key].block && block[key].block.init) Blockly.Blocks[key] = block[key].block;
     }
 }

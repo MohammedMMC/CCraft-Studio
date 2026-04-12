@@ -336,7 +336,7 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
       kind: 'category', name: 'OS / System', categorystyle: 'os_category',
       contents: [
         { kind: 'block', type: 'os_sleep' },
-        { kind: 'block', type: 'sleep_secs' },
+        { kind: 'block', type: 'os_wait_secs' },
         { kind: 'label', text: '--- Timers & Alarms ---' },
         { kind: 'block', type: 'os_startTimer' },
         { kind: 'block', type: 'os_cancelTimer' },

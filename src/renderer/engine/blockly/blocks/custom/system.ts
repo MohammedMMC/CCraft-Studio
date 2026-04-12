@@ -22,7 +22,7 @@ export const systemBlocks: Block = {
             return `${gen.getIndent()}os.sleep(${secs})`;
         }
     },
-    'sleep_secs': {
+    'os_wait_secs': {
         block: {
             init() {
                 this.appendValueInput('SECS').setCheck('Number')
@@ -37,7 +37,8 @@ export const systemBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            return '';
+            const secs = gen.valueToCode(block, 'SECS', Order.NONE);
+            return `${gen.getIndent()}sleep(${secs})`;
         }
     },
     'os_shutdown': {
