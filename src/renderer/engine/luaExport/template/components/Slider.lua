@@ -15,6 +15,10 @@ function Slider:getValue() return self.value end
 
 function Slider:setValue(val)
     self.value = math.max(self.from, math.min(self.to, math.floor(val + 0.5)))
+
+    if self.events["value_changed"] then
+        self.events["value_changed"]()
+    end
 end
 
 function Slider:onDragEvent(x, y)
@@ -47,7 +51,7 @@ function Slider:drawElement()
 
         self.monitor.setCursorPos(self.x, self.y +
             (self.orientation == "vbtt"
-                and (self.height-1) - math.floor((self.height - 1) * percentValue / 100 + 0.5)
+                and (self.height - 1) - math.floor((self.height - 1) * percentValue / 100 + 0.5)
                 or math.floor((self.height - 1) * percentValue / 100 + 0.5))
         );
         self.monitor.setBackgroundColor(self.handleColor)

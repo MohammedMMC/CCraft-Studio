@@ -24,6 +24,14 @@ function BaseObject:isVisible()
     return self.visible
 end
 
+function BaseObject:setText(text)
+    self.text = text
+    
+    if self.events['text_changed'] then
+        self.events['text_changed']()
+    end
+end
+
 function BaseObject:setVisible(visible)
     self.visible = visible
 end

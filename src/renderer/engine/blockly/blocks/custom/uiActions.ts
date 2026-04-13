@@ -68,7 +68,14 @@ export const uiActionsBlocks: Block = {
             const el = block.getFieldValue('ELEMENT');
             const prop = block.getFieldValue('PROP');
             const value = gen.valueToCode(block, 'VALUE', Order.NONE);
-            return `${gen.getIndent()}screen:getChild("${el}").${prop} = ${value}`;
+            const lines = [
+                `${gen.getIndent()}    if screen:getChild("${el}").set${prop.charAt(0).toUpperCase() + prop.slice(1)} then`,
+                `${gen.getIndent()}        screen:getChild("${el}"):set${prop.charAt(0).toUpperCase() + prop.slice(1)}(${value})`,
+                `${gen.getIndent()}    else`,
+                `${gen.getIndent()}        screen:getChild("${el}").${prop} = ${value}`,
+                `${gen.getIndent()}    end`
+            ];
+            return lines.join('\n');
         }
     },
     'ui_get_prop': {
@@ -130,43 +137,6 @@ export const uiActionsBlocks: Block = {
         generator: (block, gen) => {
             const screen = (block.getFieldValue('SCREEN') || '').replace(/[^a-zA-Z0-9_]/g, '_');
             return `${gen.getIndent()}navigate("${screen}")`;
-        }
-    },
-    'ui_set_progress': {
-        block: {
-            init(this: Blockly.Block) {
-                this.appendValueInput('VALUE').setCheck('Number')
-                    .appendField('set')
-                    .appendField(new Blockly.FieldTextInput('progressbar1'), 'ELEMENT')
-                    .appendField('progress to');
-                this.setPreviousStatement(true, null);
-                this.setNextStatement(true, null);
-                this.setStyle('ui_blocks');
-                this.setInputsInline(true);
-                this.setTooltip('Set the progress value of a progress bar element');
-            },
-        },
-        generator: (block, gen) => {
-            const el = block.getFieldValue('ELEMENT');
-            const val = gen.valueToCode(block, 'VALUE', Order.NONE);
-            return `${gen.getIndent()}getElement("${el}").value = ${val}\n${gen.getIndent()}drawCurrentScreen()`;
-        }
-    },
-    'ui_get_value': {
-        block: {
-            init(this: Blockly.Block) {
-                this.appendDummyInput()
-                    .appendField('get')
-                    .appendField(new Blockly.FieldTextInput('element1'), 'ELEMENT')
-                    .appendField('value');
-                this.setOutput(true, null);
-                this.setStyle('ui_blocks');
-                this.setTooltip('Get the current value of a UI element');
-            },
-        },
-        generator: (block, gen) => {
-            const el = block.getFieldValue('ELEMENT');
-            return [`getElement("${el}").value`, Order.ATOMIC];
         }
     }
 };

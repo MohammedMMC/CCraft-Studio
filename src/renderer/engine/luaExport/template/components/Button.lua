@@ -15,18 +15,20 @@ end
 
 function Button:onClickEvent(x, y)
     self.isFocused = true
-    if(self.events["button_click"]) then
-        self.events["button_click"](x, y)
+    
+    if self.events["clicked"] then
+        self.events["clicked"](x, y)
     end
-    if(self.events["button_focus"]) then
-        self.events["button_focus"](x, y)
+    if self.events["focused"] then
+        self.events["focused"](x, y)
     end
 end
 
 function Button:onReleaseEvent(x, y)
     self.isFocused = false
-    if(self.events["button_release"]) then
-        self.events["button_release"](x, y)
+
+    if self.events["released"] then
+        self.events["released"](x, y)
     end
 end
 

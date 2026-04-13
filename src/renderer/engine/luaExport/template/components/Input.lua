@@ -15,6 +15,10 @@ end
 
 function Input:onClickEvent(x, y)
     self.isFocused = true
+
+    if self.events["focused"] then
+        self.events["focused"]()
+    end
 end
 
 function Input:onkeyEvent(key)
@@ -25,6 +29,10 @@ function Input:onkeyEvent(key)
         self.text = self.text:sub(1, -2)
     elseif key == keys.enter then
         self.isFocused = false
+    end
+
+    if self.events["key_pressed"] then
+        self.events["key_pressed"]()
     end
 end
 
@@ -52,7 +60,8 @@ function Input:drawElement()
         if self.textAlign == "right" then
             blinkPosX = self.x + self.width - 1
         elseif self.textAlign == "center" then
-            blinkPosX = self.x + math.min(#self.textArr + math.abs(math.floor((self.width - #self.textArr) / 2)), self.width - 1)
+            blinkPosX = self.x +
+            math.min(#self.textArr + math.abs(math.floor((self.width - #self.textArr) / 2)), self.width - 1)
         end
 
         self.screen:setBlinking(true, blinkPosX, self.y)

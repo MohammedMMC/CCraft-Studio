@@ -1,3 +1,4 @@
+import { CC_COLORS } from "@/models/CCColors";
 import { Block } from "../../blocksRegistery";
 import { createColorField } from "../../ccBlocks";
 import { Order } from "../../luaGenerator";
@@ -14,7 +15,7 @@ export const colorsBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            return [block.getFieldValue('COLOR') || 'white', Order.ATOMIC];
+            return [Object.values(CC_COLORS).filter((color) => color.hex.toLowerCase() == block.getFieldValue('COLOR')?.toLowerCase())[0]?.luaName || CC_COLORS.gray.luaName, Order.ATOMIC];
         }
     }
 };

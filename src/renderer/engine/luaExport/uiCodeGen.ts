@@ -190,10 +190,6 @@ export function wrapEvent(screen: string, event: string, meta: string, body: str
     case 'screen_load': return `screen.events.onceLoaded = function()\n${ib}\nend`;
     case 'screen_update': return `screen.events.onUpdate = function()\n${ib}\nend`;
     
-    case 'button_click': return `screen:getChild("${sanitize(eMeta)}").events["button_click"] = function(x, y)\n${ib}\nend`;
-    case 'button_focus': return `screen:getChild("${sanitize(eMeta)}").events["button_focus"] = function(x, y)\n${ib}\nend`;
-    case 'button_release': return `screen:getChild("${sanitize(eMeta)}").events["button_release"] = function(x, y)\n${ib}\nend`;
-
     case 'key_press': return `screen.events.onKeyPress["${sanitize(eMeta)}"] = function(key)\n${ib}\nend`;
     case 'timer': return `handlers["${screen}"].onTimer["t_${sanitize(eMeta)}"] = function(timerId)\n${ib}\nend`;
     case 'redstone': return `handlers["${screen}"].onRedstone = function()\n${ib}\nend`;

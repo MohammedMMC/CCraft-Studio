@@ -1,8 +1,75 @@
 import * as Blockly from 'blockly';
 import { Block } from "../../blocksRegistery";
 import { ELEMENTS } from '../../ccBlocks';
+import { UI_ELEMENT_WITH_TEXT, UIElement, UIElementType } from '@/models/UIElement';
+import { useProjectStore } from '@/stores/projectStore';
+import { sanitize } from '@/utils/luaHelpers';
+
+const componentsEvents: Record<UIElementType, string[]> = {
+    'button': ['clicked', 'focused', 'released'],
+    'label': [],
+    'container': [],
+    'panel': [],
+    'progressbar': ['progress_changed'],
+    'slider': ['value_changed'],
+    'checkbox': ['toggled', 'checked', 'unchecked'],
+    'input': ['key_pressed', 'focused'],
+};
+
+function sharedComponentsEvents(compName: UIElementType): string[] {
+    let eventsNames: string[] = [];
+
+    if (UI_ELEMENT_WITH_TEXT.includes(compName)) {
+        eventsNames.push('text_changed');
+    }
+
+    return eventsNames;
+}
+
 
 export const eventsBlocks: Block = {
+    'event_components_events': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField('when')
+                    .appendField(new Blockly.FieldDropdown(ELEMENTS), 'ELEMENT')
+                    .appendField(new Blockly.FieldDropdown(function (this: Blockly.FieldDropdown) {
+                        const elementName = this.getSourceBlock()?.getFieldValue('ELEMENT') || ELEMENTS()[0][0];
+                        const element = useProjectStore.getState().getActiveScreen()?.uiElements.find(el => el.name === elementName);
+
+                        const newOptions = elementName !== "(no elements)"
+                            ? [
+                                ...componentsEvents[element?.type as UIElementType]?.map(ev => [ev.replace(/_/g, ' '), ev]),
+                                ...sharedComponentsEvents(element?.type as UIElementType)?.map(ev => [ev.replace(/_/g, ' '), ev])
+                            ] as [string, string][]
+                            : [];
+
+                        return newOptions.length > 0 ? newOptions : [['(no events)', '']];
+                    }), 'EVENT');
+                this.appendStatementInput('DO')
+                    .appendField("do");
+                this.setStyle('events_blocks');
+                this.setTooltip(`Runs when the specified event occurs on the selected UI element`);
+            },
+            onchange(event) {
+                if (event.type !== Blockly.Events.BLOCK_CHANGE) return;
+                const eventField = this.getField('EVENT') as Blockly.FieldDropdown | null;
+                const currentEventName = eventField?.getValue();
+                if (typeof currentEventName !== 'string') return;
+
+                // Update EVENT dropdown options
+                const propOptions = eventField?.getOptions() || [];
+                eventField?.setValue(propOptions.flat().includes(currentEventName) ? currentEventName : propOptions[0][1]);
+            }
+        },
+        generator: (block, gen) => {
+            const elName = block.getFieldValue('ELEMENT');
+            const evName = block.getFieldValue('EVENT');
+            const body = gen.statementToCode(block, 'DO');
+            return `screen:getChild("${sanitize(elName)}").events["${evName}"] = function()\n${body}\nend`;
+        }
+    },
     'event_screen_load': {
         block: {
             init() {
@@ -33,63 +100,6 @@ export const eventsBlocks: Block = {
         generator: (block, gen) => {
             const body = gen.statementToCode(block, 'DO');
             return `-- [EVENT:screen_update]\n${body}\n-- [/EVENT:screen_update]`;
-        }
-    },
-    'event_button_click': {
-        block: {
-            init() {
-                this.appendDummyInput()
-                    .appendField('when button')
-                    .appendField(new Blockly.FieldDropdown(ELEMENTS('button')), 'BUTTON')
-                    .appendField('is clicked');
-                this.appendStatementInput('DO')
-                    .appendField("do");
-                this.setStyle('events_blocks');
-                this.setTooltip('Runs when a button element is clicked');
-            },
-        },
-        generator: (block, gen) => {
-            const btn = block.getFieldValue('BUTTON');
-            const body = gen.statementToCode(block, 'DO');
-            return `-- [EVENT:button_click:${btn}]\n${body}\n-- [/EVENT:button_click:${btn}]`;
-        }
-    },
-    'event_button_focus': {
-        block: {
-            init() {
-                this.appendDummyInput()
-                    .appendField('when button')
-                    .appendField(new Blockly.FieldDropdown(ELEMENTS('button')), 'BUTTON')
-                    .appendField('is focused');
-                this.appendStatementInput('DO')
-                    .appendField("do");
-                this.setStyle('events_blocks');
-                this.setTooltip('Runs while a button is held down (focused)');
-            },
-        },
-        generator: (block, gen) => {
-            const btn = block.getFieldValue('BUTTON');
-            const body = gen.statementToCode(block, 'DO');
-            return `-- [EVENT:button_focus:${btn}]\n${body}\n-- [/EVENT:button_focus:${btn}]`;
-        }
-    },
-    'event_button_release': {
-        block: {
-            init() {
-                this.appendDummyInput()
-                    .appendField('when button')
-                    .appendField(new Blockly.FieldDropdown(ELEMENTS('button')), 'BUTTON')
-                    .appendField('is released');
-                this.appendStatementInput('DO')
-                    .appendField("do");
-                this.setStyle('events_blocks');
-                this.setTooltip('Runs when a button is released after being clicked');
-            },
-        },
-        generator: (block, gen) => {
-            const btn = block.getFieldValue('BUTTON');
-            const body = gen.statementToCode(block, 'DO');
-            return `-- [EVENT:button_release:${btn}]\n${body}\n-- [/EVENT:button_release:${btn}]`;
         }
     },
     'event_key_press': {

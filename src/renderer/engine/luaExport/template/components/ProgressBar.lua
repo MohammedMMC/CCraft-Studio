@@ -13,6 +13,10 @@ end
 
 function ProgressBar:setProgress(progress)
     self.progress = progress
+
+    if self.events["progress_changed"] then
+        self.events["progress_changed"]()
+    end
 end
 
 function ProgressBar:drawElement()

@@ -13,8 +13,22 @@ function CheckBox:new(name, props)
     return obj
 end
 
+function CheckBox:setChecked(value)
+    self.checked = value
+
+    if self.events["toggled"] then
+        self.events["toggled"]()
+    end
+    if value == true and self.events["checked"] then
+        self.events["checked"]()
+    end
+    if value == false and self.events["unchecked"] then
+        self.events["unchecked"]()
+    end
+end
+
 function CheckBox:onClickEvent(checkBox, x, y)
-    self.checked = not self.checked
+    self:setChecked(not self.checked)
 end
 
 function CheckBox:drawElement()
