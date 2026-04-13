@@ -4,7 +4,10 @@ while running do
     drawScreens()
     local event, p1, p2, p3, p4, p5 = os.pullEvent()
 
-    for _, comp in pairs(getScreen(currentScreen).children) do
+    local isMonitor = event == "monitor_touch"
+    local screen = getScreen(isMonitor and 'monitor:' .. p1 or 'terminal')
+
+    for _, comp in pairs(screen.children) do
         for key, fn in pairs(comp.events) do
             if event == key then
                 if type(fn) == "function" then
@@ -17,9 +20,6 @@ while running do
             end
         end
     end
-
-    local isMonitor = event == "monitor_touch"
-    local screen = getScreen(isMonitor and 'monitor:' .. p1 or 'terminal')
 
     if event == "close" then
         running = false

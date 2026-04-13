@@ -93,5 +93,10 @@ export function valueToType(value: any) {
   if (typeof value !== 'string') return null;
   if (value in CC_COLORS) return 'Color';
   if ([...ALIGNS, ...TEXT_ALIGNS].map(v => v[0]).includes(value)) return 'Align';
+  if ([...SIDES].map(v => v[0]).includes(value)) return 'Side';
+  if (["flex", "grid"].includes(value)) return 'Display';
+  if (["px", "%", "fill"].includes(value)) return 'SizeUnit';
+  if (["row", "column"].includes(value)) return 'FlexDirection';
+  if (["hltr", "hrtl", "vttb", "vbtt"].includes(value)) return 'Orientation';
   return 'String';
 }

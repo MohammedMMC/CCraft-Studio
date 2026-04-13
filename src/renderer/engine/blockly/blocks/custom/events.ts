@@ -1,6 +1,5 @@
 import * as Blockly from 'blockly';
 import { Block } from "../../blocksRegistery";
-import { GeneratorFunc } from "../../luaGenerator";
 import { ELEMENTS } from '../../ccBlocks';
 
 export const eventsBlocks: Block = {
@@ -13,7 +12,6 @@ export const eventsBlocks: Block = {
                     .appendField("do");
                 this.setStyle('events_blocks');
                 this.setTooltip('Runs when this screen is first displayed (runs once)');
-                this.setDeletable(true);
             },
         },
         generator: (block, gen) => {

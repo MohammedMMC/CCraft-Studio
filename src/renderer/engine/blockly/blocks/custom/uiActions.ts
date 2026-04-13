@@ -17,7 +17,8 @@ export const uiActionsBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            return '';
+            const screen = block.getFieldValue('SCREEN');
+            return [`getScreen("${screen}")`, Order.ATOMIC];
         }
     },
     'ui_set_prop': {

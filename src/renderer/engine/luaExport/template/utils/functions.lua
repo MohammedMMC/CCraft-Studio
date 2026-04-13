@@ -23,8 +23,6 @@ end
 function navigate(screen, newScreen)
     setupMonitorsToScreens(screen.name, newScreen)
     drawScreens()
-    -- local h = handlers[screen.name]
-    -- if h and h.onLoad then h.onLoad() end
 end
 
 function refreshScreen() drawScreens() end
