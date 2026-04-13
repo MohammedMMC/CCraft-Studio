@@ -42,6 +42,7 @@ export function createColorField() {
     colourTitles: Object.keys(CC_COLORS),
     columns: 4,
     primaryColour: "#1e1e2e",
+    // borderColour: "#363650",
   });
 }
 

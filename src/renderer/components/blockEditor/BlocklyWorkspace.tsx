@@ -55,31 +55,31 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
       colourPrimary: '#B18E35',
     },
     ui_blocks: {
-      colourPrimary: '#4EBD60',
+      colourPrimary: '#4da37b',
     },
     terminal_blocks: {
-      colourPrimary: '#3F71B5',
+      colourPrimary: '#324196',
     },
     redstone_blocks: {
-      colourPrimary: '#E05050',
+      colourPrimary: '#ba2222',
     },
     filesystem_blocks: {
-      colourPrimary: '#C49642',
+      colourPrimary: '#ab6626',
     },
     http_blocks: {
-      colourPrimary: '#49A6D4',
+      colourPrimary: '#2f86a1',
     },
     peripheral_blocks: {
-      colourPrimary: '#7C5385',
+      colourPrimary: '#6f54ab',
     },
     turtle_blocks: {
       colourPrimary: '#59B85A',
     },
     os_blocks: {
-      colourPrimary: '#8B6FC0',
+      colourPrimary: '#545b6b',
     },
     rednet_blocks: {
-      colourPrimary: '#D05F2D',
+      colourPrimary: '#de314f',
     },
     paintutils_blocks: {
       colourPrimary: '#E07070',
@@ -94,10 +94,10 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
       colourPrimary: '#3F71B5',
     },
     disk_blocks: {
-      colourPrimary: '#B88040',
+      colourPrimary: '#ab6626',
     },
     utility_blocks: {
-      colourPrimary: '#7D7D7D',
+      colourPrimary: '#545b6b',
     },
     logic_blocks: {
       colourPrimary: '#77AB41',
@@ -126,21 +126,21 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
   },
   categoryStyles: {
     events_category: { colour: '#B18E35' },
-    ui_category: { colour: '#4EBD60' },
-    terminal_category: { colour: '#3F71B5' },
-    redstone_category: { colour: '#E05050' },
-    filesystem_category: { colour: '#C49642' },
-    http_category: { colour: '#49A6D4' },
-    peripheral_category: { colour: '#7C5385' },
+    ui_category: { colour: '#4da37b' },
+    terminal_category: { colour: '#324196' },
+    redstone_category: { colour: '#ba2222' },
+    filesystem_category: { colour: '#ab6626' },
+    http_category: { colour: '#2f86a1' },
+    peripheral_category: { colour: '#6f54ab' },
     turtle_category: { colour: '#59B85A' },
-    os_category: { colour: '#8B6FC0' },
-    rednet_category: { colour: '#D05F2D' },
+    os_category: { colour: '#545b6b' },
+    rednet_category: { colour: '#de314f' },
     paintutils_category: { colour: '#E07070' },
     window_category: { colour: '#3DA08E' },
     settings_category: { colour: '#7D7D7D' },
     gps_category: { colour: '#3F71B5' },
-    disk_category: { colour: '#B88040' },
-    utility_category: { colour: '#7D7D7D' },
+    disk_category: { colour: '#ab6626' },
+    utility_category: { colour: '#545b6b' },
     logic_category: { colour: '#77AB41' },
     loop_category: { colour: '#B18E35' },
     math_category: { colour: '#3F71B5' },

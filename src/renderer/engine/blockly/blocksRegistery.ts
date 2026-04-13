@@ -15,7 +15,6 @@ import { textUtilsBlocks } from './blocks/custom/textUtils';
 import { paintUtilsBlocks } from './blocks/custom/paintUtils';
 import { windowBlocks } from './blocks/custom/window';
 import { settingsBlocks } from './blocks/custom/settings';
-import { gpsBlocks } from './blocks/custom/gps';
 import { diskBlocks } from './blocks/custom/disk';
 import { utilityBlocks } from './blocks/custom/utility';
 import { logicBlocks } from './blocks/main/logic';
@@ -50,7 +49,6 @@ export function registerAllBlocks() {
     registerBlocks(paintUtilsBlocks);
     registerBlocks(windowBlocks);
     registerBlocks(settingsBlocks);
-    registerBlocks(gpsBlocks);
     registerBlocks(diskBlocks);
     registerBlocks(utilityBlocks);
 

@@ -20,9 +20,9 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
       ],
     },
 
-    // Category: UI Actions
+    // Category: Interfaces
     {
-      kind: 'category', name: 'UI Actions', categorystyle: 'ui_category',
+      kind: 'category', name: 'Interfaces', categorystyle: 'ui_category',
       contents: [
         { kind: 'label', text: '--- Screen ---' },
         { kind: 'block', type: 'ui_navigate', inputs: { SCREEN: { block: { type: 'ui_screen_select' } } } },
@@ -31,6 +31,7 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
         { kind: 'block', type: 'ui_set_prop' },
         { kind: 'block', type: 'ui_get_prop' },
         { kind: 'label', text: '--- Options ---' },
+        { kind: 'block', type: 'color_picker' },
         { kind: 'block', type: 'helpers_onoff' },
         { kind: 'block', type: 'helpers_sides' },
         { kind: 'block', type: 'helpers_units' },
@@ -125,16 +126,6 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
       ],
     },
 
-    // Category: Colors
-    {
-      kind: 'category',
-      name: 'Colors',
-      categorystyle: 'color_category',
-      contents: [
-        { kind: 'block', type: 'color_picker' },
-      ]
-    },
-
     // Category: Lists
     {
       kind: 'category', name: 'Lists', categorystyle: 'list_category',
@@ -206,74 +197,6 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
       ],
     },
 
-    // Category: Redstone
-    {
-      kind: 'category', name: 'Redstone', categorystyle: 'redstone_category',
-      contents: [
-        { kind: 'label', text: '--- Digital ---' },
-        { kind: 'block', type: 'rs_setOutput', inputs: { VALUE: { block: { type: 'helpers_onoff' } } } },
-        { kind: 'block', type: 'rs_getOutput' },
-        { kind: 'block', type: 'rs_getInput' },
-        { kind: 'label', text: '--- Analog ---' },
-        { kind: 'block', type: 'rs_setAnalogOutput', inputs: { VALUE: { block: { type: 'math_number', fields: { NUM: 15 } } } } },
-        { kind: 'block', type: 'rs_getAnalogOutput' },
-        { kind: 'block', type: 'rs_getAnalogInput' },
-        { kind: 'label', text: '--- Bundled ---' },
-        { kind: 'block', type: 'rs_setBundledOutput', inputs: { VALUE: { block: { type: 'math_number', fields: { NUM: 0 } } } } },
-        { kind: 'block', type: 'rs_getBundledOutput' },
-        { kind: 'block', type: 'rs_getBundledInput' },
-        { kind: 'block', type: 'rs_testBundledInput', inputs: { COLOR: { block: { type: 'color_picker' } } } },
-      ],
-    },
-
-    // Category: Filesystem
-    {
-      kind: 'category', name: 'Files', categorystyle: 'filesystem_category',
-      contents: [
-        { kind: 'label', text: '--- Read / Write ---' },
-        { kind: 'block', type: 'fs_readFile' },
-        { kind: 'block', type: 'fs_writeFile' },
-        { kind: 'block', type: 'fs_appendFile' },
-        { kind: 'label', text: '--- File Operations ---' },
-        { kind: 'block', type: 'fs_exists' },
-        { kind: 'block', type: 'fs_isDir' },
-        { kind: 'block', type: 'fs_delete' },
-        { kind: 'block', type: 'fs_makeDir' },
-        { kind: 'block', type: 'fs_move' },
-        { kind: 'block', type: 'fs_copy' },
-        { kind: 'label', text: '--- Info ---' },
-        { kind: 'block', type: 'fs_list' },
-        { kind: 'block', type: 'fs_getSize' },
-        { kind: 'block', type: 'fs_getFreeSpace' },
-      ],
-    },
-
-    // Category: HTTP
-    {
-      kind: 'category', name: 'HTTP', categorystyle: 'http_category',
-      contents: [
-        { kind: 'block', type: 'http_get' },
-        { kind: 'block', type: 'http_postRequest' },
-        { kind: 'block', type: 'http_checkURL' },
-      ],
-    },
-
-    // Category: Peripheral
-    {
-      kind: 'category', name: 'Peripheral', categorystyle: 'peripheral_category',
-      contents: [
-        { kind: 'block', type: 'peripheral_wrap' },
-        { kind: 'block', type: 'peripheral_find', inputs: { TYPE: { block: { type: 'text', fields: { TEXT: 'monitor' } } } } },
-        { kind: 'block', type: 'peripheral_isPresent' },
-        { kind: 'block', type: 'peripheral_getType' },
-        { kind: 'block', type: 'peripheral_hasType', inputs: { TYPE: { block: { type: 'text', fields: { TEXT: 'monitor' } } } } },
-        { kind: 'block', type: 'peripheral_getNames' },
-        { kind: 'block', type: 'peripheral_getName' },
-        { kind: 'block', type: 'peripheral_getMethods' },
-        { kind: 'block', type: 'peripheral_call' },
-      ],
-    },
-
     // Category: Turtle (large - use subcategory-like labels)
     {
       kind: 'category', name: 'Turtle', categorystyle: 'turtle_category',
@@ -332,33 +255,6 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
       ],
     },
 
-    // Category: OS
-    {
-      kind: 'category', name: 'OS / System', categorystyle: 'os_category',
-      contents: [
-        { kind: 'block', type: 'os_sleep' },
-        { kind: 'block', type: 'os_wait_secs' },
-        { kind: 'label', text: '--- Timers & Alarms ---' },
-        { kind: 'block', type: 'os_startTimer' },
-        { kind: 'block', type: 'os_cancelTimer' },
-        { kind: 'block', type: 'os_setAlarm' },
-        { kind: 'block', type: 'os_cancelAlarm' },
-        { kind: 'label', text: '--- Date & Time ---' },
-        { kind: 'block', type: 'os_time' },
-        { kind: 'block', type: 'os_day' },
-        { kind: 'block', type: 'os_epoch' },
-        { kind: 'block', type: 'os_clock' },
-        { kind: 'label', text: '--- Computer ---' },
-        { kind: 'block', type: 'os_getComputerID' },
-        { kind: 'block', type: 'os_getComputerLabel' },
-        { kind: 'block', type: 'os_setComputerLabel' },
-        { kind: 'block', type: 'os_version' },
-        { kind: 'block', type: 'os_queueEvent' },
-        { kind: 'block', type: 'os_shutdown' },
-        { kind: 'block', type: 'os_reboot' },
-      ],
-    },
-
     // Category: Rednet
     {
       kind: 'category', name: 'Rednet', categorystyle: 'rednet_category',
@@ -374,6 +270,48 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
         { kind: 'block', type: 'rednet_host' },
         { kind: 'block', type: 'rednet_unhost' },
         { kind: 'block', type: 'rednet_lookup' },
+      ],
+    },
+
+    // Category: Redstone
+    {
+      kind: 'category', name: 'Redstone', categorystyle: 'redstone_category',
+      contents: [
+        { kind: 'label', text: '--- Digital ---' },
+        { kind: 'block', type: 'rs_setOutput', inputs: { VALUE: { block: { type: 'helpers_onoff' } } } },
+        { kind: 'block', type: 'rs_getOutput' },
+        { kind: 'block', type: 'rs_getInput' },
+        { kind: 'label', text: '--- Analog ---' },
+        { kind: 'block', type: 'rs_setAnalogOutput', inputs: { VALUE: { block: { type: 'math_number', fields: { NUM: 15 } } } } },
+        { kind: 'block', type: 'rs_getAnalogOutput' },
+        { kind: 'block', type: 'rs_getAnalogInput' },
+        { kind: 'label', text: '--- Bundled ---' },
+        { kind: 'block', type: 'rs_setBundledOutput', inputs: { VALUE: { block: { type: 'math_number', fields: { NUM: 0 } } } } },
+        { kind: 'block', type: 'rs_getBundledOutput' },
+        { kind: 'block', type: 'rs_getBundledInput' },
+        { kind: 'block', type: 'rs_testBundledInput', inputs: { COLOR: { block: { type: 'color_picker' } } } },
+      ],
+    },
+
+    // Category: Filesystem
+    {
+      kind: 'category', name: 'Files', categorystyle: 'filesystem_category',
+      contents: [
+        { kind: 'label', text: '--- Read / Write ---' },
+        { kind: 'block', type: 'fs_readFile' },
+        { kind: 'block', type: 'fs_writeFile' },
+        { kind: 'block', type: 'fs_appendFile' },
+        { kind: 'label', text: '--- File Operations ---' },
+        { kind: 'block', type: 'fs_exists' },
+        { kind: 'block', type: 'fs_isDir' },
+        { kind: 'block', type: 'fs_delete' },
+        { kind: 'block', type: 'fs_makeDir' },
+        { kind: 'block', type: 'fs_move' },
+        { kind: 'block', type: 'fs_copy' },
+        { kind: 'label', text: '--- Info ---' },
+        { kind: 'block', type: 'fs_list' },
+        { kind: 'block', type: 'fs_getSize' },
+        { kind: 'block', type: 'fs_getFreeSpace' },
       ],
     },
 
@@ -406,10 +344,27 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
       ],
     },
 
-    // Category: Settings
+    // Category: HTTP
     {
-      kind: 'category', name: 'Settings', categorystyle: 'settings_category',
+      kind: 'category', name: 'HTTP', categorystyle: 'http_category',
       contents: [
+        { kind: 'block', type: 'http_get' },
+        { kind: 'block', type: 'http_postRequest' },
+        { kind: 'block', type: 'http_checkURL' },
+      ],
+    },
+
+    // Category: Utility
+    {
+      kind: 'category', name: 'Utility', categorystyle: 'utility_category',
+      contents: [
+        { kind: 'label', text: '--- Conversion ---' },
+        { kind: 'block', type: 'tonumber_val' },
+        { kind: 'block', type: 'tostring_val' },
+        { kind: 'block', type: 'type_of' },
+        { kind: 'label', text: '--- Error Handling ---' },
+        { kind: 'block', type: 'pcall_wrap' },
+        { kind: 'label', text: '--- Settings ---' },
         { kind: 'block', type: 'settings_get' },
         { kind: 'block', type: 'settings_set' },
         { kind: 'block', type: 'settings_unset' },
@@ -418,11 +373,52 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
       ],
     },
 
-    // Category: GPS
+
+    // Category: System
     {
-      kind: 'category', name: 'GPS', categorystyle: 'gps_category',
+      kind: 'category', name: 'System', categorystyle: 'os_category',
       contents: [
+        { kind: 'block', type: 'os_sleep' },
+        { kind: 'block', type: 'os_wait_secs' },
+        { kind: 'label', text: '--- Timers & Alarms ---' },
+        { kind: 'block', type: 'os_startTimer' },
+        { kind: 'block', type: 'os_cancelTimer' },
+        { kind: 'block', type: 'os_setAlarm' },
+        { kind: 'block', type: 'os_cancelAlarm' },
+        { kind: 'label', text: '--- Date & Time ---' },
+        { kind: 'block', type: 'os_time' },
+        { kind: 'block', type: 'os_day' },
+        { kind: 'block', type: 'os_epoch' },
+        { kind: 'block', type: 'os_clock' },
+        { kind: 'label', text: '--- Computer ---' },
+        { kind: 'block', type: 'os_getComputerID' },
+        { kind: 'block', type: 'os_getComputerLabel' },
+        { kind: 'block', type: 'os_setComputerLabel' },
+        { kind: 'block', type: 'os_version' },
+        { kind: 'block', type: 'os_queueEvent' },
+        { kind: 'block', type: 'os_shutdown' },
+        { kind: 'block', type: 'os_reboot' },
+        { kind: 'label', text: '--- GPS ---' },
         { kind: 'block', type: 'gps_locate' },
+      ],
+    },
+
+
+    { kind: 'sep' },
+
+    // Category: Peripheral
+    {
+      kind: 'category', name: 'Peripheral', categorystyle: 'peripheral_category',
+      contents: [
+        { kind: 'block', type: 'peripheral_wrap' },
+        { kind: 'block', type: 'peripheral_find', inputs: { TYPE: { block: { type: 'text', fields: { TEXT: 'monitor' } } } } },
+        { kind: 'block', type: 'peripheral_isPresent' },
+        { kind: 'block', type: 'peripheral_getType' },
+        { kind: 'block', type: 'peripheral_hasType', inputs: { TYPE: { block: { type: 'text', fields: { TEXT: 'monitor' } } } } },
+        { kind: 'block', type: 'peripheral_getNames' },
+        { kind: 'block', type: 'peripheral_getName' },
+        { kind: 'block', type: 'peripheral_getMethods' },
+        { kind: 'block', type: 'peripheral_call' },
       ],
     },
 
@@ -437,21 +433,6 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
         { kind: 'block', type: 'disk_setLabel' },
         { kind: 'block', type: 'disk_getMountPath' },
         { kind: 'block', type: 'disk_eject' },
-      ],
-    },
-
-    { kind: 'sep' },
-
-    // Category: Utility
-    {
-      kind: 'category', name: 'Utility', categorystyle: 'utility_category',
-      contents: [
-        { kind: 'label', text: '--- Conversion ---' },
-        { kind: 'block', type: 'tonumber_val' },
-        { kind: 'block', type: 'tostring_val' },
-        { kind: 'block', type: 'type_of' },
-        { kind: 'label', text: '--- Error Handling ---' },
-        { kind: 'block', type: 'pcall_wrap' },
       ],
     },
   ],

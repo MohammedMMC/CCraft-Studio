@@ -114,7 +114,53 @@ svg[display="none"] {
 }
 
 .blocklyFieldColour .blocklyFieldGrid {
-  gap: 6px;
+  gap: 7px;
+}
+
+.blocklyColourSwatch {
+  width: 30px;
+  height: 30px;
+}
+
+.blocklyFieldGridItem:has(.blocklyColourSwatch) {
+  @apply border-app-text-dim !important;
+  border-radius: 6px !important;
+  border-width: 2px !important;
+  overflow: hidden;
+}
+
+.blocklyFieldGridItem:has(.blocklyColourSwatch):hover {
+  @apply border-app-text !important;
+}
+
+.blocklyDropDownArrow {
+  border-width: 2px !important;
+  border-right: unset !important;
+  border-bottom: unset !important;
+}
+
+.blocklyDropDownDiv {
+  @apply border-app-text-dim !important;
+  border-width: 2px !important;
+  border-radius: 8px;
+}
+
+.blocklyToolboxCategory {
+  margin: unset !important;
+  transition: background-color 200ms ease-in-out;
+}
+
+.blocklyToolboxCategoryGroup {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  padding: 10px;
+  gap: 10px;
+}
+
+.blocklyToolboxCategoryContainer {
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 /* CraftOS-PC */
