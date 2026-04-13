@@ -4,9 +4,20 @@ while running do
     drawScreens()
     local event, p1, p2, p3, p4, p5 = os.pullEvent()
 
-    -- for _, comp in pairs(getScreen(currentScreen).children) do
-    --     if comp.onEvent then comp:onEvent(event, p1, p2, p3, p4, p5) end
-    -- end
+    for _, comp in pairs(getScreen(currentScreen).children) do
+        for key, fn in pairs(comp.events) do
+            if event == key then
+                if type(fn) == "function" then
+                    fn(p1, p2, p3, p4, p5)
+                elseif type(fn) == "table" then
+                    for _, fn2 in pairs(fn) do
+                        fn2(p1, p2, p3, p4, p5)
+                    end
+                end
+            end
+        end
+    end
+
     local isMonitor = event == "monitor_touch"
     local screen = getScreen(isMonitor and 'monitor:' .. p1 or 'terminal')
 
@@ -16,6 +27,18 @@ while running do
     end
 
     if screen then
+        if event == "timer" then
+            screen.events.onTimer["t_" .. p1]()
+        elseif event == "redstone" then
+            screen.events.onRedstone()
+        elseif event == "modem_message" then
+            screen.events.onModemMessage["ch_" .. p1](p2, p3, p4, p5)
+        elseif event == "key" then
+            if screen.events.onKeyPress and screen.events.onKeyPress[p1] then
+                screen.events.onKeyPress[p1]()
+            end
+        end
+        
         if event == "mouse_click" or event == "monitor_touch" then
             isTouching = event ~= "monitor_touch"
 
@@ -77,21 +100,6 @@ while running do
                     drawScreens()
                 end
             end
-            -- local h = handlers[currentScreen]
-            -- if h and h.onKeyPress then
-            --     for kn, handler in pairs(h.onKeyPress) do
-            --         if keys.getName(p1) == kn or kn == "any" then handler(p1) end
-            --     end
-            -- end
-        elseif event == "timer" then
-            -- local h = handlers[currentScreen]
-            -- if h and h.onTimer then for _, fn in pairs(h.onTimer) do fn(p1) end end
-        elseif event == "redstone" then
-            -- local h = handlers[currentScreen]
-            -- if h and h.onRedstone then h.onRedstone() end
-        elseif event == "modem_message" then
-            -- local h = handlers[currentScreen]
-            -- if h and h.onModemMessage then for _, fn in pairs(h.onModemMessage) do fn(p1, p2, p3, p4, p5) end end
         end
     end
 end

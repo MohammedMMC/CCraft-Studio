@@ -37,7 +37,7 @@ export const terminalBlocks: Block = {
     'term_redirect': {
         block: {
             init() {
-                this.appendValueInput('TYPE')
+                this.appendValueInput('PERIPHERAL')
                     .appendField('redirect');
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
@@ -46,7 +46,8 @@ export const terminalBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            return '';
+            const peripheral = block.getFieldValue('PERIPHERAL');
+            return `${gen.getIndent()}term.redirect(peripheral.find(${peripheral}))`;
         }
     },
     'term_read': {
@@ -60,7 +61,7 @@ export const terminalBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            return '';
+            return [`term.read()`, Order.ATOMIC];
         }
     },
     'term_clear': {

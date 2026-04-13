@@ -185,19 +185,19 @@ export function parseEventCode(code: string, screenName: string): string {
 
 export function wrapEvent(screen: string, event: string, meta: string, body: string): string {
   const ib = body.split('\n').map(l => '  ' + l).join('\n');
-  const eMeta = sanitize(escapeLuaString(meta));
+  const eMeta = escapeLuaString(meta);
   switch (event) {
-    case 'screen_load': return `screen.onceLoaded = function()\n${ib}\nend`;
-    case 'screen_update': return `screen.onUpdate = function()\n${ib}\nend`;
+    case 'screen_load': return `screen.events.onceLoaded = function()\n${ib}\nend`;
+    case 'screen_update': return `screen.events.onUpdate = function()\n${ib}\nend`;
     
-    case 'button_click': return `screen:getChild("${eMeta}").events["button_click"] = function(x, y)\n${ib}\nend`;
-    case 'button_focus': return `screen:getChild("${eMeta}").events["button_focus"] = function(x, y)\n${ib}\nend`;
-    case 'button_release': return `screen:getChild("${eMeta}").events["button_release"] = function(x, y)\n${ib}\nend`;
+    case 'button_click': return `screen:getChild("${sanitize(eMeta)}").events["button_click"] = function(x, y)\n${ib}\nend`;
+    case 'button_focus': return `screen:getChild("${sanitize(eMeta)}").events["button_focus"] = function(x, y)\n${ib}\nend`;
+    case 'button_release': return `screen:getChild("${sanitize(eMeta)}").events["button_release"] = function(x, y)\n${ib}\nend`;
 
-    case 'key_press': return `handlers["${screen}"].onKeyPress["${eMeta}"] = function(key)\n${ib}\nend`;
-    case 'timer': return `handlers["${screen}"].onTimer["t_${eMeta}"] = function(timerId)\n${ib}\nend`;
+    case 'key_press': return `screen.events.onKeyPress["${sanitize(eMeta)}"] = function(key)\n${ib}\nend`;
+    case 'timer': return `handlers["${screen}"].onTimer["t_${sanitize(eMeta)}"] = function(timerId)\n${ib}\nend`;
     case 'redstone': return `handlers["${screen}"].onRedstone = function()\n${ib}\nend`;
-    case 'modem_message': return `handlers["${screen}"].onModemMessage["ch_${eMeta}"] = function(side, ch, replyChannel, msg, dist)\n${ib}\nend`;
+    case 'modem_message': return `handlers["${screen}"].onModemMessage["ch_${sanitize(eMeta)}"] = function(side, ch, replyChannel, msg, dist)\n${ib}\nend`;
     default: return body;
   }
 }

@@ -92,7 +92,9 @@ export const peripheralBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            return '';
+            const peripheral = block.getFieldValue('PERIPHERAL');
+            const type = block.getFieldValue('TYPE');
+            return [`peripheral.hasType(peripheral.find(${peripheral}), "${type}")`, Order.ATOMIC];
         }
     },
     'peripheral_getName': {
@@ -106,7 +108,8 @@ export const peripheralBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            return '';
+            const peripheral = block.getFieldValue('PERIPHERAL');
+            return [`peripheral.getName(peripheral.find(${peripheral}))`, Order.ATOMIC];
         }
     },
     'peripheral_isPresent': {
