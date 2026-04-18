@@ -119,16 +119,16 @@ const App: React.FC = () => {
           if (selectedId && screenId) {
             const el = useUIElementStore.getState().getElementById(screenId, selectedId);
             if (el) {
-              const deletedElement = { ...el };
-              useUIElementStore.getState().removeElement(screenId, selectedId);
+              const deletedTree = useUIElementStore.getState().removeElement(screenId, selectedId);
+              if (deletedTree.length === 0) break;
               useEditorStore.getState().selectElement(null);
               useHistoryStore.getState().push({
                 id: generateId(),
                 description: `Delete ${el.name}`,
                 execute: () => { useUIElementStore.getState().removeElement(screenId, selectedId); useEditorStore.getState().selectElement(null); },
                 undo: () => {
-                  useUIElementStore.getState().addElement(screenId, deletedElement.type, deletedElement as any);
-                  useEditorStore.getState().selectElement(deletedElement.id);
+                  useUIElementStore.getState().restoreElements(screenId, deletedTree);
+                  useEditorStore.getState().selectElement(selectedId);
                 },
               });
             }
@@ -196,16 +196,16 @@ const App: React.FC = () => {
         if (selectedId && screenId) {
           const el = useUIElementStore.getState().getElementById(screenId, selectedId);
           if (el) {
-            const deletedElement = { ...el };
-            useUIElementStore.getState().removeElement(screenId, selectedId);
+            const deletedTree = useUIElementStore.getState().removeElement(screenId, selectedId);
+            if (deletedTree.length === 0) return;
             useEditorStore.getState().selectElement(null);
             useHistoryStore.getState().push({
               id: generateId(),
               description: `Delete ${el.name}`,
               execute: () => { useUIElementStore.getState().removeElement(screenId, selectedId); useEditorStore.getState().selectElement(null); },
               undo: () => {
-                useUIElementStore.getState().addElement(screenId, deletedElement.type, deletedElement as any);
-                useEditorStore.getState().selectElement(deletedElement.id);
+                useUIElementStore.getState().restoreElements(screenId, deletedTree);
+                useEditorStore.getState().selectElement(selectedId);
               },
             });
           }

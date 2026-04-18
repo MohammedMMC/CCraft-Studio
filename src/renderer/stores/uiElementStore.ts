@@ -5,7 +5,8 @@ import { generateId, generateElementName } from '../utils/idGenerator';
 
 interface UIElementState {
   addElement: (screenId: string, type: UIElementType, overrides?: Partial<UIElement>) => UIElement;
-  removeElement: (screenId: string, elementId: string) => void;
+  removeElement: (screenId: string, elementId: string) => UIElement[];
+  restoreElements: (screenId: string, elements: UIElement[]) => void;
   updateElement: (screenId: string, elementId: string, updates: Partial<UIElement>) => void;
   duplicateElement: (screenId: string, elementId: string) => UIElement | null;
   moveElement: (screenId: string, elementId: string, x: number, y: number) => void;
@@ -50,15 +51,63 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
 
   removeElement: (screenId, elementId) => {
     const projectStore = useProjectStore.getState();
-    if (!projectStore.project) return;
+    const screen = projectStore.project?.screens.find(s => s.id === screenId);
+    if (!projectStore.project || !screen) return [];
+
+    if (!screen.uiElements.some(e => e.id === elementId)) return [];
+
+    const childrenByParent = new Map<string, string[]>();
+    for (const el of screen.uiElements) {
+      if (!el.parentId) continue;
+      const arr = childrenByParent.get(el.parentId) || [];
+      arr.push(el.id);
+      childrenByParent.set(el.parentId, arr);
+    }
+
+    const idsToDelete = new Set<string>();
+    const stack: string[] = [elementId];
+
+    while (stack.length > 0) {
+      const currentId = stack.pop() as string;
+      if (idsToDelete.has(currentId)) continue;
+      idsToDelete.add(currentId);
+      const children = childrenByParent.get(currentId) || [];
+      stack.push(...children);
+    }
+
+    const deletedElements = screen.uiElements
+      .filter(e => idsToDelete.has(e.id))
+      .map(e => ({ ...e })) as UIElement[];
 
     const screens = projectStore.project.screens.map(s => {
       if (s.id !== screenId) return s;
       return {
         ...s,
-        uiElements: s.uiElements
-          .filter(e => e.id !== elementId)
-          .map(e => e.parentId === elementId ? { ...e, parentId: null } as UIElement : e),
+        uiElements: s.uiElements.filter(e => !idsToDelete.has(e.id)),
+      };
+    });
+
+    useProjectStore.setState((state) => ({
+      project: state.project ? { ...state.project, screens } : null,
+      isDirty: true,
+    }));
+
+    return deletedElements;
+  },
+
+  restoreElements: (screenId, elements) => {
+    const projectStore = useProjectStore.getState();
+    if (!projectStore.project || elements.length === 0) return;
+
+    const screens = projectStore.project.screens.map(s => {
+      if (s.id !== screenId) return s;
+      const existingIds = new Set(s.uiElements.map(e => e.id));
+      const toRestore = elements
+        .filter(e => !existingIds.has(e.id))
+        .map(e => ({ ...e })) as UIElement[];
+      return {
+        ...s,
+        uiElements: [...s.uiElements, ...toRestore],
       };
     });
 
@@ -94,35 +143,50 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
     const original = screen?.uiElements.find(e => e.id === elementId);
     if (!screen || !original) return null;
 
-    const existingNames = screen.uiElements.map(e => e.name);
-
-    const duplicate = {
-      ...original,
-      id: generateId(),
-      name: generateElementName(original.type, existingNames),
-      x: original.x + 2,
-      y: original.y + 1,
-      zIndex: 0,
-    } as UIElement;
-
-    const newElements: UIElement[] = [duplicate];
-
-    if (original.type === 'container' || original.type === 'panel') {
-      const children = screen.uiElements.filter(e => e.parentId === elementId);
-      for (const child of children) {
-        const allNames = [...existingNames, ...newElements.map(e => e.name)];
-        newElements.push({
-          ...child,
-          id: generateId(),
-          name: generateElementName(child.type, allNames),
-          parentId: duplicate.id,
-        } as UIElement);
-      }
+    const childrenByParent = new Map<string, UIElement[]>();
+    for (const el of screen.uiElements) {
+      if (!el.parentId) continue;
+      const arr = childrenByParent.get(el.parentId) || [];
+      arr.push(el);
+      childrenByParent.set(el.parentId, arr);
     }
 
-    const screens = projectStore.project!.screens.map(s => {
+    const usedNames = screen.uiElements.map(e => e.name);
+    const idMap = new Map<string, string>();
+    const clones: UIElement[] = [];
+    const queue: UIElement[] = [original];
+
+    while (queue.length > 0) {
+      const src = queue.shift() as UIElement;
+      const newId = generateId();
+      idMap.set(src.id, newId);
+
+      const mappedParentId =
+        src.id === original.id
+          ? src.parentId
+          : src.parentId
+            ? (idMap.get(src.parentId) ?? src.parentId)
+            : null;
+
+      const clone = {
+        ...src,
+        parentId: mappedParentId,
+        id: newId,
+        name: generateElementName(src.type, usedNames),
+        ...(src.id === original.id ? { x: src.x + 2, y: src.y + 1, zIndex: 0 } : {}),
+      } as UIElement;
+
+
+      clones.push(clone);
+      usedNames.push(clone.name);
+
+      const children = childrenByParent.get(src.id) || [];
+      queue.push(...children);
+    }
+
+    const screens = projectStore.project!.screens.map((s) => {
       if (s.id !== screenId) return s;
-      return { ...s, uiElements: [...s.uiElements, ...newElements] };
+      return { ...s, uiElements: [...s.uiElements, ...clones] };
     });
 
     useProjectStore.setState((state) => ({
@@ -130,7 +194,7 @@ export const useUIElementStore = create<UIElementState>((_set, _get) => ({
       isDirty: true,
     }));
 
-    return duplicate;
+    return clones[0] ?? null;
   },
 
   moveElement: (screenId, elementId, x, y) => {

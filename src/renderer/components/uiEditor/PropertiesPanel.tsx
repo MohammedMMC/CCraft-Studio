@@ -28,6 +28,7 @@ export const PropertiesPanel: React.FC = () => {
   const getElementById = useUIElementStore((s) => s.getElementById);
   const updateElement = useUIElementStore((s) => s.updateElement);
   const removeElement = useUIElementStore((s) => s.removeElement);
+  const restoreElements = useUIElementStore((s) => s.restoreElements);
   const duplicateElement = useUIElementStore((s) => s.duplicateElement);
   const selectElement = useEditorStore((s) => s.selectElement);
   const renameScreen = useProjectStore((s) => s.renameScreen);
@@ -83,16 +84,16 @@ export const PropertiesPanel: React.FC = () => {
   const handleDelete = () => {
     const sid = activeScreenId;
     const eid = selectedElementId;
-    const deletedElement = { ...element } as UIElement;
-    removeElement(sid, eid);
+    const deletedTree = removeElement(sid, eid);
+    if (deletedTree.length === 0) return;
     selectElement(null);
     useHistoryStore.getState().push({
       id: generateId(),
       description: `Delete ${element?.name}`,
       execute: () => { removeElement(sid, eid); selectElement(null); },
       undo: () => {
-        useUIElementStore.getState().addElement(sid, deletedElement.type, deletedElement);
-        selectElement(deletedElement.id);
+        restoreElements(sid, deletedTree);
+        selectElement(eid);
       },
     });
   };
