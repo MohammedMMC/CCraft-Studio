@@ -19,6 +19,7 @@ interface ProjectState {
 
   setActiveScreen: (screenId: string) => void;
   addScreen: (name: string) => string;
+  getNextScreenName: (screens: Screen[]) => string;
   removeScreen: (screenId: string) => void;
   renameScreen: (screenId: string, name: string) => void;
   changeProjectInfo: (newName: string | undefined, newAuthor: string | undefined, newDescription: string | undefined) => void;
@@ -101,6 +102,13 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       };
     });
     return id;
+  },
+
+  getNextScreenName: (screens: Screen[]) => {
+    const used = new Set(screens.map((s) => s.name.trim().toLowerCase()));
+    let i = 1;
+    while (used.has(("Screen " + i).toLowerCase())) i += 1;
+    return "Screen " + i;
   },
 
   removeScreen: (screenId) => set((state) => {

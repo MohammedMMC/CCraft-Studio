@@ -7,6 +7,7 @@ export const TabBar: React.FC = () => {
   const activeScreenId = useProjectStore((s) => s.activeScreenId);
   const setActiveScreen = useProjectStore((s) => s.setActiveScreen);
   const addScreen = useProjectStore((s) => s.addScreen);
+  const getNextScreenName = useProjectStore((s) => s.getNextScreenName);
   const removeScreen = useProjectStore((s) => s.removeScreen);
   const renameScreen = useProjectStore((s) => s.renameScreen);
   const setWorkingScreen = useProjectStore((s) => s.setWorkingScreen);
@@ -19,8 +20,7 @@ export const TabBar: React.FC = () => {
   if (!project) return null;
 
   const handleAddScreen = () => {
-    const name = `Screen ${project.screens.length + 1}`;
-    addScreen(name);
+    addScreen(getNextScreenName(project.screens));
   };
 
   const handleStartRename = (screenId: string, currentName: string) => {

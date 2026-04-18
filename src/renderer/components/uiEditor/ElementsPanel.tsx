@@ -6,6 +6,7 @@ import { useHistoryStore } from '../../stores/historyStore';
 import { UIElement, UI_ELEMENT_LABELS } from '../../models/UIElement';
 import { generateId } from '../../utils/idGenerator';
 import { MonitorIcon, ElementIcons } from '../shared/Icons';
+import { sanitize } from '@/utils/luaHelpers';
 
 interface DropIndicator {
   parentId: string | null;
@@ -25,7 +26,8 @@ export const ElementsPanel: React.FC = () => {
   const [nestTargetId, setNestTargetId] = useState<string | null>(null);
 
   const screen = project?.screens.find((s) => s.id === activeScreenId);
-  if (!screen) return null;
+  if (!project || !screen) return null;
+  const isScreenNameInvalid =  project.screens.filter((s) => sanitize(s.name) === sanitize(screen.name)).length > 1;
 
   const elements = screen.uiElements;
 
@@ -227,6 +229,8 @@ export const ElementsPanel: React.FC = () => {
     const isDragged = draggedId === el.id;
     const idx = siblings.indexOf(el);
 
+    const isInvalidName = screen.uiElements.filter((ch) => sanitize(ch.name) === sanitize(el.name)).length > 1;
+
     return (
       <React.Fragment key={el.id}>
         {renderDropLine(el.parentId, idx, depth)}
@@ -240,12 +244,13 @@ export const ElementsPanel: React.FC = () => {
             ${isSelected ? 'bg-app-accent/20 text-app-accent' : 'hover:bg-app-bg-hover text-app-text'}
             ${isNestTarget ? 'ring-1 ring-app-accent ring-inset bg-app-accent/10' : ''}
             ${isDragged ? 'opacity-40' : ''}
+            ${isInvalidName ? 'bg-app-warning/20 text-app-warning' : ''}
           `}
           style={{ paddingLeft: 8 + depth * 16 }}
           onClick={() => selectElement(el.id)}
         >
           <span
-            className={`w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold flex-shrink-0 ${isSelected ? 'bg-app-accent text-app-bg' : 'bg-app-bg-hover text-app-text-dim'}`}
+            className={`w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold flex-shrink-0 ${isSelected ? 'text-app-bg bg-app-' + (isInvalidName ? 'warning' : 'accent') : 'bg-app-bg-hover text-app-text-dim'}`}
           >
             {/* {meta.icon} */}
             <ElementIcons name={el.type} />
@@ -287,12 +292,13 @@ export const ElementsPanel: React.FC = () => {
           <div
             className={`flex items-center gap-2 px-2 py-1.5 rounded text-left text-xs transition-colors cursor-grab
             ${screen.id === selectedElementId ? 'bg-app-accent/20 text-app-accent' : 'hover:bg-app-bg-hover text-app-text'}
+            ${isScreenNameInvalid ? 'bg-app-warning/20 text-app-warning' : ''}
           `}
             style={{ paddingLeft: 8 }}
             onClick={() => selectElement(screen.id)}
           >
             <span
-              className={`w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold flex-shrink-0 ${screen.id === selectedElementId ? 'bg-app-accent text-app-bg' : 'bg-app-bg-hover text-app-text-dim'
+              className={`w-5 h-5 flex items-center justify-center rounded text-[10px] font-bold flex-shrink-0 ${screen.id === selectedElementId ? 'text-app-bg bg-app-' + (isScreenNameInvalid ? 'warning' : 'accent') : 'bg-app-bg-hover text-app-text-dim'
                 }`}
             >
               <MonitorIcon />
