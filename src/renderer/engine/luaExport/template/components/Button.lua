@@ -27,7 +27,7 @@ end
 function Button:onReleaseEvent(x, y)
     self.isFocused = false
 
-    if self.events["released"] then
+    if self:checkTouch(x, y) and self.events["released"] then
         self.events["released"](x, y)
     end
 end

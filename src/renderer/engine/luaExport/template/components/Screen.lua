@@ -83,6 +83,22 @@ function Screen:addDrawOrder(child)
     table.insert(self.drawOrder, child)
 end
 
+function Screen:getTopTouchedElement(x, y)
+    local children = self.children
+
+    table.sort(children, function(a, b)
+        return a.zIndex > b.zIndex
+    end)
+
+    for _, comp in pairs(children) do
+        if comp.checkTouch and comp:checkTouch(x, y) then
+            return comp
+        end
+    end
+
+    return nil
+end
+
 function Screen:draw()
     self.monitor.setBackgroundColor(self.bgColor)
     for j = 0, self.height - 1 do

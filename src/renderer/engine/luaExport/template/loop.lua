@@ -38,7 +38,7 @@ while running do
                 screen.events.onKeyPress[p1]()
             end
         end
-        
+
         if event == "mouse_click" or event == "monitor_touch" then
             isTouching = event ~= "monitor_touch"
 
@@ -48,44 +48,43 @@ while running do
                     comp.isFocused = false
                     drawScreens()
                 end
+            end
 
-                if comp.checkTouch then
-                    if comp:checkTouch(p2, p3) then
-                        if comp.onClickEvent then
-                            comp:onClickEvent(p2, p3)
-                            drawScreens()
-                        end
-                        if isMonitor and comp.onDragEvent then
-                            comp:onDragEvent(p2, p3)
-                            drawScreens()
-                        end
-                        if isMonitor and comp.onReleaseEvent then
-                            os.sleep(0.2)
-                            comp:onReleaseEvent(p2, p3)
-                            drawScreens()
-                        end
-                    end
+            local touchedElement = screen:getTopTouchedElement(p2, p3)
+            if touchedElement then
+                if touchedElement.onClickEvent then
+                    touchedElement:onClickEvent(p2, p3)
+                    drawScreens()
+                end
+                if isMonitor and touchedElement.onDragEvent then
+                    touchedElement:onDragEvent(p2, p3)
+                    drawScreens()
+                end
+                if isMonitor and touchedElement.onReleaseEvent then
+                    os.sleep(0.2)
+                    touchedElement:onReleaseEvent(p2, p3)
+                    drawScreens()
                 end
             end
         elseif event == "mouse_drag" and isTouching then
             if isTouching then
-                for _, comp in pairs(screen.children) do
-                    if comp.checkTouch and comp.onDragEvent then
-                        if comp:checkTouch(p2, p3) then
-                            comp:onDragEvent(p2, p3)
-                            drawScreens()
-                        end
-                    end
+                local touchedElement = screen:getTopTouchedElement(p2, p3)
+                if touchedElement and touchedElement.onDragEvent then
+                    touchedElement:onDragEvent(p2, p3)
+                    drawScreens()
                 end
             end
         elseif event == "mouse_up" then
             isTouching = false
 
+            -- local touchedElement = screen:getTopTouchedElement(p2, p3)
+            -- if touchedElement and touchedElement.onReleaseEvent then
+            --     touchedElement:onReleaseEvent(p2, p3)
+            --     drawScreens()
+            -- end
             for _, comp in pairs(screen.children) do
                 if comp.onReleaseEvent then comp:onReleaseEvent(p2, p3) end
             end
-
-            drawScreens()
         elseif event == "key" then
             for _, comp in pairs(screen.children) do
                 if comp.isFocused and comp.onkeyEvent then
