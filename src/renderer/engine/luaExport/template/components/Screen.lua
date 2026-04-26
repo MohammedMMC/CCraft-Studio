@@ -84,15 +84,51 @@ function Screen:addDrawOrder(child)
 end
 
 function Screen:getTopTouchedElement(x, y)
-    local children = self.children
+    local function getSortedChildren(children)
+        local sorted = {}
+        for i, child in ipairs(children or {}) do
+            sorted[i] = child
+        end
 
-    table.sort(children, function(a, b)
-        return a.zIndex > b.zIndex
-    end)
+        table.sort(sorted, function(a, b)
+            return (a.zIndex or 0) > (b.zIndex or 0)
+        end)
 
-    for _, comp in pairs(children) do
-        if comp.checkTouch and comp:checkTouch(x, y) then
-            return comp
+        return sorted
+    end
+
+    local function findTouched(comp)
+        if not comp or not comp.checkTouch or not comp:checkTouch(x, y) then
+            return nil
+        end
+
+        local children = getSortedChildren(comp.children)
+        for _, child in ipairs(children) do
+            local touched = findTouched(child)
+            if touched then
+                return touched
+            end
+        end
+
+        return comp
+    end
+
+    if self.drawOrder and #self.drawOrder > 0 then
+        for i = #self.drawOrder, 1, -1 do
+            local comp = self:getChild(self.drawOrder[i])
+            local touched = findTouched(comp)
+            if touched then
+                return touched
+            end
+        end
+        return nil
+    end
+
+    local topLevel = getSortedChildren(self.children)
+    for _, comp in ipairs(topLevel) do
+        local touched = findTouched(comp)
+        if touched then
+            return touched
         end
     end
 
