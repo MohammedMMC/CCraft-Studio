@@ -75,7 +75,7 @@ export function setupCraftPCIPC(): void {
     });
 
     ipcMain.handle('craftpc:start', async (_event, execPath: string, isRemote: boolean = false) => {
-        if (proc) return;
+        if (proc || !execPath) return;
         let remoteId: string = "";
 
         if (isRemote) {
@@ -198,22 +198,17 @@ export function setupCraftPCIPC(): void {
 
             const dir = path.join(data.path, "computer", String(data.computerId), data.projectName);
 
-            await new Promise((resolve, reject) => {
-                if (fs.existsSync(dir)) {
-                    fs.rm(dir, { recursive: true }, (err) => {
-                        if (err) reject(err);
-                        fs.mkdir(dir, { recursive: true }, (err) => {
-                            if (err) reject(err);
-                            else resolve(undefined);
-                        });
-                    });
-                } else {
-                    fs.mkdir(dir, { recursive: true }, (err) => {
-                        if (err) reject(err);
-                        else resolve(undefined);
-                    });
+            if (fs.existsSync(dir)) {
+                try {
+                    await fs.promises.rm(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+                } catch (err: any) {
+                    if (!['EBUSY', 'EPERM', 'ENOTEMPTY'].includes(err?.code)) {
+                        throw err;
+                    }
                 }
-            });
+            }
+            await fs.promises.mkdir(dir, { recursive: true });
+            
 
             for (const file of data.files) {
                 const fullPath = path.join(dir, file.path);

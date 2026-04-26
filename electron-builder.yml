@@ -16,3 +16,5 @@ mac:
 linux:
   target: AppImage
   icon: assets/icons/icon.png
+  maintainer: Mohamed Mahmodi <contact@moma.dev>
+  category: Utility
