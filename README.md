@@ -2,6 +2,8 @@
 
 This is an open-source project. It’s a studio app for people playing the CC: Tweaked Minecraft mod.
 
+**Our Website:** [https://ccraft.studio](https://ccraft.studio)
+
 A lot of players (including younger ones) want to create their own programs in the mod, but they give up because Lua programming feels too difficult or overwhelming. That’s the main problem we’re trying to solve.
 
 With **CCraft Studio**, instead of coding, users can:
