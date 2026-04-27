@@ -67,7 +67,6 @@ export function generateUICode(
   const safeName = sanitize(screenName);
   const posMap = buildPositionMap(elements, displayWidth, displayHeight);
   const lines: string[] = [];
-  const i = indent(1);
 
   const monitorSize = getMonitorSize(`${screen?.monitorsHeightSize}x${screen?.monitorsWidthSize}`);
   lines.push(`local screen = Screen:new("${safeName}", { 

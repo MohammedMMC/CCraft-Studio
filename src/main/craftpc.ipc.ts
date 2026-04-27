@@ -177,7 +177,7 @@ export function setupCraftPCIPC(): void {
     ipcMain.handle('craftpc:exportProject', async (_event, data: { files: { path: string; content: string }[], path: string, isRemote: boolean, windowId: number, computerId: number, projectName: string }) => {
         if (data.isRemote) {
             if (!proc || !proc.stdin) throw new Error("CraftOS-PC process is not running");
-
+            
             await new Promise((resolve, reject) => {
                 proc!.stdin!.write(craftpcHelpers.buildDeletePacket(data.windowId, 0, data.projectName), (err) => {
                     if (err) reject(err);
@@ -186,10 +186,23 @@ export function setupCraftPCIPC(): void {
             });
 
             for (const file of data.files) {
-                console.log(await new Promise((resolve, reject) => {
-                    proc!.stdin!.write(craftpcHelpers.buildFileWritePackets(data.windowId, 0, file.path, file.content, { encoding: 'utf-8' }).requestPacket,
+                const { requestPacket, dataPacket } = craftpcHelpers.buildFileWritePackets(
+                    data.windowId,
+                    0,
+                    path.posix.join(data.projectName, file.path),
+                    file.content,
+                    { encoding: 'utf-8' }
+                );
+
+                await new Promise((resolve, reject) => {
+                    proc!.stdin!.write(requestPacket,
                         (err) => err ? reject(err) : resolve(undefined));
-                }));
+                });
+
+                await new Promise((resolve, reject) => {
+                    proc!.stdin!.write(dataPacket,
+                        (err) => err ? reject(err) : resolve(undefined));
+                });
             }
 
             return data.projectName;

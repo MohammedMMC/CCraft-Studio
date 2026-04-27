@@ -170,7 +170,7 @@ export const CraftPCPanel: React.FC = () => {
       window.electronAPI.craftpc.exportProject({
         files: files.map(f => ({ path: f.path, content: f.content })),
         path: craftPCDataPath || "",
-        isRemote: false,
+        isRemote: currentSessionType == "remote",
         computerId: computerId.current,
         projectName: project?.name || "CCProject",
         windowId: windowId.current
