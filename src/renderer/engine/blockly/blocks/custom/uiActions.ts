@@ -68,14 +68,8 @@ export const uiActionsBlocks: Block = {
             const el = block.getFieldValue('ELEMENT');
             const prop = block.getFieldValue('PROP');
             const value = gen.valueToCode(block, 'VALUE', Order.NONE);
-            const lines = [
-                `${gen.getIndent()}    if screen:getChild("${el}").set${prop.charAt(0).toUpperCase() + prop.slice(1)} then`,
-                `${gen.getIndent()}        screen:getChild("${el}"):set${prop.charAt(0).toUpperCase() + prop.slice(1)}(${value})`,
-                `${gen.getIndent()}    else`,
-                `${gen.getIndent()}        screen:getChild("${el}").${prop} = ${value}`,
-                `${gen.getIndent()}    end`
-            ];
-            return lines.join('\n');
+
+            return [`screen:childSetProp("${el}", "${prop}", ${value})`, Order.ATOMIC];
         }
     },
     'ui_get_prop': {

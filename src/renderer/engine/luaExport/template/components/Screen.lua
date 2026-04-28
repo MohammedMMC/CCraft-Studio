@@ -79,6 +79,19 @@ function Screen.cPrint(monitor, textArr, width, textAlign)
     end
 end
 
+function Screen:childSetProp(childname, prop, value)
+    local child = self:getChild(childname)
+    if child then
+        local methodName = "set" .. prop:gsub("^%l", string.upper)
+
+        if child[methodName] and type(child[methodName]) == "function" then
+            child[methodName](child, value)
+        else
+            child[prop] = value
+        end
+    end
+end
+
 function Screen:addDrawOrder(child)
     table.insert(self.drawOrder, child)
 end
