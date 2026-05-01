@@ -2,6 +2,10 @@ import { ipcMain, dialog } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import keytar from "keytar";
+
+export const WEBSITE_URL = 'https://ccraft.studio';
+export const API_URL = 'https://ccraft.studio/api';
 
 export const DEFAULT_DOCS_DIR = path.join(os.homedir(), 'Documents', 'CCraft-Studio');
 export const APP_DATA_DIR = path.join(process.env.APPDATA || process.env.HOME || '', '.ccraft-studio');
@@ -108,5 +112,38 @@ export function setupIPC(): void {
     recent = recent.slice(0, 10);
     fs.writeFileSync(APP_RECENT_FILE, JSON.stringify(recent, null, 2), 'utf-8');
     return recent;
+  });
+
+  ipcMain.handle('api:checkToken', async (_event, token: string, current: boolean) => {
+    if (current) {
+      const storedToken = await keytar.getPassword("CCraftStudio", "token");
+      
+      if (storedToken) {
+        token = storedToken;
+      } else {
+        return { valid: false };
+      }
+    }
+    
+    try {
+      const response = await fetch(`${API_URL}/checkToken`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const result = await response.json().catch(() => ({ error: 'Invalid JSON' }));
+
+      if (result.error || response.status !== 200) return { valid: false };
+
+      return { valid: true, userId: result?.id, firstName: result?.firstName };
+    } catch (error) {
+      console.error('Error checking token:', error);
+      return { valid: false };
+    }
+  });
+
+  ipcMain.handle('secret:setToken', async (_event, token: string) => {
+    await keytar.setPassword("CCraftStudio", "token", token);
   });
 }

@@ -50,6 +50,12 @@ export const CraftOSPCIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+export const CloudIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="16" height="16" className={className || "fill-app-text-dim"}>
+    <path d="M32 400C32 479.5 96.5 544 176 544L480 544C550.7 544 608 486.7 608 416C608 364.4 577.5 319.9 533.5 299.7C540.2 286.6 544 271.7 544 256C544 203 501 160 448 160C430.3 160 413.8 164.8 399.6 173.1C375.5 127.3 327.4 96 272 96C192.5 96 128 160.5 128 240C128 248 128.7 255.9 129.9 263.5C73 282.7 32 336.6 32 400z" />
+  </svg>
+);
+
 export const CraftOSPCIcons: React.FC<{ name: 'folder' | 'remote' | 'reload' | 'monitor' | 'computer', size?: number | string, className?: string }> = ({ name, size = 16, className }) => {
   return ({
     folder: () => (

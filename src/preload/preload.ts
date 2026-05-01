@@ -44,6 +44,13 @@ const electronAPI = {
       ipcRenderer.removeAllListeners('craftpc:exit');
     }
   },
+
+  api: {
+    checkToken: (token: string, current: boolean = false): Promise<{ valid: boolean; userId?: string; firstName?: string }> => ipcRenderer.invoke('api:checkToken', token, current),
+  },
+  secret: {
+    setToken: (token: string): Promise<void> => ipcRenderer.invoke('secret:setToken', token),
+  }
 };
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI);
