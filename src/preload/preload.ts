@@ -46,6 +46,7 @@ const electronAPI = {
   },
 
   api: {
+    uploadTempProject: (data: { buffer: ArrayBuffer }): Promise<string | null> => ipcRenderer.invoke('api:uploadTempProject', data),
     checkToken: (token: string, current: boolean = false): Promise<{ valid: boolean; userId?: string; firstName?: string }> => ipcRenderer.invoke('api:checkToken', token, current),
   },
   secret: {

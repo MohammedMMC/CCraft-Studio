@@ -31,6 +31,16 @@ export const useAppStore = create<AppStore>((set, get) => ({
                 get().saveApp();
             });
         }
+
+        if (get().cloudEnabled) {
+            window.electronAPI.api.checkToken("", true).then(result => {
+                if (result.valid) {
+                    set({ cloudEnabled: true });
+                } else {
+                    set({ cloudEnabled: false });
+                }
+            });
+        }
     },
 
     saveApp: () => {

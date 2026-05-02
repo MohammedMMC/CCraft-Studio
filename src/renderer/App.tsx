@@ -12,6 +12,7 @@ import { ExportDialog } from './components/shared/ExportDialog';
 import { PromptDialog } from './components/shared/PromptDialog';
 import { SettingsDialog } from './components/shared/SettingsDialog';
 import { useAppStore } from './stores/appStore';
+import { UploadTempDialog } from './components/shared/UploadTempDialog';
 
 const flushBlocklyWorkspace = () => {
   try {
@@ -77,6 +78,7 @@ const App: React.FC = () => {
   const project = useProjectStore((s) => s.project);
   const [showNewProject, setShowNewProject] = useState(false);
   const [showExport, setShowExport] = useState(false);
+  const [showUploadTemp, setShowUploadTemp] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
   // Load App Data on Startup
@@ -235,7 +237,7 @@ const App: React.FC = () => {
 
   return (
     <>
-      <AppShell onExport={() => setShowExport(true)} />
+      <AppShell onExport={() => setShowExport(true)} onUploadTemp={() => setShowUploadTemp(true)} />
       <NewProjectWizard
         isOpen={showNewProject}
         onClose={() => setShowNewProject(false)}
@@ -243,6 +245,10 @@ const App: React.FC = () => {
       <ExportDialog
         isOpen={showExport}
         onClose={() => setShowExport(false)}
+      />
+      <UploadTempDialog
+        isOpen={showUploadTemp}
+        onClose={() => setShowUploadTemp(false)}
       />
       <SettingsDialog
         isOpen={showSettings}

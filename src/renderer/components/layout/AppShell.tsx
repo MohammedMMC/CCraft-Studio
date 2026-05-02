@@ -14,9 +14,10 @@ import { PanelDiv } from '../shared/PanelDiv';
 
 interface AppShellProps {
   onExport: () => void;
+  onUploadTemp: () => void;
 }
 
-export const AppShell: React.FC<AppShellProps> = ({ onExport }) => {
+export const AppShell: React.FC<AppShellProps> = ({ onExport, onUploadTemp }) => {
   const mode = useEditorStore((s) => s.mode);
   const showCraftPC = useEditorStore(s => s.showCraftPC);
   const useCraftOSPC = useAppStore((s) => s.useCraftOSPC);
@@ -28,7 +29,7 @@ export const AppShell: React.FC<AppShellProps> = ({ onExport }) => {
 
   return (
     <div className="flex flex-col w-full h-full">
-      <Toolbar onExport={onExport} />
+      <Toolbar onExport={onExport} onUploadTemp={onUploadTemp} />
       <TabBar />
 
       <div className="flex flex-1 overflow-hidden">

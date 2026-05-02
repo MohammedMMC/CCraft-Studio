@@ -182,7 +182,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
         </div>
 
         {/* Actions */}
-        <div className="flex justify-between pt-2 border-t border-app-border">
+        <div className="flex justify-between pt-4 border-t border-app-border">
           <button onClick={handlePreview} className="btn-secondary text-xs">
             Preview Code
           </button>

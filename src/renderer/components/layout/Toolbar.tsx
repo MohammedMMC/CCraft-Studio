@@ -8,7 +8,7 @@ import { CustomMonitorDialog } from '../shared/CustomMonitorDialog';
 import { CraftOSPCIcon, GridIcon, MonitorIcon, RedoIcon, UndoIcon } from '../shared/Icons';
 import { useAppStore } from '@/stores/appStore';
 
-export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
+export const Toolbar: React.FC<{ onExport: () => void; onUploadTemp: () => void }> = ({ onExport, onUploadTemp }) => {
   const project = useProjectStore(s => s.project);
   const isDirty = useProjectStore(s => s.isDirty);
   const mode = useEditorStore(s => s.mode);
@@ -22,12 +22,14 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
   const zoomOut = useEditorStore(s => s.zoomOut);
   const resetZoom = useEditorStore(s => s.resetZoom);
   const useCraftOSPC = useAppStore(s => s.useCraftOSPC);
+  const cloudEnabled = useAppStore(e => e.cloudEnabled);
   const canUndo = useHistoryStore(s => s.undoStack.length > 0);
   const canRedo = useHistoryStore(s => s.redoStack.length > 0);
   const undo = useHistoryStore(s => s.undo);
   const redo = useHistoryStore(s => s.redo);
   const updateProjectInfo = useProjectStore(s => s.updateProjectInfo);
   const [showCustomMonitor, setShowCustomMonitor] = useState<boolean>(false);
+
 
   const screenSizeValue = useMemo(() => {
     if (!project) return '';
@@ -233,6 +235,12 @@ export const Toolbar: React.FC<{ onExport: () => void }> = ({ onExport }) => {
       <button onClick={onExport} className="btn-primary text-xs px-3 py-1">
         Export
       </button>
+
+      {cloudEnabled && (
+        <button onClick={onUploadTemp} className="btn-primary text-xs px-3 py-1">
+          Upload Temp
+        </button>
+      )}
     </div>
   );
 };
