@@ -410,8 +410,8 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
       contents: [
         { kind: 'block', type: 'peripheral_wrap' },
         { kind: 'block', type: 'peripheral_find', inputs: { TYPE: { block: { type: 'text', fields: { TEXT: 'monitor' } } } } },
-        { kind: 'block', type: 'peripheral_isPresent' },
-        { kind: 'block', type: 'peripheral_getType' },
+        { kind: 'block', type: 'peripheral_isPresent', inputs: { PERIPHERAL: { block: { type: 'text', fields: { TEXT: 'monitor' } } } } },
+        { kind: 'block', type: 'peripheral_getType', inputs: { PERIPHERAL: { block: { type: 'text', fields: { TEXT: 'monitor' } } } } },
         { kind: 'block', type: 'peripheral_hasType', inputs: { TYPE: { block: { type: 'text', fields: { TEXT: 'monitor' } } } } },
         { kind: 'block', type: 'peripheral_getNames' },
         { kind: 'block', type: 'peripheral_getName' },

@@ -1,17 +1,15 @@
 import * as Blockly from 'blockly';
 import { Block } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
-import { SIDES } from '../../ccBlocks';
 
 export const peripheralBlocks: Block = {
     'peripheral_call': {
         block: {
             init() {
-                this.appendDummyInput()
+                this.appendValueInput("PERIPHERAL").setCheck('String')
                     .appendField('call')
                     .appendField(new Blockly.FieldTextInput('methodName'), 'METHOD')
-                    .appendField('on')
-                    .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
+                    .appendField('on');
                 this.appendValueInput('ARGS').setCheck(null)
                     .setAlign(Blockly.inputs.Align.RIGHT)
                     .appendField('peripheral');
@@ -22,29 +20,29 @@ export const peripheralBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            const side = block.getFieldValue('SIDE');
+            const peripheral = block.getFieldValue('PERIPHERAL');
             const method = block.getFieldValue('METHOD');
             const args = gen.valueToCode(block, 'ARGS', Order.NONE);
+
             if (args && args !== 'nil') {
-                return `${gen.getIndent()}peripheral.call("${side}", "${method}", ${args})`;
+                return `${gen.getIndent()}peripheral.call(${peripheral}, "${method}", ${args})`;
             }
-            return `${gen.getIndent()}peripheral.call("${side}", "${method}")`;
+            return `${gen.getIndent()}peripheral.call(${peripheral}, "${method}")`;
         }
     },
     'peripheral_wrap': {
         block: {
             init() {
-                this.appendDummyInput()
-                    .appendField('wrap peripheral')
-                    .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
-                this.setOutput(true, null);
+                this.appendValueInput("PERIPHERAL").setCheck('String')
+                    .appendField('wrap peripheral');
+                this.setOutput(true, ["Table", "Null"]);
                 this.setStyle('peripheral_blocks');
-                this.setTooltip('Wrap a peripheral on a side as an object');
+                this.setTooltip('Get a table containing all functions available on a peripheral.');
             },
         },
         generator: (block, gen) => {
-            const side = block.getFieldValue('SIDE');
-            return [`peripheral.wrap("${side}")`, Order.ATOMIC];
+            const peripheral = block.getFieldValue('PERIPHERAL');
+            return [`peripheral.wrap("${peripheral}")`, Order.ATOMIC];
         }
     },
     'peripheral_find': {
@@ -52,9 +50,9 @@ export const peripheralBlocks: Block = {
             init() {
                 this.appendValueInput('TYPE').setCheck('String')
                     .appendField('find peripheral');
-                this.setOutput(true, null);
+                this.setOutput(true, "Table");
                 this.setStyle('peripheral_blocks');
-                this.setTooltip('Find the first connected peripheral of a given type');
+                this.setTooltip('Find all peripherals of a specific type');
             },
         },
         generator: (block, gen) => {
@@ -65,23 +63,24 @@ export const peripheralBlocks: Block = {
     'peripheral_getType': {
         block: {
             init() {
-                this.appendDummyInput()
-                    .appendField('type of peripheral')
-                    .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
-                this.setOutput(true, 'String');
+                this.appendValueInput('PERIPHERAL').setCheck(["String", "Table"])
+                    .appendField('type of peripheral');
+                this.setOutput(true, ['String', 'Null']);
                 this.setStyle('peripheral_blocks');
-                this.setTooltip('Get the type name of the peripheral on a side');
+                this.setTooltip('Get the type name of the peripheral');
             },
         },
         generator: (block, gen) => {
-            const side = block.getFieldValue('SIDE');
-            return [`peripheral.getType("${side}")`, Order.ATOMIC];
+            const peripheral = block.getFieldValue('PERIPHERAL');
+            const isString = block.getInput('PERIPHERAL')?.connection?.targetConnection?.getCheck()?.includes('String');
+            
+            return [`peripheral.getType(${isString ? `"${peripheral}"` : peripheral})`, Order.ATOMIC];
         }
     },
     'peripheral_hasType': {
         block: {
             init() {
-                this.appendValueInput('PERIPHERAL').setCheck(null)
+                this.appendValueInput('PERIPHERAL').setCheck(["String", "Table"])
                     .appendField('peripheral');
                 this.appendValueInput('TYPE').setCheck('String')
                     .setAlign(Blockly.inputs.Align.RIGHT)
@@ -94,13 +93,14 @@ export const peripheralBlocks: Block = {
         generator: (block, gen) => {
             const peripheral = block.getFieldValue('PERIPHERAL');
             const type = block.getFieldValue('TYPE');
-            return [`peripheral.hasType(peripheral.find(${peripheral}), "${type}")`, Order.ATOMIC];
+            const isString = block.getInput('PERIPHERAL')?.connection?.targetConnection?.getCheck()?.includes('String');
+            return [`peripheral.hasType(${isString ? `"${peripheral}"` : peripheral}, "${type}")`, Order.ATOMIC];
         }
     },
     'peripheral_getName': {
         block: {
             init() {
-                this.appendValueInput('PERIPHERAL').setCheck(null)
+                this.appendValueInput('PERIPHERAL').setCheck("Table")
                     .appendField('name of peripheral');
                 this.setOutput(true, 'String');
                 this.setStyle('peripheral_blocks');
@@ -109,40 +109,37 @@ export const peripheralBlocks: Block = {
         },
         generator: (block, gen) => {
             const peripheral = block.getFieldValue('PERIPHERAL');
-            return [`peripheral.getName(peripheral.find(${peripheral}))`, Order.ATOMIC];
+            return [`peripheral.getName(${peripheral})`, Order.ATOMIC];
         }
     },
     'peripheral_isPresent': {
         block: {
             init() {
-                this.appendDummyInput()
-                    .appendField('peripheral on')
-                    .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
-                    .appendField('exists?');
+                this.appendValueInput('PERIPHERAL').setCheck("String")
+                    .appendField('peripheral exists?')
                 this.setOutput(true, 'Boolean');
                 this.setStyle('peripheral_blocks');
-                this.setTooltip('Check if a peripheral is connected on a side');
+                this.setTooltip('Determines if a peripheral is present with the given name');
             },
         },
         generator: (block, gen) => {
-            const side = block.getFieldValue('SIDE');
-            return [`peripheral.isPresent("${side}")`, Order.ATOMIC];
+            const peripheral = block.getFieldValue('PERIPHERAL');
+            return [`peripheral.isPresent("${peripheral}")`, Order.ATOMIC];
         }
     },
     'peripheral_getMethods': {
         block: {
             init() {
-                this.appendDummyInput()
-                    .appendField('methods of')
-                    .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
+                this.appendValueInput('PERIPHERAL').setCheck("Table")
+                    .appendField('methods of');
                 this.setOutput(true, 'Array');
                 this.setStyle('peripheral_blocks');
                 this.setTooltip('Get a list of methods available on a peripheral');
             },
         },
         generator: (block, gen) => {
-            const side = block.getFieldValue('SIDE');
-            return [`peripheral.getMethods("${side}")`, Order.ATOMIC];
+            const peripheral = block.getFieldValue('PERIPHERAL');
+            return [`peripheral.getMethods("${peripheral}")`, Order.ATOMIC];
         }
     },
     'peripheral_getNames': {
