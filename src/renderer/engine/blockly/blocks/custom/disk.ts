@@ -7,9 +7,8 @@ export const diskBlocks: Block = {
     'disk_eject': {
         block: {
             init() {
-                this.appendDummyInput()
-                    .appendField('eject disk')
-                    .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
+                this.appendValueInput('DISK').setCheck('String')
+                    .appendField('eject disk');
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
                 this.setStyle('disk_blocks');
@@ -17,16 +16,16 @@ export const diskBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            const side = block.getFieldValue('SIDE');
-            return `${gen.getIndent()}disk.eject("${side}")`;
+            const disk = gen.valueToCode(block, 'DISK', Order.NONE);
+            return `${gen.getIndent()}disk.eject(${disk})`;
         }
     },
     'disk_setLabel': {
         block: {
             init() {
-                this.appendValueInput('LABEL').setCheck('String')
-                    .appendField('set disk')
-                    .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
+                this.appendValueInput('DISK').setCheck('String')
+                    .appendField('set disk');
+                this.appendValueInput('LABEL').setCheck(['String', 'Null'])
                     .appendField('label to');
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
@@ -36,94 +35,84 @@ export const diskBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            const side = block.getFieldValue('SIDE');
+            const disk = gen.valueToCode(block, 'DISK', Order.NONE);
             const label = gen.valueToCode(block, 'LABEL', Order.NONE);
-            return `${gen.getIndent()}disk.setLabel("${side}", ${label})`;
+            return `${gen.getIndent()}disk.setLabel(${disk}, ${label})`;
         }
     },
     'disk_isPresent': {
         block: {
             init() {
-                this.appendDummyInput()
-                    .appendField('disk in')
-                    .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
-                    .appendField('?');
+                this.appendValueInput('DISK').setCheck('String')
+                    .appendField('is disk present?');
                 this.setOutput(true, 'Boolean');
                 this.setStyle('disk_blocks');
-                this.setTooltip('Check if a disk is present in the drive on the given side');
+                this.setTooltip('Checks whether any item at all is in the disk drive');
             },
         },
         generator: (block, gen) => {
-            const side = block.getFieldValue('SIDE');
-            return [`disk.isPresent("${side}")`, Order.ATOMIC];
+            const disk = gen.valueToCode(block, 'DISK', Order.NONE);
+            return [`disk.isPresent(${disk})`, Order.ATOMIC];
         }
     },
     'disk_hasData': {
         block: {
             init() {
-                this.appendDummyInput()
-                    .appendField('disk')
-                    .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
-                    .appendField('has data?');
+                this.appendValueInput('DISK').setCheck('String')
+                    .appendField('disk has data?')
                 this.setOutput(true, 'Boolean');
                 this.setStyle('disk_blocks');
-                this.setTooltip('Check if a disk has data (is a floppy disk)');
+                this.setTooltip('Check whether the current disk provides a mount');
             },
         },
         generator: (block, gen) => {
-            const side = block.getFieldValue('SIDE');
-            return [`disk.hasData("${side}")`, Order.ATOMIC];
+            const disk = gen.valueToCode(block, 'DISK', Order.NONE);
+            return [`disk.hasData(${disk})`, Order.ATOMIC];
         }
     },
     'disk_hasAudio': {
         block: {
             init() {
-                this.appendDummyInput()
-                    .appendField('disk')
-                    .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
-                    .appendField('has audio?');
+                this.appendValueInput('DISK').setCheck('String')
+                    .appendField('disk has audio?')
                 this.setOutput(true, 'Boolean');
                 this.setStyle('disk_blocks');
                 this.setTooltip('Check if a disk is a music disc');
             },
         },
         generator: (block, gen) => {
-            const side = block.getFieldValue('SIDE');
-            return [`disk.hasAudio("${side}")`, Order.ATOMIC];
+            const disk = gen.valueToCode(block, 'DISK', Order.NONE);
+            return [`disk.hasAudio(${disk})`, Order.ATOMIC];
         }
     },
     'disk_getLabel': {
         block: {
             init() {
-                this.appendDummyInput()
-                    .appendField('disk')
-                    .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
-                    .appendField('label');
-                this.setOutput(true, 'String');
+                this.appendValueInput('DISK').setCheck('String')
+                    .appendField('get disk label');
+                this.setOutput(true, ['String', 'Null']);
                 this.setStyle('disk_blocks');
                 this.setTooltip('Get the label of a disk');
             },
         },
         generator: (block, gen) => {
-            const side = block.getFieldValue('SIDE');
-            return [`disk.getLabel("${side}")`, Order.ATOMIC];
+            const disk = gen.valueToCode(block, 'DISK', Order.NONE);
+            return [`disk.getLabel(${disk})`, Order.ATOMIC];
         }
     },
     'disk_getMountPath': {
         block: {
             init() {
-                this.appendDummyInput()
-                    .appendField('disk')
-                    .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
-                    .appendField('mount path');
-                this.setOutput(true, 'String');
+                this.appendValueInput('DISK').setCheck('String')
+                    .appendField('get disk mount path');
+                this.setOutput(true, ['String', 'Null']);
                 this.setStyle('disk_blocks');
                 this.setTooltip('Get the mount path of a disk');
             },
         },
         generator: (block, gen) => {
-            const side = block.getFieldValue('SIDE');
-            return [`disk.getMountPath("${side}")`, Order.ATOMIC];
+            const disk = gen.valueToCode(block, 'DISK', Order.NONE);
+            return [`disk.getMountPath(${disk})`, Order.ATOMIC];
         }
     }
 };

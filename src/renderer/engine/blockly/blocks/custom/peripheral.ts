@@ -35,14 +35,14 @@ export const peripheralBlocks: Block = {
             init() {
                 this.appendValueInput("PERIPHERAL").setCheck('String')
                     .appendField('wrap peripheral');
-                this.setOutput(true, ["Table", "Null"]);
+                this.setOutput(true, ["Array", "Null"]);
                 this.setStyle('peripheral_blocks');
                 this.setTooltip('Get a table containing all functions available on a peripheral.');
             },
         },
         generator: (block, gen) => {
-            const peripheral = block.getFieldValue('PERIPHERAL');
-            return [`peripheral.wrap("${peripheral}")`, Order.ATOMIC];
+            const peripheral = gen.valueToCode(block, 'PERIPHERAL', Order.NONE);
+            return [`peripheral.wrap(${peripheral})`, Order.ATOMIC];
         }
     },
     'peripheral_find': {
@@ -50,20 +50,20 @@ export const peripheralBlocks: Block = {
             init() {
                 this.appendValueInput('TYPE').setCheck('String')
                     .appendField('find peripheral');
-                this.setOutput(true, "Table");
+                this.setOutput(true, "Array");
                 this.setStyle('peripheral_blocks');
                 this.setTooltip('Find all peripherals of a specific type');
             },
         },
         generator: (block, gen) => {
-            const type = block.getFieldValue('TYPE');
-            return [`peripheral.find("${type}")`, Order.ATOMIC];
+            const type = gen.valueToCode(block, 'TYPE', Order.NONE);
+            return [`peripheral.find(${type})`, Order.ATOMIC];
         }
     },
     'peripheral_getType': {
         block: {
             init() {
-                this.appendValueInput('PERIPHERAL').setCheck(["String", "Table"])
+                this.appendValueInput('PERIPHERAL').setCheck(["String", "Array"])
                     .appendField('type of peripheral');
                 this.setOutput(true, ['String', 'Null']);
                 this.setStyle('peripheral_blocks');
@@ -80,7 +80,7 @@ export const peripheralBlocks: Block = {
     'peripheral_hasType': {
         block: {
             init() {
-                this.appendValueInput('PERIPHERAL').setCheck(["String", "Table"])
+                this.appendValueInput('PERIPHERAL').setCheck(["String", "Array"])
                     .appendField('peripheral');
                 this.appendValueInput('TYPE').setCheck('String')
                     .setAlign(Blockly.inputs.Align.RIGHT)
@@ -100,7 +100,7 @@ export const peripheralBlocks: Block = {
     'peripheral_getName': {
         block: {
             init() {
-                this.appendValueInput('PERIPHERAL').setCheck("Table")
+                this.appendValueInput('PERIPHERAL').setCheck("Array")
                     .appendField('name of peripheral');
                 this.setOutput(true, 'String');
                 this.setStyle('peripheral_blocks');
@@ -130,7 +130,7 @@ export const peripheralBlocks: Block = {
     'peripheral_getMethods': {
         block: {
             init() {
-                this.appendValueInput('PERIPHERAL').setCheck("Table")
+                this.appendValueInput('PERIPHERAL').setCheck("Array")
                     .appendField('methods of');
                 this.setOutput(true, 'Array');
                 this.setStyle('peripheral_blocks');

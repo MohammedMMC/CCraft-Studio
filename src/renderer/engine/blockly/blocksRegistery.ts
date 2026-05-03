@@ -26,6 +26,7 @@ import { controlBlocks } from './blocks/main/control';
 import { listsBlocks } from './blocks/main/lists';
 import { functionsBlocks } from './blocks/main/functions';
 import { pluginsBlocks } from './blocks/main/plugins';
+import { modemBlocks } from './blocks/custom/modem';
 
 export type Block = Record<string, {
     block?: {
@@ -51,6 +52,7 @@ export function registerAllBlocks() {
     registerBlocks(settingsBlocks);
     registerBlocks(diskBlocks);
     registerBlocks(utilityBlocks);
+    registerBlocks(modemBlocks);
 
     registerBlocks(logicBlocks);
     registerBlocks(mathBlocks);

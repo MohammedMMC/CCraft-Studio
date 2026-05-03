@@ -72,6 +72,9 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
     peripheral_blocks: {
       colourPrimary: '#6f54ab',
     },
+    modem_blocks: {
+      colourPrimary: '#b7ba56',
+    },
     turtle_blocks: {
       colourPrimary: '#59B85A',
     },
@@ -140,6 +143,7 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
     settings_category: { colour: '#7D7D7D' },
     gps_category: { colour: '#3F71B5' },
     disk_category: { colour: '#ab6626' },
+    modem_category: { colour: '#b7ba56' },
     utility_category: { colour: '#545b6b' },
     logic_category: { colour: '#77AB41' },
     loop_category: { colour: '#B18E35' },

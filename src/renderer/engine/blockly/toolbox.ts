@@ -433,5 +433,17 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
         { kind: 'block', type: 'disk_eject' },
       ],
     },
+    {
+      kind: 'category', name: 'Modem', categorystyle: 'modem_category',
+      contents: [
+        { kind: 'block', type: 'modem_open' },
+        { kind: 'block', type: 'modem_isOpen' },
+        { kind: 'block', type: 'modem_close' },
+        { kind: 'block', type: 'modem_closeAll' },
+        { kind: 'block', type: 'modem_transmit' },
+        { kind: 'block', type: 'modem_isWireless' },
+        { kind: 'block', type: 'modem_getNamesRemote' },
+      ],
+    },
   ],
 };
