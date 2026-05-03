@@ -6,7 +6,7 @@ export const variablesBlocks: Block = {
         generator: (block, gen) => {
             const name = block.getFieldValue('VAR') || 'x';
             const safeName = name.replace(/[^a-zA-Z0-9_]/g, '_');
-            return [safeName, Order.ATOMIC];
+            return [`variable_${safeName}`, Order.ATOMIC];
         }
     },
     'variables_set': {
@@ -14,7 +14,7 @@ export const variablesBlocks: Block = {
             const name = block.getFieldValue('VAR') || 'x';
             const safeName = name.replace(/[^a-zA-Z0-9_]/g, '_');
             const val = gen.valueToCode(block, 'VALUE', Order.NONE);
-            return `${gen.getIndent()}${safeName} = ${val}`;
+            return `${gen.getIndent()}variable_${safeName} = ${val}`;
         }
     }
 };

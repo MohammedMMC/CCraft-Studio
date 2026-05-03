@@ -259,6 +259,7 @@ export const TOOLBOX: Blockly.utils.toolbox.ToolboxDefinition = {
       contents: [
         { kind: 'block', type: 'rednet_open' },
         { kind: 'block', type: 'rednet_close' },
+        { kind: 'block', type: 'rednet_closeAll' },
         { kind: 'block', type: 'rednet_isOpen' },
         { kind: 'label', text: '--- Send & Receive ---' },
         { kind: 'block', type: 'rednet_send' },

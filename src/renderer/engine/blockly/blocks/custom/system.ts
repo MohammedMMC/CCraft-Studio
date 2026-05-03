@@ -128,7 +128,7 @@ export const systemBlocks: Block = {
     'os_cancelTimer': {
         block: {
             init() {
-                this.appendValueInput('SECS').setCheck('Number')
+                this.appendValueInput('ID').setCheck('Number')
                     .appendField('start timer');
                 this.appendDummyInput()
                     .appendField('seconds');
@@ -163,13 +163,13 @@ export const systemBlocks: Block = {
     'os_startTimer': {
         block: {
             init() {
-                this.appendValueInput('ID').setCheck('Number')
-                    .appendField('cancel timer');
+                this.appendValueInput('SECS').setCheck('Number')
+                    .appendField('start timer');
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
                 this.setStyle('os_blocks');
                 this.setInputsInline(true);
-                this.setTooltip('Cancel a previously started timer by ID');
+                this.setTooltip('Starts a timer that will run for the specified number of seconds');
             },
         },
         generator: (block, gen) => {

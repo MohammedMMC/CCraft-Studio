@@ -19,7 +19,7 @@ export const redstoneBlocks: Block = {
         },
         generator: (block, gen) => {
             const side = block.getFieldValue('SIDE');
-            const value = block.getFieldValue('VALUE');
+            const value = gen.valueToCode(block, 'VALUE', Order.NONE);
             return `${gen.getIndent()}redstone.setOutput("${side}", ${value})`;
         }
     },
@@ -38,7 +38,7 @@ export const redstoneBlocks: Block = {
         },
         generator: (block, gen) => {
             const side = block.getFieldValue('SIDE');
-            const value = block.getFieldValue('VALUE');
+            const value = gen.valueToCode(block, 'VALUE', Order.NONE);
             return `${gen.getIndent()}redstone.setAnalogOutput("${side}", ${value})`;
         }
     },
@@ -171,7 +171,8 @@ export const redstoneBlocks: Block = {
         },
         generator: (block, gen) => {
             const side = block.getFieldValue('SIDE');
-            const color = block.getFieldValue('COLOR');
+            const color = gen.valueToCode(block, 'COLOR', Order.NONE);
+            
             return [`redstone.testBundledInput("${side}", ${color})`, Order.ATOMIC];
         }
     }

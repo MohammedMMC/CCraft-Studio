@@ -1,7 +1,7 @@
 import * as Blockly from 'blockly';
 import { Block } from "../../blocksRegistery";
 import { ELEMENTS } from '../../ccBlocks';
-import { UI_ELEMENT_WITH_TEXT, UIElement, UIElementType } from '@/models/UIElement';
+import { UI_ELEMENT_WITH_TEXT, UIElementType } from '@/models/UIElement';
 import { useProjectStore } from '@/stores/projectStore';
 import { sanitize } from '@/utils/luaHelpers';
 

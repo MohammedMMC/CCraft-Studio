@@ -8,8 +8,10 @@ export const rednetBlocks: Block = {
         block: {
             init() {
                 this.appendDummyInput()
-                    .appendField('open rednet on')
-                    .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
+                    .appendField('open rednet');
+                this.appendValueInput('NAME').setCheck('String')
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField('modem');
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
                 this.setStyle('rednet_blocks');
@@ -17,16 +19,18 @@ export const rednetBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            const side = block.getFieldValue('SIDE');
-            return `${gen.getIndent()}rednet.open("${side}")`;
+            const modem = gen.valueToCode(block, 'NAME', Order.NONE);
+            return `${gen.getIndent()}rednet.open(${modem})`;
         }
     },
     'rednet_close': {
         block: {
             init() {
                 this.appendDummyInput()
-                    .appendField('close rednet on')
-                    .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE');
+                    .appendField('close rednet');
+                this.appendValueInput('NAME').setCheck('String')
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField('modem');
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
                 this.setStyle('rednet_blocks');
@@ -34,8 +38,38 @@ export const rednetBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            const side = block.getFieldValue('SIDE');
-            return `${gen.getIndent()}rednet.close("${side}")`;
+            const modem = gen.valueToCode(block, 'NAME', Order.NONE);
+            return `${gen.getIndent()}rednet.close(${modem})`;
+        }
+    },
+    'rednet_closeAll': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField('close all rednet modems');
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setStyle('rednet_blocks');
+                this.setTooltip('Close all open modems');
+            },
+        },
+        generator: (block, gen) => {
+            return `${gen.getIndent()}rednet.close()`;
+        }
+    },
+    'rednet_isOpen': {
+        block: {
+            init() {
+                this.appendValueInput('NAME').setCheck('String')
+                    .appendField('is rednet open?')
+                this.setOutput(true, 'Boolean');
+                this.setStyle('rednet_blocks');
+                this.setTooltip('Check if rednet is open');
+            },
+        },
+        generator: (block, gen) => {
+            const modem = gen.valueToCode(block, 'NAME', Order.NONE);
+            return [`rednet.isOpen(${modem})`, Order.ATOMIC];
         }
     },
     'rednet_send': {
@@ -164,21 +198,4 @@ export const rednetBlocks: Block = {
             return [`rednet.lookup("${protocol}")`, Order.ATOMIC];
         }
     },
-    'rednet_isOpen': {
-        block: {
-            init() {
-                this.appendDummyInput()
-                    .appendField('rednet open on')
-                    .appendField(new Blockly.FieldDropdown(SIDES), 'SIDE')
-                    .appendField('?');
-                this.setOutput(true, 'Boolean');
-                this.setStyle('rednet_blocks');
-                this.setTooltip('Check if rednet is open on a given side');
-            },
-        },
-        generator: (block, gen) => {
-            const side = block.getFieldValue('SIDE');
-            return [`rednet.isOpen("${side}")`, Order.ATOMIC];
-        }
-    }
 };

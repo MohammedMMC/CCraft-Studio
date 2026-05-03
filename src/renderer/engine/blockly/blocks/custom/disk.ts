@@ -1,7 +1,5 @@
-import * as Blockly from 'blockly';
 import { Block } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
-import { SIDES } from '../../ccBlocks';
 
 export const diskBlocks: Block = {
     'disk_eject': {

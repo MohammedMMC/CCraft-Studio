@@ -1,4 +1,3 @@
-import * as Blockly from 'blockly';
 import { Block } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 

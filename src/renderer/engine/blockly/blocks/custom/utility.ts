@@ -17,7 +17,8 @@ export const utilityBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            return '';
+            const bool = block.getFieldValue('BOOL');
+            return [bool, Order.ATOMIC];
         }
     },
     'helpers_sides': {
@@ -32,7 +33,8 @@ export const utilityBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            return '';
+            const side = block.getFieldValue('SIDE');
+            return [side, Order.ATOMIC];
         }
     },
     'helpers_units': {
@@ -49,7 +51,8 @@ export const utilityBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            return '';
+            const sizeUnit = block.getFieldValue('SIZE_UNIT');
+            return [sizeUnit, Order.ATOMIC];
         }
     },
     'helpers_display': {
@@ -66,7 +69,8 @@ export const utilityBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            return '';
+            const display = block.getFieldValue('DISPLAY');
+            return [display, Order.ATOMIC];
         }
     },
     'helpers_flexDirection': {
@@ -83,7 +87,8 @@ export const utilityBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            return '';
+            const flexDirection = block.getFieldValue('FLEX_DIRECTION');
+            return [flexDirection, Order.ATOMIC];
         }
     },
     'helpers_orientation': {
@@ -100,7 +105,8 @@ export const utilityBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            return '';
+            const orientation = block.getFieldValue('ORIENTATION');
+            return [orientation, Order.ATOMIC];
         }
     },
     'helpers_align': {
@@ -148,7 +154,8 @@ export const utilityBlocks: Block = {
             }
         },
         generator: (block, gen) => {
-            return '';
+            const align = block.getFieldValue('ALIGN');
+            return [align, Order.ATOMIC];
         }
     },
     'pcall_wrap': {

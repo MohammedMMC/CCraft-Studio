@@ -39,7 +39,7 @@ export const modemBlocks: Block = {
         generator: (block, gen) => {
             const channel = gen.valueToCode(block, 'CHANNEL', Order.NONE);
             const modem = gen.valueToCode(block, 'MODEM_PERIPHERAL', Order.NONE);
-            return `${modem}.isOpen(${channel})`;
+            return [`${modem}.isOpen(${channel})`, Order.ATOMIC];
         }
     },
     'modem_close': {
@@ -125,7 +125,7 @@ export const modemBlocks: Block = {
         generator: (block, gen) => {
             const channel = gen.valueToCode(block, 'CHANNEL', Order.NONE);
             const modem = gen.valueToCode(block, 'MODEM_PERIPHERAL', Order.NONE);
-            return `${modem}.isOpen(${channel})`;
+            return [`${modem}.isOpen(${channel})`, Order.ATOMIC];
         }
     },
     'modem_getNamesRemote': {
@@ -143,7 +143,7 @@ export const modemBlocks: Block = {
         },
         generator: (block, gen) => {
             const modem = gen.valueToCode(block, 'MODEM_PERIPHERAL', Order.NONE);
-            return `${modem}.getNamesRemote()`;
+            return [`${modem}.getNamesRemote()`, Order.ATOMIC];
         }
     },
 };

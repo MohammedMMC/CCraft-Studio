@@ -6,13 +6,13 @@ export const peripheralBlocks: Block = {
     'peripheral_call': {
         block: {
             init() {
-                this.appendValueInput("PERIPHERAL").setCheck('String')
+                this.appendValueInput('PERIPHERAL').setCheck('String')
                     .appendField('call')
-                    .appendField(new Blockly.FieldTextInput('methodName'), 'METHOD')
+                    .appendField(new Blockly.FieldTextInput('methodName'), 'METHOD').setCheck('String')
                     .appendField('on');
                 this.appendValueInput('ARGS').setCheck(null)
                     .setAlign(Blockly.inputs.Align.RIGHT)
-                    .appendField('peripheral');
+                    .appendField('args');
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
                 this.setStyle('peripheral_blocks');
@@ -20,20 +20,19 @@ export const peripheralBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            const peripheral = block.getFieldValue('PERIPHERAL');
-            const method = block.getFieldValue('METHOD');
+            const peripheral = gen.valueToCode(block, 'PERIPHERAL', Order.NONE);
+            const method = gen.valueToCode(block, 'METHOD', Order.NONE);
             const args = gen.valueToCode(block, 'ARGS', Order.NONE);
-
             if (args && args !== 'nil') {
-                return `${gen.getIndent()}peripheral.call(${peripheral}, "${method}", ${args})`;
+                return `${gen.getIndent()}peripheral.call(${peripheral}, ${method}, ${args})`;
             }
-            return `${gen.getIndent()}peripheral.call(${peripheral}, "${method}")`;
+            return `${gen.getIndent()}peripheral.call(${peripheral}, ${method})`;
         }
     },
     'peripheral_wrap': {
         block: {
             init() {
-                this.appendValueInput("PERIPHERAL").setCheck('String')
+                this.appendValueInput('PERIPHERAL').setCheck('String')
                     .appendField('wrap peripheral');
                 this.setOutput(true, ["Array", "Null"]);
                 this.setStyle('peripheral_blocks');
@@ -71,10 +70,9 @@ export const peripheralBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            const peripheral = block.getFieldValue('PERIPHERAL');
-            const isString = block.getInput('PERIPHERAL')?.connection?.targetConnection?.getCheck()?.includes('String');
+            const peripheral = gen.valueToCode(block, 'PERIPHERAL', Order.NONE);
             
-            return [`peripheral.getType(${isString ? `"${peripheral}"` : peripheral})`, Order.ATOMIC];
+            return [`peripheral.getType(${peripheral})`, Order.ATOMIC];
         }
     },
     'peripheral_hasType': {
@@ -91,10 +89,9 @@ export const peripheralBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            const peripheral = block.getFieldValue('PERIPHERAL');
-            const type = block.getFieldValue('TYPE');
-            const isString = block.getInput('PERIPHERAL')?.connection?.targetConnection?.getCheck()?.includes('String');
-            return [`peripheral.hasType(${isString ? `"${peripheral}"` : peripheral}, "${type}")`, Order.ATOMIC];
+            const peripheral = gen.valueToCode(block, 'PERIPHERAL', Order.NONE);
+            const type = gen.valueToCode(block, 'TYPE', Order.NONE);
+            return [`peripheral.hasType(${peripheral}, ${type})`, Order.ATOMIC];
         }
     },
     'peripheral_getName': {
@@ -108,7 +105,7 @@ export const peripheralBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            const peripheral = block.getFieldValue('PERIPHERAL');
+            const peripheral = gen.valueToCode(block, 'PERIPHERAL', Order.NONE);
             return [`peripheral.getName(${peripheral})`, Order.ATOMIC];
         }
     },
@@ -123,8 +120,8 @@ export const peripheralBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            const peripheral = block.getFieldValue('PERIPHERAL');
-            return [`peripheral.isPresent("${peripheral}")`, Order.ATOMIC];
+            const peripheral = gen.valueToCode(block, 'PERIPHERAL', Order.NONE);
+            return [`peripheral.isPresent(${peripheral})`, Order.ATOMIC];
         }
     },
     'peripheral_getMethods': {
@@ -138,8 +135,8 @@ export const peripheralBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            const peripheral = block.getFieldValue('PERIPHERAL');
-            return [`peripheral.getMethods("${peripheral}")`, Order.ATOMIC];
+            const peripheral = gen.valueToCode(block, 'PERIPHERAL', Order.NONE);
+            return [`peripheral.getMethods(${peripheral})`, Order.ATOMIC];
         }
     },
     'peripheral_getNames': {

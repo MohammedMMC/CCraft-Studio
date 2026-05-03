@@ -46,7 +46,7 @@ export const terminalBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            const peripheral = block.getFieldValue('PERIPHERAL');
+            const peripheral = gen.valueToCode(block, 'PERIPHERAL', Order.NONE);
             return `${gen.getIndent()}term.redirect(peripheral.find(${peripheral}))`;
         }
     },
@@ -142,7 +142,7 @@ export const terminalBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            const color = block.getFieldValue('COLOR');
+            const color = gen.valueToCode(block, 'COLOR', Order.NONE);
             return `${gen.getIndent()}term.setTextColor(${color})`;
         }
     },
@@ -158,7 +158,7 @@ export const terminalBlocks: Block = {
             },
         },
         generator: (block, gen) => {
-            const color = block.getFieldValue('COLOR');
+            const color = gen.valueToCode(block, 'COLOR', Order.NONE);
             return `${gen.getIndent()}term.setBackgroundColor(${color})`;
         }
     },
