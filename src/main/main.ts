@@ -5,8 +5,23 @@ import { setupIPC } from './ipc';
 import { buildMenu } from './menu';
 import { setupCraftPCIPC } from './craftpc.ipc';
 
-app.disableHardwareAcceleration();
-app.commandLine.appendSwitch('disable-gpu-rasterization');
+const isLinux = process.platform === 'linux';
+const useSafeGraphics =
+  process.argv.includes('--safe-gfx') ||
+  process.env.CCRAFT_SAFE_GFX === '1' ||
+  process.env.CCRAFT_DISABLE_GPU === '1';
+
+if (isLinux) {
+  app.commandLine.appendSwitch('ozone-platform', 'x11');
+  app.commandLine.appendSwitch('ozone-platform-hint', 'x11');
+  app.commandLine.appendSwitch('no-sandbox');
+}
+
+if (useSafeGraphics) {
+  app.disableHardwareAcceleration();
+  app.commandLine.appendSwitch('disable-gpu');
+  app.commandLine.appendSwitch('disable-gpu-rasterization');
+}
 
 let mainWindow: BrowserWindow | null = null;
 
