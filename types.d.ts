@@ -7,6 +7,8 @@ declare module '@mit-app-inventor/blockly-block-lexical-variables' {
       workspace: Blockly.WorkspaceSvg,
       options?: Record<string, unknown>
     ): void;
+    FieldParameterFlydown: (name, isEditable, opt_displayLocation, opt_additionalChangeHandler) => Blockly.Field;
+    // FieldGlobalFlydown: typeof Blockly.Field;
   }
 
   export const LexicalVariablesPlugin: LexicalVariablesPluginApi;

@@ -67,7 +67,7 @@ export const eventsBlocks: Blocks = {
             const elName = block.getFieldValue('ELEMENT');
             const evName = block.getFieldValue('EVENT');
             const body = gen.statementToCode(block, 'DO');
-            return `screen:getChild("${sanitize(elName)}").events["${evName}"] = function()\n${body}\nend`;
+            return `${gen.getIndent()}screen:getChild("${sanitize(elName)}").events["${evName}"] = function()\n${body}\nend`;
         }
     },
     'event_screen_load': {

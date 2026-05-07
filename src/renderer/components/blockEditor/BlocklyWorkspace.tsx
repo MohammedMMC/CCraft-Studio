@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback, useState } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import * as Blockly from 'blockly';
 import { LexicalVariablesPlugin } from '@mit-app-inventor/blockly-block-lexical-variables';
 import { registerAllBlocks } from '@/engine/blockly/blocksRegistery';
