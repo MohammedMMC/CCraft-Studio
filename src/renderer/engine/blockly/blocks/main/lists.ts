@@ -1,7 +1,7 @@
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const listsBlocks: Block = {
+export const listsBlocks: Blocks = {
     'lists_create_with': {
         generator: (block, gen) => {
             const count = (block as any).itemCount_ || 0;

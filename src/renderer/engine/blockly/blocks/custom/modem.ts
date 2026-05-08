@@ -1,8 +1,8 @@
 import * as Blockly from 'blockly';
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const modemBlocks: Block = {
+export const modemBlocks: Blocks = {
     'modem_open': {
         block: {
             init() {

@@ -3,17 +3,18 @@ import * as Blockly from 'blockly';
 import { LexicalVariablesPlugin } from '@mit-app-inventor/blockly-block-lexical-variables';
 import { registerAllBlocks } from '@/engine/blockly/blocksRegistery';
 import { luaGenerator } from '../../engine/blockly/luaGenerator';
-import { TOOLBOX } from '../../engine/blockly/toolbox';
+import { generateToolBox } from '../../engine/blockly/toolbox';
 import { useBlocklyStore } from '../../stores/blocklyStore';
 import { useProjectStore } from '../../stores/projectStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { usePromptStore } from '../shared/PromptDialog';
+import { CCProject, PLUGINS } from '@/models/Project';
 
 let blocksRegistered = false;
-function ensureInit() {
+function ensureInit(project: CCProject | null) {
   if (blocksRegistered) return;
   blocksRegistered = true;
-  registerAllBlocks();
+  registerAllBlocks(project);
 
   // Changing Default Blocks
   Blockly.Msg.TEXT_ISEMPTY_TITLE = 'is empty %1';
@@ -51,81 +52,37 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
   name: 'ccraftDark',
   base: Blockly.Themes.Classic,
   blockStyles: {
-    events_blocks: {
-      colourPrimary: '#B18E35',
-    },
-    ui_blocks: {
-      colourPrimary: '#4da37b',
-    },
-    terminal_blocks: {
-      colourPrimary: '#324196',
-    },
-    redstone_blocks: {
-      colourPrimary: '#ba2222',
-    },
-    filesystem_blocks: {
-      colourPrimary: '#ab6626',
-    },
-    http_blocks: {
-      colourPrimary: '#2f86a1',
-    },
-    peripheral_blocks: {
-      colourPrimary: '#6f54ab',
-    },
-    modem_blocks: {
-      colourPrimary: '#b7ba56',
-    },
-    turtle_blocks: {
-      colourPrimary: '#59B85A',
-    },
-    os_blocks: {
-      colourPrimary: '#545b6b',
-    },
-    rednet_blocks: {
-      colourPrimary: '#de314f',
-    },
-    paintutils_blocks: {
-      colourPrimary: '#E07070',
-    },
-    window_blocks: {
-      colourPrimary: '#3DA08E',
-    },
-    settings_blocks: {
-      colourPrimary: '#7D7D7D',
-    },
-    gps_blocks: {
-      colourPrimary: '#3F71B5',
-    },
-    disk_blocks: {
-      colourPrimary: '#ab6626',
-    },
-    utility_blocks: {
-      colourPrimary: '#545b6b',
-    },
-    logic_blocks: {
-      colourPrimary: '#77AB41',
-    },
-    loop_blocks: {
-      colourPrimary: '#B18E35',
-    },
-    math_blocks: {
-      colourPrimary: '#3F71B5',
-    },
-    text_blocks: {
-      colourPrimary: '#B32D5E',
-    },
-    color_blocks: {
-      colourPrimary: '#7D7D7D',
-    },
-    list_blocks: {
-      colourPrimary: '#49A6D4',
-    },
-    variable_blocks: {
-      colourPrimary: '#D05F2D',
-    },
-    procedure_blocks: {
-      colourPrimary: '#7C5385',
-    },
+    events_blocks: { colourPrimary: '#B18E35' },
+    ui_blocks: { colourPrimary: '#4da37b' },
+    terminal_blocks: { colourPrimary: '#324196' },
+    redstone_blocks: { colourPrimary: '#ba2222' },
+    filesystem_blocks: { colourPrimary: '#ab6626' },
+    http_blocks: { colourPrimary: '#2f86a1' },
+    peripheral_blocks: { colourPrimary: '#6f54ab' },
+    modem_blocks: { colourPrimary: '#b7ba56' },
+    turtle_blocks: { colourPrimary: '#59B85A' },
+    os_blocks: { colourPrimary: '#545b6b' },
+    rednet_blocks: { colourPrimary: '#de314f' },
+    paintutils_blocks: { colourPrimary: '#E07070' },
+    window_blocks: { colourPrimary: '#3DA08E' },
+    settings_blocks: { colourPrimary: '#7D7D7D' },
+    gps_blocks: { colourPrimary: '#3F71B5' },
+    disk_blocks: { colourPrimary: '#ab6626' },
+    utility_blocks: { colourPrimary: '#545b6b' },
+    logic_blocks: { colourPrimary: '#77AB41' },
+    loop_blocks: { colourPrimary: '#B18E35' },
+    math_blocks: { colourPrimary: '#3F71B5' },
+    text_blocks: { colourPrimary: '#B32D5E' },
+    color_blocks: { colourPrimary: '#7D7D7D' },
+    list_blocks: { colourPrimary: '#49A6D4' },
+    variable_blocks: { colourPrimary: '#D05F2D' },
+    procedure_blocks: { colourPrimary: '#7C5385' },
+    ...Object.fromEntries(
+      PLUGINS.map(p => [
+        `${p.id}_blocks`,
+        { colourPrimary: p.color }
+      ])
+    ),
   },
   categoryStyles: {
     events_category: { colour: '#B18E35' },
@@ -153,6 +110,12 @@ const DARK_THEME = Blockly.Theme.defineTheme('ccraftDark', {
     list_category: { colour: '#49A6D4' },
     variable_category: { colour: '#D05F2D' },
     procedure_category: { colour: '#7C5385' },
+    ...Object.fromEntries(
+      PLUGINS.map(p => [
+        `${p.id}_category`,
+        { colour: p.color }
+      ])
+    ),
   },
   componentStyles: {
     workspaceBackgroundColour: '#1e1e2e',
@@ -256,6 +219,7 @@ export const BlocklyWorkspace: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const workspaceRef = useRef<Blockly.WorkspaceSvg | null>(null);
   const activeScreenId = useProjectStore((s) => s.activeScreenId);
+  const project = useProjectStore((s) => s.project);
   const { getXml, setXml, setLuaCode } = useBlocklyStore();
 
   const activeScreenRef = useRef(activeScreenId);
@@ -280,10 +244,10 @@ export const BlocklyWorkspace: React.FC = () => {
 
     const rafId = requestAnimationFrame(() => {
       if (disposed || !container) return;
-      ensureInit();
+      ensureInit(project);
 
       const ws = Blockly.inject(container, {
-        toolbox: TOOLBOX,
+        toolbox: generateToolBox(project),
         theme: DARK_THEME,
         grid: { spacing: 20, length: 5, colour: '#363650', snap: true },
         zoom: { controls: true, wheel: true, startScale: 0.9, maxScale: 3, minScale: 0.1, scaleSpeed: 1.1 },

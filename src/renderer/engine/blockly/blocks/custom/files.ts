@@ -1,7 +1,7 @@
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const filesBlocks: Block = {
+export const filesBlocks: Blocks = {
     'fs_writeFile': {
         block: {
             init() {

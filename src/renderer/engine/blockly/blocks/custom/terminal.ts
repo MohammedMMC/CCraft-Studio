@@ -1,7 +1,7 @@
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const terminalBlocks: Block = {
+export const terminalBlocks: Blocks = {
     'term_write': {
         block: {
             init() {

@@ -1,9 +1,9 @@
 import { CC_COLORS } from "@/models/CCColors";
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { createColorField } from "../../ccBlocks";
 import { Order } from "../../luaGenerator";
 
-export const colorsBlocks: Block = {
+export const colorsBlocks: Blocks = {
     'color_picker': {
         block: {
             init() {

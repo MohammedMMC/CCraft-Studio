@@ -1,8 +1,8 @@
 import * as Blockly from 'blockly';
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const settingsBlocks: Block = {
+export const settingsBlocks: Blocks = {
     'settings_set': {
         block: {
             init() {

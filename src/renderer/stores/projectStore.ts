@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { CCProject, Screen, GlobalVariable, createDefaultProject, DeviceType } from '../models/Project';
+import { CCProject, Screen, GlobalVariable, createDefaultProject, PluginStore } from '../models/Project';
 import { CCColor } from '@/models/CCColors';
 
 interface ProjectState {
@@ -22,7 +22,7 @@ interface ProjectState {
   getNextScreenName: (screens: Screen[]) => string;
   removeScreen: (screenId: string) => void;
   renameScreen: (screenId: string, name: string) => void;
-  changeProjectInfo: (newName: string | undefined, newAuthor: string | undefined, newDescription: string | undefined) => void;
+  changeProjectInfo: ({ newName, newAuthor, newDescription, newPlugins }: { newName?: string; newAuthor?: string; newDescription?: string; newPlugins?: PluginStore[] }) => void;
   setWorkingScreen: (screenId: string, isActivated: boolean) => void;
   getActiveScreen: () => Screen | null;
   changeScreenBgColor: (screenId: string, color: CCColor) => void;
@@ -138,10 +138,10 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     };
   }),
 
-  changeProjectInfo: (newName, newAuthor, newDescription) => set((state) => {
+  changeProjectInfo: ({ newName, newAuthor, newDescription, newPlugins }) => set((state) => {
     if (!state.project) return state;
     return {
-      project: { ...state.project, name: newName ?? state.project.name, author: newAuthor ?? state.project.author, description: newDescription ?? state.project.description },
+      project: { ...state.project, name: newName ?? state.project.name, author: newAuthor ?? state.project.author, description: newDescription ?? state.project.description, plugins: newPlugins ?? state.project.plugins },
       isDirty: true,
     };
   }),

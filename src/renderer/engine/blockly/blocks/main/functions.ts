@@ -1,7 +1,7 @@
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const functionsBlocks: Block = {
+export const functionsBlocks: Blocks = {
     'procedures_defnoreturn': {
         generator: (block, gen) => {
             const name = (block.getFieldValue('NAME') || 'myFunc').replace(/[^a-zA-Z0-9_]/g, '_');

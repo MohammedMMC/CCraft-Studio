@@ -1,7 +1,7 @@
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const pluginsBlocks: Block = {
+export const pluginsBlocks: Blocks = {
     'global_declaration': {
         generator: (block, gen) => {
             const name = sanitizeVar(block.getFieldValue('NAME') || 'myVar');

@@ -1,9 +1,9 @@
 import * as Blockly from 'blockly';
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { SIDES } from "../../ccBlocks";
 import { Order } from "../../luaGenerator";
 
-export const redstoneBlocks: Block = {
+export const redstoneBlocks: Blocks = {
     'rs_setOutput': {
         block: {
             init() {

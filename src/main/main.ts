@@ -1,9 +1,8 @@
-import { app, BrowserWindow, ipcMain, dialog, Menu } from 'electron';
-import * as path from 'path';
-import * as fs from 'fs';
+import { app, BrowserWindow, Menu } from 'electron';
+import { setupCraftPCIPC } from './craftpc.ipc';
 import { setupIPC } from './ipc';
 import { buildMenu } from './menu';
-import { setupCraftPCIPC } from './craftpc.ipc';
+import * as path from 'path';
 
 const isLinux = process.platform === 'linux';
 const useSafeGraphics =

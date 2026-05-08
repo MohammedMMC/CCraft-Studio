@@ -1,9 +1,9 @@
 import * as Blockly from 'blockly';
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 import { SIDES } from '../../ccBlocks';
 
-export const rednetBlocks: Block = {
+export const rednetBlocks: Blocks = {
     'rednet_open': {
         block: {
             init() {

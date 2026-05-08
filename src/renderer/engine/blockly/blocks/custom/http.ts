@@ -1,7 +1,7 @@
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const httpBlocks: Block = {
+export const httpBlocks: Blocks = {
     'http_postRequest': {
         block: {
             init() {

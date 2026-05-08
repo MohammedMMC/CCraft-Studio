@@ -1,7 +1,7 @@
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const windowBlocks: Block = {
+export const windowBlocks: Blocks = {
     'window_create': {
         block: {
             init() {

@@ -193,6 +193,9 @@ export function wrapEvent(screen: string, event: string, meta: string, body: str
     case 'timer': return `handlers["${screen}"].onTimer["t_${sanitize(eMeta)}"] = function(timerId)\n${ib}\nend`;
     case 'redstone': return `handlers["${screen}"].onRedstone = function()\n${ib}\nend`;
     case 'modem_message': return `handlers["${screen}"].onModemMessage["ch_${sanitize(eMeta)}"] = function(side, ch, replyChannel, msg, dist)\n${ib}\nend`;
+
+    
+
     default: return body;
   }
 }

@@ -1,7 +1,7 @@
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const textUtilsBlocks: Block = {
+export const textUtilsBlocks: Blocks = {
     'textutils_slowPrint': {
         block: {
             init() {

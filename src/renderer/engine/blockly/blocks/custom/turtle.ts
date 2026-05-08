@@ -1,5 +1,5 @@
 import * as Blockly from 'blockly';
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
 const turtleSimpleMoves = [
@@ -14,7 +14,7 @@ const dropSuckActions = [
     'suck', 'suckUp', 'suckDown'
 ];
 
-export const turtleBlocks: Block = {
+export const turtleBlocks: Blocks = {
     ...Object.fromEntries(turtleSimpleMoves.map(move => [
         `turtle_${move}`,
         {

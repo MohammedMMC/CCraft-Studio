@@ -58,6 +58,22 @@ export const DEVICE_PRESETS: Record<DeviceType, DevicePreset> = {
   },
 };
 
+export interface Plugin {
+  name: string;
+  id: string;
+  version: string;
+  color: string;
+}
+
+export interface PluginStore {
+  id: string;
+  version: string;
+}
+
+export const PLUGINS: Plugin[] = [
+  { name: 'Create Mod', id: "create-mod", version: '1.0.0', color: '#be5f4f' },
+];
+
 export interface GlobalVariable {
   name: string;
   type: 'string' | 'number' | 'boolean' | 'table';
@@ -92,6 +108,7 @@ export interface CCProject {
   createdAt: string;
   modifiedAt: string;
   version: string;
+  plugins: PluginStore[];
   customMonitors: { blocks: string; width: number; height: number }[];
 }
 
@@ -103,6 +120,7 @@ export function createDefaultProject(overrides: Partial<CCProject> = {}): CCProj
     name: 'Untitled Project',
     author: '',
     description: '',
+    plugins: [],
     device: 'advanced_computer',
     displayWidth: 51,
     displayHeight: 19,

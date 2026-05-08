@@ -1,11 +1,11 @@
 import * as Blockly from 'blockly';
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { ELEMENT_COLOR_PROPS, ELEMENT_PROPS, ELEMENTS, SCREENS, valueToType } from "../../ccBlocks";
 import { Order } from "../../luaGenerator";
 import { UI_ELEMENT_COLORS_NAMES, UI_ELEMENT_PROPS_NAMES, UIElement } from '@/models/UIElement';
 import { useProjectStore } from '@/stores/projectStore';
 
-export const uiActionsBlocks: Block = {
+export const uiActionsBlocks: Blocks = {
     'ui_screen_select': {
         block: {
             init() {

@@ -1,7 +1,7 @@
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const mathBlocks: Block = {
+export const mathBlocks: Blocks = {
     'math_number': {
         generator: (block, gen) => {
             return [String(block.getFieldValue('NUM')), Order.ATOMIC];

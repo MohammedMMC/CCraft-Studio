@@ -1,7 +1,7 @@
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const logicBlocks: Block = {
+export const logicBlocks: Blocks = {
     'logic_boolean': {
         generator: (block, gen) => {
             return [block.getFieldValue('BOOL') === 'TRUE' ? 'true' : 'false', Order.ATOMIC];

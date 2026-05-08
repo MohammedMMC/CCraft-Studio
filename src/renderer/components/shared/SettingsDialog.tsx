@@ -3,6 +3,7 @@ import { Modal } from '../shared/Modal';
 import { useProjectStore } from '../../stores/projectStore';
 import { CloudIcon, CraftOSPCIcon } from './Icons';
 import { useAppStore } from '@/stores/appStore';
+import { PLUGINS, PluginStore } from '@/models/Project';
 
 interface SettingsDialogProps {
     isOpen: boolean;
@@ -15,9 +16,10 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
     const [settingsType, setSettingsType] = useState<'project' | 'app'>(project ? 'project' : 'app');
     const [newChanges, setNewChanges] = useState(false);
 
-    const [projectName, setProjectName] = useState(project?.name);
-    const [projectAuthor, setProjectAuthor] = useState(project?.author);
-    const [projectDescription, setProjectDescription] = useState(project?.description);
+    const [projectName, setProjectName] = useState<string>(project?.name ?? "");
+    const [projectAuthor, setProjectAuthor] = useState<string | undefined>(project?.author ?? "");
+    const [projectDescription, setProjectDescription] = useState<string>(project?.description ?? "");
+    const [projectPlugins, setProjectPlugins] = useState<PluginStore[]>(project?.plugins ?? []);
 
     const useCraftOSPC = useAppStore(e => e.useCraftOSPC);
     const setCraftOSPC = useAppStore(e => e.setCraftOSPC);
@@ -32,7 +34,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
 
     useEffect(() => {
         if (project) {
-            if (projectName !== project.name || projectAuthor !== project.author || projectDescription !== project.description) {
+            if (projectName !== project.name || projectAuthor !== project.author || projectDescription !== project.description || projectPlugins?.length !== project.plugins?.length) {
                 setNewChanges(true);
             }
         }
@@ -42,7 +44,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
         if (cloudEnabled !== editorCloudEnabled) {
             setNewChanges(true);
         }
-    }, [projectName, projectAuthor, projectDescription, editorCraftOSPC, editorCloudEnabled]);
+    }, [projectName, projectAuthor, projectDescription, projectPlugins, editorCraftOSPC, editorCloudEnabled]);
 
     useEffect(() => {
         if (editorCloudEnabled) {
@@ -52,8 +54,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
 
     async function checkToken() {
         const result = await window.electronAPI.api.checkToken(token, typeof tokenData.lastFetch === "undefined");
-        console.log(result, typeof tokenData.lastFetch === "undefined");
-        
+
         if (result.valid) {
             setNewChanges(true);
             setTokenData({ lastFetch: new Date(), valid: true, userId: result.userId, firstName: result.firstName });
@@ -64,8 +65,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
 
     function handleSave() {
         if (project) {
-            if (projectName !== project.name || projectAuthor !== project.author || projectDescription !== project.description) {
-                changeProjectInfo(projectName, projectAuthor, projectDescription)
+            if (projectName !== project.name || projectAuthor !== project.author || projectDescription !== project.description || projectPlugins?.length !== project.plugins?.length) {
+                changeProjectInfo({ newName: projectName, newAuthor: projectAuthor, newDescription: projectDescription, newPlugins: projectPlugins });
             }
         }
         if (useCraftOSPC !== editorCraftOSPC) {
@@ -134,6 +135,28 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
                                             onChange={(e) => setProjectDescription(e.target.value)}
                                             placeholder="What does this program do?"
                                         />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-app-text-dim mb-1">Plugins</label>
+                                        <select
+                                            name="plugins"
+                                            id="plugins"
+                                            multiple
+                                            value={projectPlugins.map((p) => `${p.id}:${p.version}`)}
+                                            onChange={(e) => {
+                                                const selectedOptions = Array.from(e.target.selectedOptions).map(option => {
+                                                    const [id, version] = option.value.split(':');
+                                                    return { id, version };
+                                                });
+                                                setProjectPlugins(selectedOptions);
+                                            }}
+                                        >
+                                            {PLUGINS.map((plugin) => (
+                                                <option key={plugin.id} value={`${plugin.id}:${plugin.version}`}>
+                                                    {plugin.name} (v{plugin.version})
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
                                 </div>
                             </>

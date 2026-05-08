@@ -1,7 +1,7 @@
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const controlBlocks: Block = {
+export const controlBlocks: Blocks = {
     'controls_repeat_ext': {
         generator: (block, gen) => {
             const times = gen.valueToCode(block, 'TIMES', Order.NONE);

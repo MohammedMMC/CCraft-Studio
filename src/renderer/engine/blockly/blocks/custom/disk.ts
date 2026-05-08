@@ -1,7 +1,7 @@
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const diskBlocks: Block = {
+export const diskBlocks: Blocks = {
     'disk_eject': {
         block: {
             init() {

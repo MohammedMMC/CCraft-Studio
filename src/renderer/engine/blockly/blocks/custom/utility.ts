@@ -1,9 +1,9 @@
 import * as Blockly from 'blockly';
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 import { ALIGNS, SIDES, TEXT_ALIGNS } from '../../ccBlocks';
 
-export const utilityBlocks: Block = {
+export const utilityBlocks: Blocks = {
     'helpers_onoff': {
         block: {
             init() {

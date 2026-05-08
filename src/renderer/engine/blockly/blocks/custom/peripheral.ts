@@ -1,8 +1,8 @@
 import * as Blockly from 'blockly';
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const peripheralBlocks: Block = {
+export const peripheralBlocks: Blocks = {
     'peripheral_call': {
         block: {
             init() {

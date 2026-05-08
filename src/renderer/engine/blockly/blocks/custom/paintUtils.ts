@@ -1,7 +1,7 @@
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const paintUtilsBlocks: Block = {
+export const paintUtilsBlocks: Blocks = {
     'paint_drawPixel': {
         block: {
             init() {

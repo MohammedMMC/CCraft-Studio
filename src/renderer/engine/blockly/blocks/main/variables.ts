@@ -1,7 +1,7 @@
-import { Block } from "../../blocksRegistery";
+import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
-export const variablesBlocks: Block = {
+export const variablesBlocks: Blocks = {
     'variables_get': {
         generator: (block, gen) => {
             const name = block.getFieldValue('VAR') || 'x';
