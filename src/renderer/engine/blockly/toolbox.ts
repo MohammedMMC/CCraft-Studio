@@ -505,6 +505,9 @@ function generatePluginsToolbox(project: CCProject | null): Array<Blockly.utils.
         case "createmod_train_assemble":
           blocksContent.push({ kind: 'label', text: '--- Train Station ---' });
           break;
+        case "createmod_logistics_getAddress":
+          blocksContent.push({ kind: 'label', text: '--- Logistics ---' });
+          break;
       }
       blocksContent.push({ kind: 'block', type: blockType });
     }

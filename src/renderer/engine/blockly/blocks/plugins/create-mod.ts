@@ -8,6 +8,7 @@ const EVENTS = [
     "overstressed", "stress_change", "speed_change",
     "train_passing", "train_passed", "train_signal_state_change",
     "train_imminent", "train_arrival", "train_departure",
+    "package_sent", "package_received",
 ];
 
 export const createmodBlocks: Blocks = {
@@ -40,6 +41,156 @@ export const createmodBlocks: Blocks = {
             const body = gen.statementToCode(block, 'DO');
             const peripheral = gen.valueToCode(block, 'PERIPHERAL', Order.ATOMIC);
             return `${gen.getIndent()}screen.events["${peripheral}_${eventName}"] = function()\n${body}\nend`;
+        }
+    },
+    'createmod_logistics_getAddress': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get logistics configuration");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "String");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the logistics address.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getAddress()`, Order.ATOMIC];
+        }
+    },
+    'createmod_logistics_setAddress': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("set logistics address");
+                this.appendValueInput("ADDRESS").setCheck("String")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("address");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Sets the logistics address.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const address = gen.valueToCode(block, "ADDRESS", Order.ATOMIC);
+            return `${gen.getIndent()}${peripheral}.setAddress(${address})`;
+        }
+    },
+    'createmod_logistics_getConfiguration': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get logistics configuration");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "String");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the logistics configuration.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getConfiguration()`, Order.ATOMIC];
+        }
+    },
+    'createmod_logistics_setConfiguration': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("set logistics configuration");
+                this.appendValueInput("CONFIG").setCheck("String")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("configuration");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Sets the logistics configuration to either \"send_receive\" or \"send\"");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const config = gen.valueToCode(block, "CONFIG", Order.ATOMIC);
+            return `${gen.getIndent()}${peripheral}.setConfiguration(${config})`;
+        }
+    },
+    'createmod_logistics_getItemDetail': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get item details");
+                this.appendValueInput("SLOT").setCheck("Number")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("slot");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, ["LOGISTICS_ITEM_DETAIL", "Null"]);
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Get detailed information about an item in the connected inventory. Note: (Throws error If the slot is out of range.)");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const slot = gen.valueToCode(block, "SLOT", Order.ATOMIC);
+            return [`${peripheral}.getItemDetail(${slot})`, Order.ATOMIC];
+        }
+    },
+    'createmod_logistics_getItemDataFromDetails': {
+        block: {
+            init() {
+                this.appendValueInput("DETAILS").setCheck("LOGISTICS_ITEM_DETAIL")
+                    .appendField("get")
+                    .appendField(new Blockly.FieldDropdown([["name", "name:String"], ["display name", "displayName:String"], ["count", "count:Number"], ["max count", "maxCount:Number"]]), "DATA")
+                    .appendField("from details");
+                this.setOutput(true, ["String", "Number", "Null"]);
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Get specific data of an item details.");
+            },
+            onchange(event) {
+                if (event.type !== Blockly.Events.BLOCK_CHANGE) return;
+                const dataField = this.getField('DATA') as Blockly.FieldDropdown | null;
+                const currentData = dataField?.getValue();
+                if (typeof currentData !== 'string') return;
+
+                const [prop, type] = currentData.split(':');
+                this.setOutput(true, type);
+            }
+        },
+        generator: (block, gen) => {
+            const details = gen.valueToCode(block, "DETAILS", Order.ATOMIC);
+            const data = block.getFieldValue("DATA");
+            const [dataProp, dataType] = data.split(':');
+            return [`${details}.${dataProp}()`, Order.ATOMIC];
+        }
+    },
+    'createmod_logistics_makePackage': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("make package");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Boolean");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Activates the packager like if it was powered by redstone.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.makePackage()`, Order.ATOMIC];
         }
     },
     'createmod_train_assemble': {
