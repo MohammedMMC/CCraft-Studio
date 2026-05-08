@@ -40,14 +40,130 @@ export const createmodBlocks: Blocks = {
             return `${gen.getIndent()}screen.events["${peripheral}_${eventName}"] = function()\n${body}\nend`;
         }
     },
+    'createmod_gearshift_rotate': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("rotate gearshift");
+                this.appendValueInput("ANGLE").setCheck("Number")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("angle");
+                this.appendValueInput("SPEED").setCheck("Number")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("speed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Rotates connected components by a set angle.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const angle = gen.valueToCode(block, "ANGLE", Order.ATOMIC);
+            const speed = gen.valueToCode(block, "SPEED", Order.ATOMIC);
+            return `${gen.getIndent()}${peripheral}.rotate(${angle}, ${speed})`;
+        }
+    },
+    'createmod_gearshift_move': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("move gearshift");
+                this.appendValueInput("DISTANCE").setCheck("Number")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("distance");
+                this.appendValueInput("SPEED").setCheck("Number")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("speed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Rotates connected components to move connected piston, pulley or gantry contractions by a set distance.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const distance = gen.valueToCode(block, "DISTANCE", Order.ATOMIC);
+            const speed = gen.valueToCode(block, "SPEED", Order.ATOMIC);
+            return `${gen.getIndent()}${peripheral}.move(${distance}, ${speed})`;
+        }
+    },
+    'createmod_isRunning': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("is running");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Boolean");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Checks if the sequenced gearshift is currently spinning.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.isRunning()`, Order.ATOMIC];
+        }
+    },
+    'createmod_setTargetSpeed': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("set target speed");
+                this.appendValueInput("SPEED").setCheck("Number")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("speed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Sets the rotation speed controller's target speed.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const speed = gen.valueToCode(block, "SPEED", Order.ATOMIC);
+            return `${gen.getIndent()}${peripheral}.setTargetSpeed(${speed})`;
+        }
+    },
+    'createmod_getTargetSpeed': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get target speed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the rotation speed controller's current target speed.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getTargetSpeed()`, Order.ATOMIC];
+        }
+    },
     'createmod_setGeneratedSpeed': {
         block: {
             init() {
-                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                this.appendDummyInput()
                     .appendField("set generated speed");
                 this.appendValueInput("SPEED").setCheck("Number")
                     .setAlign(Blockly.inputs.Align.RIGHT)
-                    .appendField("to");
+                    .appendField("speed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
                 this.setStyle(`${PLUGIN_ID}_blocks`);
@@ -63,8 +179,11 @@ export const createmodBlocks: Blocks = {
     'createmod_getGeneratedSpeed': {
         block: {
             init() {
-                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                this.appendDummyInput()
                     .appendField("get generated speed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
                 this.setOutput(true, "Number");
                 this.setStyle(`${PLUGIN_ID}_blocks`);
                 this.setTooltip("Gets the creative motor's current generated speed.");
@@ -78,8 +197,11 @@ export const createmodBlocks: Blocks = {
     'createmod_getSpeed': {
         block: {
             init() {
-                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                this.appendDummyInput()
                     .appendField("get speed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
                 this.setOutput(true, "Number");
                 this.setStyle(`${PLUGIN_ID}_blocks`);
                 this.setTooltip("Gets the current rotation speed of the attached components.");
@@ -93,8 +215,11 @@ export const createmodBlocks: Blocks = {
     'createmod_getStress': {
         block: {
             init() {
-                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                this.appendDummyInput()
                     .appendField("get stress level");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
                 this.setOutput(true, "Number");
                 this.setStyle(`${PLUGIN_ID}_blocks`);
                 this.setTooltip("Gets the connected network's current stress level.");
@@ -108,8 +233,11 @@ export const createmodBlocks: Blocks = {
     'createmod_getStressCapacity': {
         block: {
             init() {
-                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                this.appendDummyInput()
                     .appendField("get stress capacity");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
                 this.setOutput(true, "Number");
                 this.setStyle(`${PLUGIN_ID}_blocks`);
                 this.setTooltip("Gets the connected network's total stress capacity.");

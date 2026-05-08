@@ -456,7 +456,7 @@ export function generateToolBox(project: CCProject | null): Blockly.utils.toolbo
 };
 
 function generatePluginsToolbox(project: CCProject | null): Array<Blockly.utils.toolbox.ToolboxItemInfo> {
-  if (!project || project?.plugins.length === 0) return [];
+  if (!project || (project?.plugins?.length ?? 0) === 0) return [];
 
   const infoArray = [];
   infoArray.push({ kind: 'sep' });
@@ -470,8 +470,25 @@ function generatePluginsToolbox(project: CCProject | null): Array<Blockly.utils.
 
     const blocksContent = [];
 
-    for (const block of Object.keys(blockData.blocks)) {
-      blocksContent.push({ kind: 'block', type: block });
+    for (const blockType of Object.keys(blockData.blocks)) {
+      switch (blockType) {
+        case "createmod_getStress":
+          blocksContent.push({ kind: 'label', text: '--- Stressometer ---' });
+          break;
+        case "createmod_getSpeed":
+          blocksContent.push({ kind: 'label', text: '--- Speedometer ---' });
+          break;
+        case "createmod_setGeneratedSpeed":
+          blocksContent.push({ kind: 'label', text: '--- Creative Motor ---' });
+          break;
+        case "createmod_setTargetSpeed":
+          blocksContent.push({ kind: 'label', text: '--- Rotational Speed Controller ---' });
+          break;
+        case "createmod_gearshift_rotate":
+          blocksContent.push({ kind: 'label', text: '--- Sequenced Gearshift ---' });
+          break;
+      }
+      blocksContent.push({ kind: 'block', type: blockType });
     }
 
     infoArray.push({
