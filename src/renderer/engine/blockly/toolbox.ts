@@ -487,6 +487,24 @@ function generatePluginsToolbox(project: CCProject | null): Array<Blockly.utils.
         case "createmod_gearshift_rotate":
           blocksContent.push({ kind: 'label', text: '--- Sequenced Gearshift ---' });
           break;
+        case "createmod_isExtended":
+          blocksContent.push({ kind: 'label', text: '--- Sticker ---' });
+          break;
+        case "createmod_display_setCursorPos":
+          blocksContent.push({ kind: 'label', text: '--- Display Link ---' });
+          break;
+        case "createmod_nixie_setText":
+          blocksContent.push({ kind: 'label', text: '--- Nixie Tube ---' });
+          break;
+        case "createmod_train_isTrainPassing":
+          blocksContent.push({ kind: 'label', text: '--- Train Observer ---' });
+          break;
+        case "createmod_train_getState":
+          blocksContent.push({ kind: 'label', text: '--- Train Signal ---' });
+          break;
+        case "createmod_train_assemble":
+          blocksContent.push({ kind: 'label', text: '--- Train Station ---' });
+          break;
       }
       blocksContent.push({ kind: 'block', type: blockType });
     }
