@@ -14,6 +14,8 @@ if (isLinux) {
   app.commandLine.appendSwitch('ozone-platform', 'x11');
   app.commandLine.appendSwitch('ozone-platform-hint', 'x11');
   app.commandLine.appendSwitch('no-sandbox');
+  app.commandLine.appendSwitch('enable-features', 'UseOzonePlatform');
+  app.commandLine.appendSwitch('disable-features', 'WaylandWindowDecorations');
 }
 
 if (useSafeGraphics) {

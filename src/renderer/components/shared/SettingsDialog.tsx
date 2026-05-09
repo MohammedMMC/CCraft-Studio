@@ -1,9 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Modal } from '../shared/Modal';
 import { useProjectStore } from '../../stores/projectStore';
 import { CloudIcon, CraftOSPCIcon } from './Icons';
 import { useAppStore } from '@/stores/appStore';
 import { PLUGINS, PluginStore } from '@/models/Project';
+
+const normalizePlugins = (plugins?: PluginStore[]) =>
+    (plugins ?? []).map((plugin) => `${plugin.id}:${plugin.version}`).sort();
+
+const hasPluginChanges = (current: PluginStore[], original?: PluginStore[]) => {
+    const currentList = normalizePlugins(current);
+    const originalList = normalizePlugins(original);
+
+    if (currentList.length !== originalList.length) return true;
+
+    return currentList.some((value, index) => value !== originalList[index]);
+};
 
 interface SettingsDialogProps {
     isOpen: boolean;
@@ -20,6 +32,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
     const [projectAuthor, setProjectAuthor] = useState<string | undefined>(project?.author ?? "");
     const [projectDescription, setProjectDescription] = useState<string>(project?.description ?? "");
     const [projectPlugins, setProjectPlugins] = useState<PluginStore[]>(project?.plugins ?? []);
+    const [isPluginsOpen, setIsPluginsOpen] = useState(false);
+    const pluginsRef = useRef<HTMLDivElement | null>(null);
 
     const useCraftOSPC = useAppStore(e => e.useCraftOSPC);
     const setCraftOSPC = useAppStore(e => e.setCraftOSPC);
@@ -34,7 +48,12 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
 
     useEffect(() => {
         if (project) {
-            if (projectName !== project.name || projectAuthor !== project.author || projectDescription !== project.description || projectPlugins?.length !== project.plugins?.length) {
+            if (
+                projectName !== project.name ||
+                projectAuthor !== project.author ||
+                projectDescription !== project.description ||
+                hasPluginChanges(projectPlugins, project.plugins)
+            ) {
                 setNewChanges(true);
             }
         }
@@ -52,6 +71,20 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
         }
     }, [editorCloudEnabled, token]);
 
+    useEffect(() => {
+        if (!isPluginsOpen) return;
+
+        const handleClickOutside = (event: MouseEvent) => {
+            if (!pluginsRef.current) return;
+            if (!pluginsRef.current.contains(event.target as Node)) {
+                setIsPluginsOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isPluginsOpen]);
+
     async function checkToken() {
         const result = await window.electronAPI.api.checkToken(token, typeof tokenData.lastFetch === "undefined");
 
@@ -63,9 +96,33 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
         }
     }
 
+    const isPluginSelected = (plugin: PluginStore) =>
+        projectPlugins.some((selected) => selected.id === plugin.id && selected.version === plugin.version);
+
+    const addPlugin = (plugin: PluginStore) => {
+        if (isPluginSelected(plugin)) return;
+        setProjectPlugins((prev) => [...prev, plugin]);
+    };
+
+    const removePlugin = (plugin: PluginStore) => {
+        setProjectPlugins((prev) =>
+            prev.filter((selected) => !(selected.id === plugin.id && selected.version === plugin.version))
+        );
+    };
+
+    const getPluginLabel = (plugin: PluginStore) => {
+        const match = PLUGINS.find((item) => item.id === plugin.id && item.version === plugin.version);
+        return match ? `${match.name} (v${match.version})` : `${plugin.id} (v${plugin.version})`;
+    };
+
     function handleSave() {
         if (project) {
-            if (projectName !== project.name || projectAuthor !== project.author || projectDescription !== project.description || projectPlugins?.length !== project.plugins?.length) {
+            if (
+                projectName !== project.name ||
+                projectAuthor !== project.author ||
+                projectDescription !== project.description ||
+                hasPluginChanges(projectPlugins, project.plugins)
+            ) {
                 changeProjectInfo({ newName: projectName, newAuthor: projectAuthor, newDescription: projectDescription, newPlugins: projectPlugins });
             }
         }
@@ -138,25 +195,47 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
                                     </div>
                                     <div>
                                         <label className="block text-xs text-app-text-dim mb-1">Plugins</label>
-                                        <select
-                                            name="plugins"
-                                            id="plugins"
-                                            multiple
-                                            value={projectPlugins.map((p) => `${p.id}:${p.version}`)}
-                                            onChange={(e) => {
-                                                const selectedOptions = Array.from(e.target.selectedOptions).map(option => {
-                                                    const [id, version] = option.value.split(':');
-                                                    return { id, version };
-                                                });
-                                                setProjectPlugins(selectedOptions);
-                                            }}
-                                        >
-                                            {PLUGINS.map((plugin) => (
-                                                <option key={plugin.id} value={`${plugin.id}:${plugin.version}`}>
-                                                    {plugin.name} (v{plugin.version})
-                                                </option>
-                                            ))}
-                                        </select>
+                                        <div className="relative" ref={pluginsRef}>
+                                            <button
+                                                type="button"
+                                                className="input-field flex flex-wrap items-center gap-2 text-left min-h-[2.5rem]"
+                                                onClick={() => setIsPluginsOpen((open) => !open)}
+                                                aria-haspopup="listbox"
+                                                aria-expanded={isPluginsOpen}
+                                            >
+                                                {projectPlugins.length === 0 ? (
+                                                    <span className="text-app-text-dim">Click to select plugins</span>
+                                                ) : (
+                                                    <span className="text-app-text">{projectPlugins.map(getPluginLabel).join(', ')}</span>
+                                                )}
+                                            </button>
+                                            {isPluginsOpen && (
+                                                <div className="absolute z-10 mt-1 w-full rounded border border-app-border bg-app-bg shadow-lg">
+                                                    <div className="max-h-56 overflow-auto">
+                                                        {PLUGINS.map((plugin) => {
+                                                            const selected = isPluginSelected({ id: plugin.id, version: plugin.version });
+                                                            return (
+                                                                <button
+                                                                    key={`${plugin.id}:${plugin.version}`}
+                                                                    type="button"
+                                                                    className={`flex w-full items-center justify-between px-3 py-2 text-sm text-left hover:bg-app-hover ${selected ? 'text-app-text' : 'text-app-text-dim'}`}
+                                                                    onClick={() =>
+                                                                        selected
+                                                                            ? removePlugin({ id: plugin.id, version: plugin.version })
+                                                                            : addPlugin({ id: plugin.id, version: plugin.version })
+                                                                    }
+                                                                    role="option"
+                                                                    aria-selected={selected}
+                                                                >
+                                                                    <span>{plugin.name} (v{plugin.version})</span>
+                                                                    {selected && <span className="text-xs text-app-text-dim">Added</span>}
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </>

@@ -69,7 +69,7 @@ export const uiActionsBlocks: Blocks = {
             const prop = block.getFieldValue('PROP');
             const value = gen.valueToCode(block, 'VALUE', Order.NONE);
 
-            return [`screen:childSetProp("${el}", "${prop}", ${value})`, Order.ATOMIC];
+            return `${gen.getIndent()}screen:childSetProp("${el}", "${prop}", ${value})`;
         }
     },
     'ui_get_prop': {
