@@ -11,11 +11,14 @@ const useSafeGraphics =
   process.env.CCRAFT_DISABLE_GPU === '1';
 
 if (isLinux) {
+  process.env.ELECTRON_OZONE_PLATFORM_HINT = 'x11';
+  process.env.OZONE_PLATFORM = 'x11';
+  process.env.WAYLAND_DISPLAY = '';
   app.commandLine.appendSwitch('ozone-platform', 'x11');
   app.commandLine.appendSwitch('ozone-platform-hint', 'x11');
   app.commandLine.appendSwitch('no-sandbox');
   app.commandLine.appendSwitch('enable-features', 'UseOzonePlatform');
-  app.commandLine.appendSwitch('disable-features', 'WaylandWindowDecorations');
+  app.commandLine.appendSwitch('disable-features', 'WaylandWindowDecorations,Wayland');
 }
 
 if (useSafeGraphics) {
