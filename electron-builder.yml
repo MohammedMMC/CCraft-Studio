@@ -7,6 +7,8 @@ files:
   - package.json
   - LICENSE
   - LICENSES/**/*
+  - assets/**/*
+  - assets/icons/icon.png
 win:
   target: nsis
   icon: assets/icons/icon.ico

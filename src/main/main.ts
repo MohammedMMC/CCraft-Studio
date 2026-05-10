@@ -34,7 +34,7 @@ function createWindow(): void {
     minHeight: 700,
     title: 'CCraft Studio',
     backgroundColor: '#1e1e2e',
-    icon: path.join(__dirname, '../../assets/icons/icon.png'),
+    icon: path.join(app.getAppPath(), 'assets', 'icons', 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, '../preload/preload.js'),
       contextIsolation: true,
