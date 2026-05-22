@@ -119,13 +119,12 @@ export const modemBlocks: Blocks = {
                     .appendField('modem');
                 this.setOutput(true, 'Boolean');
                 this.setStyle('modem_blocks');
-                this.setTooltip('Check if a channel is open on the modem');
+                this.setTooltip('Check if the modem is wireless');
             },
         },
         generator: (block, gen) => {
-            const channel = gen.valueToCode(block, 'CHANNEL', Order.NONE);
             const modem = gen.valueToCode(block, 'MODEM_PERIPHERAL', Order.NONE);
-            return [`${modem}.isOpen(${channel})`, Order.ATOMIC];
+            return [`${modem}.isWireless()`, Order.ATOMIC];
         }
     },
     'modem_getNamesRemote': {
