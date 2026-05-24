@@ -138,7 +138,7 @@ export const redstoneBlocks: Blocks = {
         },
         generator: (block, gen) => {
             const side = block.getFieldValue('SIDE');
-            return [`redstone.getBundledInput("${side}")`, Order.ATOMIC];
+            return [`redstone.getBundledOutput("${side}")`, Order.ATOMIC];
         }
     },
     'rs_getBundledInput': {
@@ -172,7 +172,7 @@ export const redstoneBlocks: Blocks = {
         generator: (block, gen) => {
             const side = block.getFieldValue('SIDE');
             const color = gen.valueToCode(block, 'COLOR', Order.NONE);
-            
+
             return [`redstone.testBundledInput("${side}", ${color})`, Order.ATOMIC];
         }
     }

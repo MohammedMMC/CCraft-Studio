@@ -15,7 +15,7 @@ export const textBlocks: Blocks = {
             for (let i = 0; i < count; i++) {
                 parts.push(gen.valueToCode(block, `ADD${i}`, Order.CONCAT));
             }
-            return [parts.join(' .. ') || '""', Order.CONCAT];
+            return [`(${parts.join(' .. ') || '""'})`, Order.CONCAT];
         }
     },
     'text_length': {

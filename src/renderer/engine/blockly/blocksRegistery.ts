@@ -1,6 +1,5 @@
 import * as Blockly from 'blockly';
 import { GeneratorFunc, luaGenerator } from './luaGenerator';
-import { useProjectStore } from '@/stores/projectStore';
 import { CCProject } from '@/models/Project';
 import { blocksData } from './BlocksDataGen';
 

@@ -30,5 +30,13 @@ export const logicBlocks: Blocks = {
             const b = gen.valueToCode(block, 'B', Order.RELATIONAL);
             return [`${a} ${op} ${b}`, Order.RELATIONAL];
         }
+    },
+    'logic_ternary': {
+        generator: (block, gen) => {
+            const condition = gen.valueToCode(block, 'IF', Order.HIGH);
+            const trueExpr = gen.valueToCode(block, 'THEN', Order.HIGH);
+            const falseExpr = gen.valueToCode(block, 'ELSE', Order.HIGH);
+            return [`((${condition}) and (${trueExpr}) or (${falseExpr}))`, Order.HIGH];
+        }
     }
-};
+}; 

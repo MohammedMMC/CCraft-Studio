@@ -1,3 +1,4 @@
+import { CC_COLORS } from "@/models/CCColors";
 import { Blocks } from "../../blocksRegistery";
 import { Order } from "../../luaGenerator";
 
@@ -211,16 +212,17 @@ export const terminalBlocks: Blocks = {
             },
         },
         generator: (block, gen) => {
-            const text = gen.valueToCode(block, 'TEXT', Order.NONE) || '""';
-            const fg = gen.valueToCode(block, 'FG', Order.NONE) || 'colors.white';
-            const bg = gen.valueToCode(block, 'BG', Order.NONE) || 'colors.black';
-            const map = `{[colors.white]="0",[colors.orange]="1",[colors.magenta]="2",[colors.lightBlue]="3",[colors.yellow]="4",[colors.lime]="5",[colors.pink]="6",[colors.gray]="7",[colors.lightGray]="8",[colors.cyan]="9",[colors.purple]="a",[colors.blue]="b",[colors.brown]="c",[colors.green]="d",[colors.red]="e",[colors.black]="f"}`;
-            return `${gen.getIndent()}do
-${gen.getIndent()}  local _blitText = tostring(${text})
-${gen.getIndent()}  local _fg = (${map})[${fg}] or "0"
-${gen.getIndent()}  local _bg = (${map})[${bg}] or "f"
-${gen.getIndent()}  term.blit(_blitText, string.rep(_fg, #_blitText), string.rep(_bg, #_blitText))
-${gen.getIndent()}end`;
+            const text = gen.valueToCode(block, 'TEXT', Order.NONE);
+            const fg = gen.valueToCode(block, 'FG', Order.NONE);
+            const bg = gen.valueToCode(block, 'BG', Order.NONE);
+            const fgBlit = Object.values(CC_COLORS).find(c => c.luaName == fg);
+            const bgBlit = Object.values(CC_COLORS).find(c => c.luaName == bg);
+            return [
+                `${gen.getIndent()}do`,
+                `${gen.getIndent()}  local _blitText = tostring(${text})`,
+                `${gen.getIndent()}  term.blit(_blitText, string.rep("${fgBlit?.blit}", #_blitText), string.rep("${bgBlit?.blit}", #_blitText))`,
+                `${gen.getIndent()}end`
+            ].join('\n');
         }
     },
     'term_getWidth': {
