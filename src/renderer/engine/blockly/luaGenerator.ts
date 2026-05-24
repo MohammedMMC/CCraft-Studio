@@ -77,7 +77,7 @@ class LuaGen {
       const code = this.chainToCode(block);
       if (code.trim()) sections.push(code);
     }
-    console.log(sections.join('\n\n'));
+    // console.log(sections.join('\n\n')); DEBUG
     return sections.join('\n\n');
   }
 }

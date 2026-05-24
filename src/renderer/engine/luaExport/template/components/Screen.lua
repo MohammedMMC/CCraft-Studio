@@ -90,6 +90,7 @@ function Screen:childSetProp(childname, prop, value)
             child[prop] = value
         end
     end
+    self:draw()
 end
 
 function Screen:addDrawOrder(child)
