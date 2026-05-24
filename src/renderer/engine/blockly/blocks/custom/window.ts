@@ -108,7 +108,7 @@ export const windowBlocks: Blocks = {
         },
         generator: (block, gen) => {
             const win = gen.valueToCode(block, 'WIN', Order.ATOMIC);
-            return [`({${win}.getSize()})`, Order.ATOMIC];
+            return [`select(1, ${win}.getSize())`, Order.ATOMIC];
         }
     },
     'window_getHeight': {
@@ -144,7 +144,7 @@ export const windowBlocks: Blocks = {
         },
         generator: (block, gen) => {
             const win = gen.valueToCode(block, 'WIN', Order.ATOMIC);
-            return [`({${win}.getPosition()})`, Order.ATOMIC];
+            return [`select(1, ${win}.getPosition())`, Order.ATOMIC];
         }
     },
     'window_getPositionY': {
