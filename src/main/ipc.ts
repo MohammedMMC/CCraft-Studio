@@ -1,4 +1,4 @@
-import { ipcMain, dialog } from 'electron';
+import { ipcMain, dialog, app } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
@@ -16,6 +16,10 @@ export const APP_RECENT_FILE = path.join(APP_DATA_DIR, 'recent.json');
 export function setupIPC(): void {
   fs.mkdirSync(DEFAULT_DOCS_DIR, { recursive: true });
   fs.mkdirSync(APP_DATA_DIR, { recursive: true });
+
+  ipcMain.handle('app:getVersion', () => {
+    return app.getVersion();
+  });
 
   ipcMain.handle('app:getAppData', async () => {
     if (!fs.existsSync(APP_DATA_FILE)) {
@@ -115,6 +119,16 @@ export function setupIPC(): void {
     return recent;
   });
 
+  ipcMain.handle('fs:removeRecentProject', async (_event, entry: { name: string; path: string }) => {
+    let recent: { name: string; path: string; openedAt: string }[] = [];
+    if (fs.existsSync(APP_RECENT_FILE)) {
+      try { recent = JSON.parse(fs.readFileSync(APP_RECENT_FILE, 'utf-8')); } catch { }
+    }
+    recent = recent.filter(r => r.path !== entry.path);
+    fs.writeFileSync(APP_RECENT_FILE, JSON.stringify(recent, null, 2), 'utf-8');
+    return recent;
+  });
+
   ipcMain.handle('api:uploadTempProject', async (_event, data: { buffer: ArrayBuffer }) => {
     try {
       const formData = new FormData();
@@ -146,14 +160,14 @@ export function setupIPC(): void {
   ipcMain.handle('api:checkToken', async (_event, token: string, current: boolean) => {
     if (current) {
       const storedToken = await keytar.getPassword("CCraftStudio", "token");
-      
+
       if (storedToken) {
         token = storedToken;
       } else {
         return { valid: false };
       }
     }
-    
+
     try {
       const response = await fetch(`${API_URL}/checkToken`, {
         method: 'POST',

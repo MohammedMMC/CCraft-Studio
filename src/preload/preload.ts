@@ -1,7 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 const electronAPI = {
-  getAppData: () => ipcRenderer.invoke('app:getAppData'),
+  getAppVersion: (): Promise<string> => ipcRenderer.invoke('app:getVersion'),
+  getAppData: (): Promise<{}> => ipcRenderer.invoke('app:getAppData'),
   saveAppData: (data: {}) => ipcRenderer.invoke('app:saveAppData', data),
   openProject: () => ipcRenderer.invoke('dialog:openProject'),
   openProjectByPath: (filePath: string) => ipcRenderer.invoke('fs:openProjectByPath', filePath),
@@ -10,6 +11,7 @@ const electronAPI = {
   exportMultiFile: (data: { files: { path: string; content: string }[] }) => ipcRenderer.invoke('dialog:exportMultiFile', data),
   getRecentProjects: () => ipcRenderer.invoke('fs:getRecentProjects'),
   addRecentProject: (entry: { name: string; path: string }) => ipcRenderer.invoke('fs:addRecentProject', entry),
+  removeRecentProject: (entry: { name: string; path: string }) => ipcRenderer.invoke('fs:removeRecentProject', entry),
 
   onMenuAction: (callback: (action: string) => void) => {
     const actions = [

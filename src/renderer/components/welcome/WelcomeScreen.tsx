@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useProjectStore } from '../../stores/projectStore';
 import { useBlocklyStore } from '../../stores/blocklyStore';
-import { ElectronAPI } from 'src/preload/preload';
+import { ElectronAPI } from '../../../preload/preload';
 
 interface RecentProject {
   name: string;
@@ -47,6 +47,11 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNewProject }) =>
     }
   };
 
+  const removeFromRecents = (project: { name: string; path: string }) => {
+    setRecentProjects((prev) => prev.filter((p) => p.path !== project.path));
+    window.electronAPI.removeRecentProject({ name: project.name, path: project.path });
+  };
+
   const handleOpenRecent = async (project: RecentProject) => {
     if (!window.electronAPI) return;
     try {
@@ -55,10 +60,10 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNewProject }) =>
         handleLoadProjectData(result.content, result.filePath);
         window.electronAPI.addRecentProject({ name: result.content.name, path: result.filePath });
       } else {
-        setRecentProjects((prev) => prev.filter((p) => p.path !== project.path));
+        removeFromRecents({ name: project.name, path: project.path });
       }
     } catch {
-      setRecentProjects((prev) => prev.filter((p) => p.path !== project.path));
+      removeFromRecents({ name: project.name, path: project.path });
     }
   };
 
@@ -121,7 +126,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNewProject }) =>
 
         {/* Version */}
         <div className="mt-10 text-xs text-app-text-dim">
-          v1.0.0 &middot; CC:Tweaked
+          v0.5.0-alpha &middot; CCraft Studio
         </div>
       </div>
     </div>
