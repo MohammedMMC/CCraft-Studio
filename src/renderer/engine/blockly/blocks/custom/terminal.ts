@@ -31,7 +31,7 @@ export const terminalBlocks: Blocks = {
         },
         generator: (block, gen) => {
             const text = gen.valueToCode(block, 'TEXT', Order.NONE);
-            return `${gen.getIndent()}term.print(${text})`;
+            return `${gen.getIndent()}print(${text})`;
         }
     },
     'term_redirect': {
@@ -61,7 +61,7 @@ export const terminalBlocks: Blocks = {
             },
         },
         generator: (block, gen) => {
-            return [`term.read()`, Order.ATOMIC];
+            return [`read()`, Order.ATOMIC];
         }
     },
     'term_clear': {
@@ -190,7 +190,7 @@ export const terminalBlocks: Blocks = {
             },
         },
         generator: (block, gen) => {
-            const n = gen.valueToCode(block, 'N', Order.NONE);
+            const n = gen.valueToCode(block, 'NUMBER', Order.NONE);
             return `${gen.getIndent()}term.scroll(${n})`;
         }
     },
@@ -211,10 +211,16 @@ export const terminalBlocks: Blocks = {
             },
         },
         generator: (block, gen) => {
-            const text = gen.valueToCode(block, 'TEXT', Order.NONE);
-            const fg = gen.valueToCode(block, 'FG', Order.NONE);
-            const bg = gen.valueToCode(block, 'BG', Order.NONE);
-            return `${gen.getIndent()}term.blit(${text}, ${fg}, ${bg})`;
+            const text = gen.valueToCode(block, 'TEXT', Order.NONE) || '""';
+            const fg = gen.valueToCode(block, 'FG', Order.NONE) || 'colors.white';
+            const bg = gen.valueToCode(block, 'BG', Order.NONE) || 'colors.black';
+            const map = `{[colors.white]="0",[colors.orange]="1",[colors.magenta]="2",[colors.lightBlue]="3",[colors.yellow]="4",[colors.lime]="5",[colors.pink]="6",[colors.gray]="7",[colors.lightGray]="8",[colors.cyan]="9",[colors.purple]="a",[colors.blue]="b",[colors.brown]="c",[colors.green]="d",[colors.red]="e",[colors.black]="f"}`;
+            return `${gen.getIndent()}do
+${gen.getIndent()}  local _blitText = tostring(${text})
+${gen.getIndent()}  local _fg = (${map})[${fg}] or "0"
+${gen.getIndent()}  local _bg = (${map})[${bg}] or "f"
+${gen.getIndent()}  term.blit(_blitText, string.rep(_fg, #_blitText), string.rep(_bg, #_blitText))
+${gen.getIndent()}end`;
         }
     },
     'term_getWidth': {
@@ -228,7 +234,7 @@ export const terminalBlocks: Blocks = {
             },
         },
         generator: (block, gen) => {
-            return [`({term.getSize()})`, Order.ATOMIC];
+            return [`select(1, term.getSize())`, Order.ATOMIC];
         }
     },
     'term_getHeight': {
@@ -256,7 +262,7 @@ export const terminalBlocks: Blocks = {
             },
         },
         generator: (block, gen) => {
-            return [`({term.getCursorPos()})`, Order.ATOMIC];
+            return [`select(1, term.getCursorPos())`, Order.ATOMIC];
         }
     },
     'term_getCursorY': {

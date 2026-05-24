@@ -22,7 +22,7 @@ export const listsBlocks: Blocks = {
         generator: (block, gen) => {
             const list = gen.valueToCode(block, 'VALUE', Order.ATOMIC);
             const index = gen.valueToCode(block, 'AT', Order.NONE);
-            return [`${list}[${index}]`, Order.ATOMIC];
+            return [`(${list})[${index}]`, Order.ATOMIC];
         }
     }
 };
