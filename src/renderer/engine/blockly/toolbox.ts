@@ -526,6 +526,18 @@ function generatePluginsToolbox(project: CCProject | null): Array<Blockly.utils.
         case "mekanism_firla_setLogicMode":
           blocksContent.push({ kind: 'block', type: blockType, inputs: { MODE: { block: { type: 'mekanism_firla_modes' } } } });
           break;
+        case "mekanism_fur_getCaseTemperature":
+          blocksContent.push({ kind: 'label', text: '--- Fission Reactor ---' });
+          break;
+        case "mekanism_fur_setInjectionRate":
+          blocksContent.push({ kind: 'block', type: blockType, inputs: { RATE: { block: { type: 'math_number', fields: { NUM: 5 } } } } });
+          break;
+        case "mekanism_furla_getLogicMode":
+          blocksContent.push({ kind: 'label', text: '--- Fusion Reactor Logic Adapter ---' });
+          break;
+        case "mekanism_furla_setLogicMode":
+          blocksContent.push({ kind: 'block', type: blockType, inputs: { MODE: { block: { type: 'mekanism_furla_modes' } } } });
+          break;
       }
       if (blocksContent.find(b => b.kind === 'block' && b.type === blockType)) continue;
       blocksContent.push({ kind: 'block', type: blockType });

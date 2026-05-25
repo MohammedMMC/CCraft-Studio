@@ -129,6 +129,27 @@ export const mekanismBlocks: Blocks = {
             return [`"${option}"`, Order.ATOMIC];
         }
     },
+    'mekanism_furla_modes': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("fusion reactor logic modes")
+                    .appendField(new Blockly.FieldDropdown([
+                        ["READY", "READY"],
+                        ["CAPACITY", "CAPACITY"],
+                        ["DEPLETED", "DEPLETED"],
+                        ["DISABLED", "DISABLED"],
+                    ]), 'OPTION');
+                this.setOutput(true, "String");
+                this.setStyle("utility_blocks");
+                this.setTooltip("Gives the fusion reactor logic options.");
+            },
+        },
+        generator: (block, gen) => {
+            const option = block.getFieldValue("OPTION");
+            return [`"${option}"`, Order.ATOMIC];
+        }
+    },
     'mekanism_gmm_getComparatorLevel': {
         block: {
             init() {
@@ -807,24 +828,6 @@ export const mekanismBlocks: Blocks = {
             return [`${peripheral}.getLogicMode()`, Order.ATOMIC];
         }
     },
-    'mekanism_firla_getRedstoneLogicStatus': {
-        block: {
-            init() {
-                this.appendDummyInput()
-                    .appendField("get fission reactor redstone logic status");
-                this.appendValueInput("PERIPHERAL").setCheck("Array")
-                    .setAlign(Blockly.inputs.Align.RIGHT)
-                    .appendField("peripheral");
-                this.setOutput(true, "String");
-                this.setStyle(`${PLUGIN_ID}_blocks`);
-                this.setTooltip("Gets the fission reactor redstone logic adapter status.");
-            },
-        },
-        generator: (block, gen) => {
-            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
-            return [`${peripheral}.getRedstoneLogicStatus()`, Order.ATOMIC];
-        }
-    },
     'mekanism_firla_setLogicMode': {
         block: {
             init() {
@@ -846,6 +849,645 @@ export const mekanismBlocks: Blocks = {
             const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
             const mode = gen.valueToCode(block, "MODE", Order.ATOMIC);
             return `${gen.getIndent()}${peripheral}.setLogicMode(${mode})`;
+        }
+    },
+    'mekanism_firla_getRedstoneLogicStatus': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fission reactor redstone logic status");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "String");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fission reactor redstone logic adapter status.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getRedstoneLogicStatus()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getCaseTemperature': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor case temperature");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor case temperature.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getCaseTemperature()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getDTFuelCapacity': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor DT fuel capacity");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor DT fuel capacity.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getDTFuelCapacity()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getDTFuelFilledPercentage': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor DT fuel filled percentage");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor DT fuel filled percentage.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getDTFuelFilledPercentage()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getDTFuelNeeded': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor DT fuel needed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor DT fuel needed.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getDTFuelNeeded()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getDeuteriumCapacity': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor deuterium capacity");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor deuterium capacity.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getDeuteriumCapacity()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getDeuteriumFilledPercentage': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor deuterium filled percentage");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor deuterium filled percentage.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getDeuteriumFilledPercentage()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getDeuteriumNeeded': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor deuterium needed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor deuterium needed.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getDeuteriumNeeded()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getEnvironmentalLoss': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor environmental loss");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor environmental loss.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getEnvironmentalLoss()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getIgnitionTemperature': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor")
+                    .appendField(new Blockly.FieldDropdown([
+                        ["Water", "WATER"],
+                        ["Air", "AIR"]
+                    ]), "COOLING_TYPE")
+                    .appendField("cooled ignition temperature");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor ignition temperature.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const coolingType = block.getFieldValue("COOLING_TYPE");
+            return [`${peripheral}.getIgnitionTemperature(${coolingType == "WATER" ? "true" : "false"})`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getInjectionRate': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor injection rate");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor injection rate.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getInjectionRate()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getMaxCasingTemperature': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor")
+                    .appendField(new Blockly.FieldDropdown([
+                        ["Water", "WATER"],
+                        ["Air", "AIR"]
+                    ]), "COOLING_TYPE")
+                    .appendField("cooled max casing temperature");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor max casing temperature.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const coolingType = block.getFieldValue("COOLING_TYPE");
+            return [`${peripheral}.getMaxCasingTemperature(${coolingType == "WATER" ? "true" : "false"})`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getMaxPlasmaTemperature': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor")
+                    .appendField(new Blockly.FieldDropdown([
+                        ["Water", "WATER"],
+                        ["Air", "AIR"]
+                    ]), "COOLING_TYPE")
+                    .appendField("cooled max plasma temperature");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor max plasma temperature.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const coolingType = block.getFieldValue("COOLING_TYPE");
+            return [`${peripheral}.getMaxPlasmaTemperature(${coolingType == "WATER" ? "true" : "false"})`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getMinInjectionRate': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor")
+                    .appendField(new Blockly.FieldDropdown([
+                        ["Water", "WATER"],
+                        ["Air", "AIR"]
+                    ]), "COOLING_TYPE")
+                    .appendField("cooled min injection rate");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor min injection rate.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const coolingType = block.getFieldValue("COOLING_TYPE");
+            return [`${peripheral}.getMinInjectionRate(${coolingType == "WATER" ? "true" : "false"})`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getPassiveGeneration': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor")
+                    .appendField(new Blockly.FieldDropdown([
+                        ["Water", "WATER"],
+                        ["Air", "AIR"]
+                    ]), "COOLING_TYPE")
+                    .appendField("cooled passive generation");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor passive generation.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const coolingType = block.getFieldValue("COOLING_TYPE");
+            return [`${peripheral}.getPassiveGeneration(${coolingType == "WATER" ? "true" : "false"})`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getPlasmaTemperature': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor plasma temperature");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor plasma temperature.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getPlasmaTemperature()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getProductionRate': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor production rate");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor production rate.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getProductionRate()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getSteamCapacity': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor steam capacity");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor steam capacity.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getSteamCapacity()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getSteamFilledPercentage': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor steam filled percentage");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor steam filled percentage.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getSteamFilledPercentage()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getSteamNeeded': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor steam needed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor steam needed.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getSteamNeeded()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getTransferLoss': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor transfer loss");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor transfer loss.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getTransferLoss()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getTritiumCapacity': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor tritium capacity");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor tritium capacity.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getTritiumCapacity()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getTritiumFilledPercentage': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor tritium filled percentage");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor tritium filled percentage.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getTritiumFilledPercentage()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getTritiumNeeded': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor tritium needed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor tritium needed.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getTritiumNeeded()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getWaterCapacity': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor water capacity");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor water capacity.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getWaterCapacity()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getWaterFilledPercentage': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor water filled percentage");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor water filled percentage.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getWaterFilledPercentage()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_getWaterNeeded': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor water needed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor water needed.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getWaterNeeded()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_isIgnited': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor ignition status");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Boolean");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor ignition status.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.isIgnited()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_fur_setInjectionRate': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("set fusion reactor injection rate");
+                this.appendValueInput("RATE").setCheck("Number")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("to");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Sets the fusion reactor injection rate.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const rate = gen.valueToCode(block, "RATE", Order.ATOMIC);
+            return `${gen.getIndent()}${peripheral}.setInjectionRate(${rate})`;
+        }
+    },
+    'mekanism_furla_getLogicMode': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor logic mode");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "String");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor logic adapter mode.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getLogicMode()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_furla_setLogicMode': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("set fusion reactor logic mode");
+                this.appendValueInput("MODE").setCheck("String")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("to");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Sets the fusion reactor logic adapter mode.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const mode = gen.valueToCode(block, "MODE", Order.ATOMIC);
+            return `${gen.getIndent()}${peripheral}.setLogicMode(${mode})`;
+        }
+    },
+    'mekanism_furla_isActiveCooledLogic': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get fusion reactor active cooled logic status");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Boolean");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the fusion reactor active cooled logic status.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.isActiveCooledLogic()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_furla_setActiveCooledLogic': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("set fusion reactor active cooled logic status");
+                this.appendValueInput("ACTIVE").setCheck("Boolean")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("to");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Sets the fusion reactor active cooled logic status.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const active = gen.valueToCode(block, "ACTIVE", Order.ATOMIC);
+            return `${gen.getIndent()}${peripheral}.setActiveCooledLogic(${active})`;
         }
     },
 };
