@@ -72,6 +72,7 @@ export interface PluginStore {
 
 export const PLUGINS: Plugin[] = [
   { name: 'Create Mod', id: "create-mod", version: '1.0.0', color: '#be5f4f' },
+  { name: 'Mekanism Mod', id: "mekanism-mod", version: '1.0.0', color: '#42d58f' },
 ];
 
 export interface GlobalVariable {
