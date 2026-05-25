@@ -514,7 +514,20 @@ function generatePluginsToolbox(project: CCProject | null): Array<Blockly.utils.
         case "mekanism_gmm_setRedstoneMode":
           blocksContent.push({ kind: 'block', type: blockType, inputs: { MODE: { block: { type: 'mekanism_redstoneModes' } } } });
           break;
+        case "mekanism_fir_activate":
+          blocksContent.push({ kind: 'label', text: '--- Fission Reactor ---' });
+          break;
+        case "mekanism_fir_setBurnRate":
+          blocksContent.push({ kind: 'block', type: blockType, inputs: { RATE: { block: { type: 'math_number', fields: { NUM: 5 } } } } });
+          break;
+        case "mekanism_firla_getLogicMode":
+          blocksContent.push({ kind: 'label', text: '--- Fission Reactor Logic Adapter ---' });
+          break;
+        case "mekanism_firla_setLogicMode":
+          blocksContent.push({ kind: 'block', type: blockType, inputs: { MODE: { block: { type: 'mekanism_firla_modes' } } } });
+          break;
       }
+      if (blocksContent.find(b => b.kind === 'block' && b.type === blockType)) continue;
       blocksContent.push({ kind: 'block', type: blockType });
     }
 
