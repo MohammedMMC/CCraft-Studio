@@ -508,6 +508,12 @@ function generatePluginsToolbox(project: CCProject | null): Array<Blockly.utils.
         case "createmod_logistics_getAddress":
           blocksContent.push({ kind: 'label', text: '--- Logistics ---' });
           break;
+        case "mekanism_gmm_getComparatorLevel":
+          blocksContent.push({ kind: 'label', text: '--- Generic Mekanism Machine ---' });
+          break;
+        case "mekanism_gmm_setRedstoneMode":
+          blocksContent.push({ kind: 'block', type: blockType, inputs: { MODE: { block: { type: 'mekanism_redstoneModes' } } } });
+          break;
       }
       blocksContent.push({ kind: 'block', type: blockType });
     }

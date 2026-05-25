@@ -53,37 +53,186 @@ export const mekanismBlocks: Blocks = {
         block: {
             init() {
                 this.appendDummyInput()
-                    .appendField("get peripheral name");
-                this.appendDummyInput()
-                    .appendField(new Blockly.FieldDropdown(function (this: Blockly.FieldDropdown) {
-                        return Object.entries(PERIPHERAL_NAMES).map(([key, value]) => [key, value]);
-                    }), 'PERIPHERAL_NAME');
+                    .appendField("peripheral id for")
+                    .appendField(new Blockly.FieldDropdown(Object.entries(PERIPHERAL_NAMES)), 'PERIPHERAL_NAME');
                 this.setOutput(true, "String");
-                this.setStyle(`${PLUGIN_ID}_blocks`);
-                this.setTooltip("Gets the name of the specified peripheral.");
+                this.setStyle("utility_blocks");
+                this.setTooltip("Gives the ID of the specified peripheral.");
             },
         },
         generator: (block, gen) => {
             const peripheralName = block.getFieldValue("PERIPHERAL_NAME");
-            return [`("${peripheralName}")`, Order.ATOMIC];
+            return [`"${peripheralName}"`, Order.ATOMIC];
         }
     },
-    // 'mekanism_logistics_getConfiguration': {
-    //     block: {
-    //         init() {
-    //             this.appendDummyInput()
-    //                 .appendField("get logistics configuration");
-    //             this.appendValueInput("PERIPHERAL").setCheck("Array")
-    //                 .setAlign(Blockly.inputs.Align.RIGHT)
-    //                 .appendField("peripheral");
-    //             this.setOutput(true, "String");
-    //             this.setStyle(`${PLUGIN_ID}_blocks`);
-    //             this.setTooltip("Gets the logistics configuration.");
-    //         },
-    //     },
-    //     generator: (block, gen) => {
-    //         const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
-    //         return [`${peripheral}.getConfiguration()`, Order.ATOMIC];
-    //     }
-    // },
+    'mekanism_redstoneModes': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("redstone modes")
+                    .appendField(new Blockly.FieldDropdown([
+                        ["DISABLED", "DISABLED"],
+                        ["HIGH", "HIGH"],
+                        ["LOW", "LOW"],
+                        ["PULSE", "PULSE"],
+                    ]), 'OPTION');
+                this.setOutput(true, "String");
+                this.setStyle("utility_blocks");
+                this.setTooltip("Gives the redstone control options.");
+            },
+        },
+        generator: (block, gen) => {
+            const option = block.getFieldValue("OPTION");
+            return [`"${option}"`, Order.ATOMIC];
+        }
+    },
+    'mekanism_gmm_getComparatorLevel': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get comparator level");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the comparator level.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getComparatorLevel()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_gmm_getDirection': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get direction");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "String");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the direction.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getDirection()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_gmm_getEnergy': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get energy");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the energy.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getEnergy()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_gmm_getEnergyFilledPercentage': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get energy filled percentage");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the energy filled percentage.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getEnergyFilledPercentage()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_gmm_getEnergyNeeded': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get energy needed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the energy needed.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getEnergyNeeded()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_gmm_getMaxEnergy': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get max energy");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the max energy.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getMaxEnergy()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_gmm_getRedstoneMode': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get redstone mode");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "String");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the redstone mode.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getRedstoneMode()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_gmm_setRedstoneMode': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("set redstone mode");
+                this.appendValueInput("MODE").setCheck("String")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("to");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Sets the redstone mode.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const mode = gen.valueToCode(block, "MODE", Order.ATOMIC);
+            return `${gen.getIndent()}${peripheral}.setRedstoneMode(${mode})`;
+        }
+    },
 };
