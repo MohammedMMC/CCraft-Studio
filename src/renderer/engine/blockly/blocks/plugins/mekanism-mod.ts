@@ -150,6 +150,26 @@ export const mekanismBlocks: Blocks = {
             return [`"${option}"`, Order.ATOMIC];
         }
     },
+    'mekanism_boiler_modes': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("boiler modes")
+                    .appendField(new Blockly.FieldDropdown([
+                        ["INPUT", "INPUT"],
+                        ["OUTPUT_COOLANT", "OUTPUT_COOLANT"],
+                        ["OUTPUT_STEAM", "OUTPUT_STEAM"],
+                    ]), 'OPTION');
+                this.setOutput(true, "String");
+                this.setStyle("utility_blocks");
+                this.setTooltip("Gives the boiler mode options.");
+            },
+        },
+        generator: (block, gen) => {
+            const option = block.getFieldValue("OPTION");
+            return [`"${option}"`, Order.ATOMIC];
+        }
+    },
     'mekanism_gmm_getComparatorLevel': {
         block: {
             init() {
@@ -1488,6 +1508,370 @@ export const mekanismBlocks: Blocks = {
             const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
             const active = gen.valueToCode(block, "ACTIVE", Order.ATOMIC);
             return `${gen.getIndent()}${peripheral}.setActiveCooledLogic(${active})`;
+        }
+    },
+    'mekanism_boiler_getBoilCapacity': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler boil capacity");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler boil capacity.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getBoilCapacity()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getBoilRate': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler boil rate");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler boil rate.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getBoilRate()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getCooledCoolantCapacity': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler cooled coolant capacity");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler cooled coolant capacity.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getCooledCoolantCapacity()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getCooledCoolantFilledPercentage': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler cooled coolant filled percentage");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler cooled coolant filled percentage.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getCooledCoolantFilledPercentage()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getCooledCoolantNeeded': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler cooled coolant needed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler cooled coolant needed.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getCooledCoolantNeeded()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getEnvironmentalLoss': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler environmental loss");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler environmental loss.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getEnvironmentalLoss()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getHeatedCoolantCapacity': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler heated coolant capacity");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler heated coolant capacity.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getHeatedCoolantCapacity()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getHeatedCoolantFilledPercentage': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler heated coolant filled percentage");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler heated coolant filled percentage.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getHeatedCoolantFilledPercentage()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getHeatedCoolantNeeded': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler heated coolant needed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler heated coolant needed.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getHeatedCoolantNeeded()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getMaxBoilRate': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler max boil rate");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler max boil rate.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getMaxBoilRate()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getSteamCapacity': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler steam capacity");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler steam capacity.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getSteamCapacity()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getSteamFilledPercentage': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler steam filled percentage");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler steam filled percentage.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getSteamFilledPercentage()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getSteamNeeded': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler steam needed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler steam needed.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getSteamNeeded()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getSuperheaters': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler superheaters");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler superheaters.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getSuperheaters()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getTemperature': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler temperature");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler temperature.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getTemperature()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getWaterCapacity': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler water capacity");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler water capacity.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getWaterCapacity()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getWaterFilledPercentage': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler water filled percentage");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler water filled percentage.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getWaterFilledPercentage()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getWaterNeeded': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler water needed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler water needed.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getWaterNeeded()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_getMode': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get boiler mode");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "String");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the boiler mode.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getMode()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_boiler_setMode': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("set boiler mode");
+                this.appendValueInput("MODE").setCheck("String")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("to");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "String");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Sets the boiler mode.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const mode = gen.valueToCode(block, "MODE", Order.ATOMIC);
+            return [`${peripheral}.setMode(${mode})`, Order.ATOMIC];
         }
     },
 };

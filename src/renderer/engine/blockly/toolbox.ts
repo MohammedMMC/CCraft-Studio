@@ -538,6 +538,15 @@ function generatePluginsToolbox(project: CCProject | null): Array<Blockly.utils.
         case "mekanism_furla_setLogicMode":
           blocksContent.push({ kind: 'block', type: blockType, inputs: { MODE: { block: { type: 'mekanism_furla_modes' } } } });
           break;
+        case "mekanism_boiler_getBoilCapacity":
+          blocksContent.push({ kind: 'label', text: '--- Boiler ---' });
+          break;
+        case "mekanism_boiler_getMode":
+          blocksContent.push({ kind: 'label', text: '--- Boiler Valve ---' });
+          break;
+        case "mekanism_boiler_setMode":
+          blocksContent.push({ kind: 'block', type: blockType, inputs: { MODE: { block: { type: 'mekanism_boiler_modes' } } } });
+          break;
       }
       if (blocksContent.find(b => b.kind === 'block' && b.type === blockType)) continue;
       blocksContent.push({ kind: 'block', type: blockType });
