@@ -511,6 +511,9 @@ function generatePluginsToolbox(project: CCProject | null): Array<Blockly.utils.
         case "mekanism_gmm_getComparatorLevel":
           blocksContent.push({ kind: 'label', text: '--- Generic Mekanism Machine ---' });
           break;
+        case "mekanism_mbm_isFormed":
+          blocksContent.push({ kind: 'label', text: '--- Multiblock Machines ---' });
+          break;
         case "mekanism_gmm_setRedstoneMode":
           blocksContent.push({ kind: 'block', type: blockType, inputs: { MODE: { block: { type: 'mekanism_redstoneModes' } } } });
           break;
@@ -546,6 +549,21 @@ function generatePluginsToolbox(project: CCProject | null): Array<Blockly.utils.
           break;
         case "mekanism_boiler_setMode":
           blocksContent.push({ kind: 'block', type: blockType, inputs: { MODE: { block: { type: 'mekanism_boiler_modes' } } } });
+          break;
+        case "mekanism_im_getInstalledCells":
+          blocksContent.push({ kind: 'label', text: '--- Induction Matrix ---' });
+          break;
+        case "mekanism_im_getMode":
+          blocksContent.push({ kind: 'label', text: '--- Induction Matrix Port ---' });
+          break;
+        case "mekanism_im_setMode":
+          blocksContent.push({ kind: 'block', type: blockType, inputs: { MODE: { block: { type: 'mekanism_im_modes' } } } });
+          break;
+        case "mekanism_dt_getChemicalTankCapacity":
+          blocksContent.push({ kind: 'label', text: '--- Dynamic/Fluid Tank ---' });
+          break;
+        case "mekanism_dt_setContainerEditMode":
+          blocksContent.push({ kind: 'block', type: blockType, inputs: { MODE: { block: { type: 'mekanism_dtce_modes' } } } });
           break;
       }
       if (blocksContent.find(b => b.kind === 'block' && b.type === blockType)) continue;

@@ -170,6 +170,45 @@ export const mekanismBlocks: Blocks = {
             return [`"${option}"`, Order.ATOMIC];
         }
     },
+    'mekanism_dtce_modes': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("dynamic tank container edit modes")
+                    .appendField(new Blockly.FieldDropdown([
+                        ["BOTH", "BOTH"],
+                        ["EMPTY", "EMPTY"],
+                        ["FILL", "FILL"],
+                    ]), 'OPTION');
+                this.setOutput(true, "String");
+                this.setStyle("utility_blocks");
+                this.setTooltip("Gives the dynamic tank container edit options.");
+            },
+        },
+        generator: (block, gen) => {
+            const option = block.getFieldValue("OPTION");
+            return [`"${option}"`, Order.ATOMIC];
+        }
+    },
+    'mekanism_im_modes': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("induction matrix modes")
+                    .appendField(new Blockly.FieldDropdown([
+                        ["OUTPUT", "true"],
+                        ["INPUT", "false"],
+                    ]), 'OPTION');
+                this.setOutput(true, "Boolean");
+                this.setStyle("utility_blocks");
+                this.setTooltip("Gives the induction matrix modes.");
+            },
+        },
+        generator: (block, gen) => {
+            const option = block.getFieldValue("OPTION");
+            return [`${option}`, Order.ATOMIC];
+        }
+    },
     'mekanism_gmm_getComparatorLevel': {
         block: {
             init() {
@@ -317,6 +356,78 @@ export const mekanismBlocks: Blocks = {
             const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
             const mode = gen.valueToCode(block, "MODE", Order.ATOMIC);
             return `${gen.getIndent()}${peripheral}.setRedstoneMode(${mode})`;
+        }
+    },
+    'mekanism_mbm_isFormed': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("is formed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Boolean");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Checks if the multiblock is formed.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.isFormed()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_mbm_getHeight': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get height");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the height of the multiblock.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getHeight()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_mbm_getLength': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get length");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the length of the multiblock.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getLength()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_mbm_getWidth': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get width");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the width of the multiblock.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getWidth()`, Order.ATOMIC];
         }
     },
     'mekanism_fir_activate': {
@@ -1863,7 +1974,8 @@ export const mekanismBlocks: Blocks = {
                 this.appendValueInput("PERIPHERAL").setCheck("Array")
                     .setAlign(Blockly.inputs.Align.RIGHT)
                     .appendField("peripheral");
-                this.setOutput(true, "String");
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
                 this.setStyle(`${PLUGIN_ID}_blocks`);
                 this.setTooltip("Sets the boiler mode.");
             },
@@ -1871,7 +1983,251 @@ export const mekanismBlocks: Blocks = {
         generator: (block, gen) => {
             const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
             const mode = gen.valueToCode(block, "MODE", Order.ATOMIC);
-            return [`${peripheral}.setMode(${mode})`, Order.ATOMIC];
+            return `${gen.getIndent()}${peripheral}.setMode(${mode})`;
+        }
+    },
+    'mekanism_im_getInstalledCells': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get installed cells");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the number of installed cells.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getInstalledCells()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_im_getInstalledProviders': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get installed providers");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the number of installed providers.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getInstalledProviders()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_im_getLastInput': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get last input");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the last input amount.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getLastInput()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_im_getLastOutput': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get last output");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the last output amount.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getLastOutput()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_im_getTransferCap': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get transfer capacity");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the transfer capacity.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getTransferCap()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_im_getMode': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get induction matrix mode");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Boolean");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the induction matrix mode.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getMode()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_im_setMode': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("set induction matrix mode");
+                this.appendValueInput("MODE").setCheck("Boolean")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("to");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Sets the induction matrix mode.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const mode = gen.valueToCode(block, "MODE", Order.ATOMIC);
+            return `${gen.getIndent()}${peripheral}.setMode(${mode})`;
+        }
+    },
+    'mekanism_dt_getChemicalTankCapacity': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get chemical tank capacity");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the chemical tank capacity.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getChemicalTankCapacity()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_dt_getFilledPercentage': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get filled percentage");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the filled percentage.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getFilledPercentage()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_dt_getTankCapacity': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get tank capacity");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the tank capacity.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getTankCapacity()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_dt_getNeeded': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get needed");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the needed amount.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getNeeded()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_dt_getContainerEditMode': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get container edit mode");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "String");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Gets the container edit mode.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getContainerEditMode()`, Order.ATOMIC];
+        }
+    },
+    'mekanism_dt_setContainerEditMode': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("set container edit mode");
+                this.appendValueInput("MODE").setCheck("String")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("to");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Sets the container edit mode.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const mode = gen.valueToCode(block, "MODE", Order.ATOMIC);
+            return [`${peripheral}.setContainerEditMode(${mode})`, Order.ATOMIC];
         }
     },
 };
