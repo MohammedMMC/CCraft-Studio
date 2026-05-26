@@ -13,29 +13,36 @@ export interface ExportFile {
   content: string;
 }
 
-export function exportProject(project: CCProject, options: ExportOptions): ExportFile[] {
-  const workingScreens = project.screens.filter(s => s.isWorkingScreen);
-  // if (workingScreens.length === 0) return [];
-
+export function exportProject(project: CCProject, options: ExportOptions, excludedFiles?: string[]): ExportFile[] {
   const files: ExportFile[] = [];
   const blocklyStore = useBlocklyStore.getState();
 
   for (const component of COMPONENTS_LIST) {
-    files.push({ path: `components/${component}.lua`, content: getComponentLua(project.name, project.author, component) });
+    if (!excludedFiles?.includes(`components/${component}.lua`)) {
+      files.push({ path: `components/${component}.lua`, content: getComponentLua(project.name, project.author, component) });
+    }
   }
 
-  files.push({ path: 'utils/vars.lua', content: generateVarsFile(project) });
+  if (!excludedFiles?.includes('utils/vars.lua')) {
+    files.push({ path: 'utils/vars.lua', content: generateVarsFile(project) });
+  }
   if (options.mode === 'full') {
-    files.push({ path: 'utils/functions.lua', content: generateFunctionsFile(project.name, project.author) });
-    files.push({ path: 'utils/handlers.lua', content: generateHandlersFile(project) });
+    if (!excludedFiles?.includes('utils/functions.lua')) {
+      files.push({ path: 'utils/functions.lua', content: generateFunctionsFile(project.name, project.author) });
+    }
+    if (!excludedFiles?.includes('utils/handlers.lua')) {
+      files.push({ path: 'utils/handlers.lua', content: generateHandlersFile(project) });
+    }
   }
 
   for (const screen of project.screens) {
     const safeName = sanitize(screen.name);
-    files.push({
-      path: `screens/${safeName}.lua`,
-      content: generateScreenFile(project, screen.name, screen.uiElements),
-    });
+    if (!excludedFiles?.includes(`screens/${safeName}.lua`)) {
+      files.push({
+        path: `screens/${safeName}.lua`,
+        content: generateScreenFile(project, screen.name, screen.uiElements),
+      });
+    }
   }
 
   if (options.mode === 'full') {
@@ -43,7 +50,9 @@ export function exportProject(project: CCProject, options: ExportOptions): Expor
       const code = blocklyStore.getLuaCode(screen.id);
       if (code.trim()) {
         const safeName = sanitize(screen.name);
-        files.push({ path: `logic/${safeName}.lua`, content: generateLogicFile(project, screen.name, code) });
+        if (!excludedFiles?.includes(`logic/${safeName}.lua`)) {
+          files.push({ path: `logic/${safeName}.lua`, content: generateLogicFile(project, screen.name, code) });
+        }
       }
     }
   }

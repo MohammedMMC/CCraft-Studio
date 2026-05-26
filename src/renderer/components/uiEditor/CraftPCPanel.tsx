@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useProjectStore } from '../../stores/projectStore';
 import { useAppStore } from '@/stores/appStore';
-import type * as craftpcHelpers from 'src/main/craftospcHelpers';
+import type * as craftpcHelpers from '@/../../src/main/craftospcHelpers';
 import * as cosCH from '../../utils/craftospcCanvasHelpers';
 import { CC_CHAR_HEIGHT, CC_CHAR_WIDTH, TerminalRenderer } from '@/engine/terminal/TerminalRenderer';
 import { TerminalBuffer } from '@/engine/terminal/TerminalBuffer';
 import { CraftOSPCIcons } from '../shared/Icons';
-
 import { ExportOptions, exportProject } from '../../engine/luaExport/index';
 import { CCProject } from '@/models/Project';
 

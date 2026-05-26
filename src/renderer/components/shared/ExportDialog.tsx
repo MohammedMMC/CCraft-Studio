@@ -11,6 +11,31 @@ interface ExportDialogProps {
   onClose: () => void;
 }
 
+const ExportFileNamePreview: React.FC<{ name: string, filesnames?: string[], row?: number, onStateChange?: (name: string, excluded: boolean) => void }> = ({ name, filesnames, row = 0, onStateChange }) => {
+  const [isExcluded, setExcluded] = useState(false);
+  return (
+    <>
+      <div className={(isExcluded ? " line-through text-app-text-dim" : "text-app-text")} style={{ paddingLeft: row * 16 }} >
+        <span className="cursor-pointer" onClick={() => {
+          setExcluded(!isExcluded);
+          if (onStateChange) {
+            onStateChange(name, !isExcluded);
+            if (filesnames) {
+              filesnames.forEach(fn => {
+                onStateChange(fn, !isExcluded);
+              });
+            }
+          }
+        }}>{isExcluded ? '-' : '+'}</span>
+        <span className="pl-2">{(row === 0 ? name : name.split('/').pop()) || "Unnamed File"}</span>
+      </div>
+      {filesnames && !isExcluded && filesnames.map(fn => (
+        <ExportFileNamePreview key={fn} name={fn} row={row + 1} onStateChange={onStateChange} />
+      ))}
+    </>
+  );
+};
+
 export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) => {
   const project = useProjectStore((s) => s.project);
 
@@ -19,8 +44,19 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
   const [previewFiles, setPreviewFiles] = useState<ExportFile[]>([]);
   const [activePreviewIdx, setActivePreviewIdx] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
-
   if (!project) return null;
+
+  const [previewExcludedFiles, setPreviewExcludedFiles] = useState<string[]>([]);
+
+  function changeExcludedFiles(name: string, excluded: boolean) {
+    setPreviewExcludedFiles(prev => {
+      if (excluded) {
+        return [...prev, name];
+      } else {
+        return prev.filter(n => n !== name);
+      }
+    });
+  }
 
   const flushLiveWorkspace = () => {
     const { liveWorkspace, liveScreenId, setXml, setLuaCode } = useBlocklyStore.getState();
@@ -35,7 +71,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
   const handlePreview = () => {
     flushLiveWorkspace();
     const options: ExportOptions = { mode, minify };
-    const files = exportProject(project, options);
+    const files = exportProject(project, options, previewExcludedFiles);
     if (files.length > 0) {
       setPreviewFiles(files);
       setActivePreviewIdx(0);
@@ -51,7 +87,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
 
     flushLiveWorkspace();
     const options: ExportOptions = { mode, minify };
-    const files = exportProject(project, options);
+    const files = exportProject(project, options, previewExcludedFiles);
 
     if (files.length > 0) {
       await window.electronAPI.exportMultiFile({
@@ -65,7 +101,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
   useEffect(() => {
     flushLiveWorkspace();
     const options: ExportOptions = { mode, minify };
-    const files = exportProject(project, options);
+    const files = exportProject(project, options, previewExcludedFiles);
     if (files.length > 0) {
       setPreviewFiles(files);
       setActivePreviewIdx(0);
@@ -125,25 +161,13 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
           <div className={"bg-app-bg border border-app-border rounded overflow-auto p-3" + (showPreview ? " w-1/4" : " w-full")}>
             <div className="text-xs text-app-text-dim mb-2">Export structure:</div>
             <div className="text-[11px] text-app-text font-mono space-y-0.5">
-              <div>components/</div>
-              <div className="pl-4">...</div>
+              <ExportFileNamePreview name="components/" filesnames={["..."]} onStateChange={changeExcludedFiles} />
               {(mode === 'full') && (previewFiles.filter(f => f.path.startsWith('logic/')).length > 0) && (
-                <>
-                  <div>logic/</div>
-                  {previewFiles.filter(f => f.path.startsWith('logic/')).map(f => (
-                    <div key={f.path} className="pl-4">{f.path.split('/').pop()}</div>
-                  ))}
-                </>
+                <ExportFileNamePreview name="logic/" filesnames={previewFiles.filter(f => f.path.startsWith('logic/')).map(f => f.path)} onStateChange={changeExcludedFiles} />
               )}
-              <div>screens/</div>
-              {previewFiles.filter(f => f.path.startsWith('screens/')).map(f => (
-                <div key={f.path} className="pl-4">{f.path.split('/').pop()}</div>
-              ))}
-              <div>utils/</div>
-              <div className="pl-4">vars.lua</div>
-              <div className="pl-4">functions.lua</div>
-              <div className="pl-4">handlers.lua</div>
-              <div>startup.lua</div>
+              <ExportFileNamePreview name="screens/" filesnames={previewFiles.filter(f => f.path.startsWith('screens/')).map(f => f.path)} onStateChange={changeExcludedFiles} />
+              <ExportFileNamePreview name="utils/" filesnames={["utils/vars.lua", "utils/functions.lua", "utils/handlers.lua"]} onStateChange={changeExcludedFiles} />
+              <ExportFileNamePreview name="startup.lua" onStateChange={changeExcludedFiles} />
             </div>
           </div>
 
@@ -152,7 +176,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
             <div className="w-3/4 h-full min-h-0 flex flex-col">
               <div className="flex items-center justify-between mb-1 shrink-0">
                 <div className="flex items-center gap-1 overflow-x-auto">
-                  {previewFiles.filter(f => !f.path.includes('components')).reverse().map((f) => (
+                  {previewFiles.filter(f => !f.path.includes('components') && !previewExcludedFiles.includes(f.path)).reverse().map((f) => (
                     <button
                       key={f.path}
                       onClick={() => setActivePreviewIdx(previewFiles.indexOf(f))}
