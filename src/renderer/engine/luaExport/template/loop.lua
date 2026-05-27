@@ -35,8 +35,13 @@ while running do
             elseif event == "modem_message" then
                 screen.events.onModemMessage["ch_" .. p1](p2, p3, p4, p5)
             elseif event == "key" then
-                if screen.events.onKeyPress and screen.events.onKeyPress[p1] then
-                    screen.events.onKeyPress[p1]()
+                keyName = keys.getName(p1)
+                if screen.events.onKeyPress then
+                    if screen.events.onKeyPress[keyName] then
+                        screen.events.onKeyPress[keyName]()
+                    elseif screen.events.onKeyPress["any"] then
+                        screen.events.onKeyPress["any"]()
+                    end
                 end
             end
 

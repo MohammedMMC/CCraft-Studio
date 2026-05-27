@@ -104,7 +104,7 @@ function getScreen(name)
     local monitorName = isMonitor and name:sub(9) or nil
 
     for _, screen in ipairs(screens) do
-        if (name == 'terminal' and screen.monitor == term) or (isMonitor and (screen.monitor and (screen.monitor.name == monitorName)) or (screen.name == name)) then
+        if (name == 'terminal' and screen.isWorkingScreen and screen.monitor == term) or (isMonitor and (screen.monitor and (screen.monitor.name == monitorName)) or (screen.name == name)) then
             return screen
         end
     end
@@ -173,6 +173,9 @@ function setupMonitorsToScreens(oldMon, newMon)
                 scn.monitor = term
                 scn.width, scn.height = term.getSize()
             end
+        else
+            scn.monitor = term
+            scn.width, scn.height = term.getSize()
         end
     end
 end
