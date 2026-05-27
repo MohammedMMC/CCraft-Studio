@@ -3,8 +3,9 @@ import { COMPONENTS_LIST, generateFunctionsFile, generateHandlersFile, generateL
 import { useBlocklyStore } from '../../stores/blocklyStore';
 import { minifyLua, sanitize } from '../../utils/luaHelpers';
 
+export type ExportModes = 'full' | 'uiOnly' | 'codeOnly';
 export interface ExportOptions {
-  mode: 'full' | 'uiOnly';
+  mode: ExportModes;
   minify: boolean;
 }
 
@@ -17,35 +18,39 @@ export function exportProject(project: CCProject, options: ExportOptions, exclud
   const files: ExportFile[] = [];
   const blocklyStore = useBlocklyStore.getState();
 
-  for (const component of COMPONENTS_LIST) {
-    if (!excludedFiles?.includes(`components/${component}.lua`)) {
-      files.push({ path: `components/${component}.lua`, content: getComponentLua(project.name, project.author, component) });
+  if (options.mode !== 'codeOnly') {
+    for (const component of COMPONENTS_LIST) {
+      if (!excludedFiles?.includes(`components/${component}.lua`)) {
+        files.push({ path: `components/${component}.lua`, content: getComponentLua(project.name, project.author, component) });
+      }
     }
   }
 
   if (!excludedFiles?.includes('utils/vars.lua')) {
     files.push({ path: 'utils/vars.lua', content: generateVarsFile(project) });
   }
-  if (options.mode === 'full') {
-    if (!excludedFiles?.includes('utils/functions.lua')) {
-      files.push({ path: 'utils/functions.lua', content: generateFunctionsFile(project.name, project.author) });
-    }
-    if (!excludedFiles?.includes('utils/handlers.lua')) {
-      files.push({ path: 'utils/handlers.lua', content: generateHandlersFile(project) });
+  if (!excludedFiles?.includes('utils/functions.lua')) {
+    files.push({ path: 'utils/functions.lua', content: generateFunctionsFile(project.name, project.author) });
+  }
+  // if (options.mode === 'full' || options.mode === 'codeOnly') {
+  //   if (!excludedFiles?.includes('utils/handlers.lua')) {
+  //     files.push({ path: 'utils/handlers.lua', content: generateHandlersFile(project) });
+  //   }
+  // }
+
+  if (options.mode !== 'codeOnly') {
+    for (const screen of project.screens) {
+      const safeName = sanitize(screen.name);
+      if (!excludedFiles?.includes(`screens/${safeName}.lua`)) {
+        files.push({
+          path: `screens/${safeName}.lua`,
+          content: generateScreenFile(project, screen.name, screen.uiElements),
+        });
+      }
     }
   }
 
-  for (const screen of project.screens) {
-    const safeName = sanitize(screen.name);
-    if (!excludedFiles?.includes(`screens/${safeName}.lua`)) {
-      files.push({
-        path: `screens/${safeName}.lua`,
-        content: generateScreenFile(project, screen.name, screen.uiElements),
-      });
-    }
-  }
-
-  if (options.mode === 'full') {
+  if (options.mode === 'full' || options.mode === 'codeOnly') {
     for (const screen of project.screens) {
       const code = blocklyStore.getLuaCode(screen.id);
       if (code.trim()) {
@@ -57,7 +62,7 @@ export function exportProject(project: CCProject, options: ExportOptions, exclud
     }
   }
 
-  files.push({ path: 'startup.lua', content: generateStartupFile(project, options.mode !== 'full') });
+  files.push({ path: 'startup.lua', content: generateStartupFile(project, options.mode) });
 
   if (options.minify) {
     return files.map(f => ({ ...f, content: minifyLua(f.content) }));

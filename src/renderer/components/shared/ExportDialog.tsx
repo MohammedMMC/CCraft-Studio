@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal } from '../shared/Modal';
 import { useProjectStore } from '../../stores/projectStore';
 import { flushBlocklyWorkspaces } from '../../engine/blockly/flushBlockly';
-import { exportProject, ExportOptions, ExportFile } from '../../engine/luaExport/index';
+import { exportProject, ExportOptions, ExportFile, ExportModes } from '../../engine/luaExport/index';
 
 interface ExportDialogProps {
   isOpen: boolean;
@@ -37,7 +37,7 @@ const ExportFileNamePreview: React.FC<{ name: string, filesnames?: string[], row
 export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) => {
   const project = useProjectStore((s) => s.project);
 
-  const [mode, setMode] = useState<'full' | 'uiOnly'>('full');
+  const [mode, setMode] = useState<ExportModes>('full');
   const [minify, setMinify] = useState(false);
   const [previewFiles, setPreviewFiles] = useState<ExportFile[]>([]);
   const [activePreviewIdx, setActivePreviewIdx] = useState(0);
@@ -106,7 +106,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
         {/* Export Mode */}
         <div>
           <label className="block text-xs text-app-text-dim mb-2">Export Mode</label>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <button
               onClick={() => setMode('full')}
               className={`p-3 rounded border text-left transition-all ${mode === 'full'
@@ -131,6 +131,18 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
                 Just screen drawing functions. Code your own logic.
               </div>
             </button>
+            <button
+              onClick={() => setMode('codeOnly')}
+              className={`p-3 rounded border text-left transition-all ${mode === 'codeOnly'
+                ? 'border-app-accent bg-app-accent/10'
+                : 'border-app-border bg-app-bg hover:bg-app-hover'
+                }`}
+            >
+              <div className="text-sm font-medium text-app-text-bright">Code Only</div>
+              <div className="text-[10px] text-app-text-dim mt-1">
+                Screen Logics with no screens or UI components.
+              </div>
+            </button>
           </div>
         </div>
 
@@ -153,11 +165,15 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
           <div className={"bg-app-bg border border-app-border rounded overflow-auto p-3" + (showPreview ? " w-1/4" : " w-full")}>
             <div className="text-xs text-app-text-dim mb-2">Export structure:</div>
             <div className="text-[11px] text-app-text font-mono space-y-0.5">
-              <ExportFileNamePreview name="components/" filesnames={["..."]} onStateChange={changeExcludedFiles} />
-              {(mode === 'full') && (previewFiles.filter(f => f.path.startsWith('logic/')).length > 0) && (
+              {(mode !== 'codeOnly') && (
+                <ExportFileNamePreview name="components/" filesnames={["..."]} onStateChange={changeExcludedFiles} />
+              )}
+              {(mode === 'full' || mode === 'codeOnly') && (previewFiles.filter(f => f.path.startsWith('logic/')).length > 0) && (
                 <ExportFileNamePreview name="logic/" filesnames={previewFiles.filter(f => f.path.startsWith('logic/')).map(f => f.path)} onStateChange={changeExcludedFiles} />
               )}
-              <ExportFileNamePreview name="screens/" filesnames={previewFiles.filter(f => f.path.startsWith('screens/')).map(f => f.path)} onStateChange={changeExcludedFiles} />
+              {(mode !== 'codeOnly') && (
+                <ExportFileNamePreview name="screens/" filesnames={previewFiles.filter(f => f.path.startsWith('screens/')).map(f => f.path)} onStateChange={changeExcludedFiles} />
+              )}
               <ExportFileNamePreview name="utils/" filesnames={["utils/vars.lua", "utils/functions.lua", "utils/handlers.lua"]} onStateChange={changeExcludedFiles} />
               <ExportFileNamePreview name="startup.lua" onStateChange={changeExcludedFiles} />
             </div>

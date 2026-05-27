@@ -1,6 +1,7 @@
 import { escapeLuaString, sanitize } from '@/utils/luaHelpers';
 import { CCProject } from '@/models/Project';
 import { generateUICode, parseEventCode } from './uiCodeGen';
+import { ExportModes } from '.';
 
 const TEMPLATE_DATA = import.meta.glob("./template/**/*.lua", {
   eager: true, import: "default",
@@ -88,14 +89,14 @@ export function generateLogicFile(project: CCProject, screenName: string, blockC
   return generateHeader(project.name, project.author) + lines.join('\n');
 }
 
-export function generateStartupFile(project: CCProject, onlyUI: boolean = false): string {
+export function generateStartupFile(project: CCProject, mode: ExportModes = 'full'): string {
   const workingScreens = project.screens.filter(s => s.isWorkingScreen);
   const safeName = sanitize(workingScreens[0]?.name ?? 'Screen 1');
 
   let lines = `${generateHeader(project.name, project.author)}${TEMPLATE_DATA["./template/startup.lua"]}`;
   lines = lines.replace("-- {PROJECT_START}",
-    onlyUI
-      ? `resolveLayout(term.getSize())\ndrawScreen_${safeName}()`
+    mode === 'uiOnly'
+      ? `drawScreens()`
       : (`\n` + TEMPLATE_DATA["./template/loop.lua"])
   );
 
