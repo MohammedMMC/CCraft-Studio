@@ -1,6 +1,6 @@
 import * as Blockly from 'blockly';
 import { Blocks } from "../../blocksRegistery";
-import { ELEMENT_COLOR_PROPS, ELEMENT_PROPS, ELEMENTS, SCREENS, valueToType } from "../../ccBlocks";
+import { ALL_ELEMENT_PROPS, ELEMENT_COLOR_PROPS, ELEMENT_PROPS, ELEMENTS, SCREENS, valueToType } from "../../ccBlocks";
 import { Order } from "../../luaGenerator";
 import { UI_ELEMENT_COLORS_NAMES, UI_ELEMENT_PROPS_NAMES, UIElement } from '@/models/UIElement';
 import { useProjectStore } from '@/stores/projectStore';
@@ -117,6 +117,51 @@ export const uiActionsBlocks: Blocks = {
             return [`screen:getChild("${el}").${prop}`, Order.ATOMIC];
         }
     },
+    'ui_set_prop_byname': {
+        block: {
+            init() {
+                this.appendValueInput('ELEMENT').setCheck("String")
+                    .appendField('set');
+                this.appendValueInput('VALUE').setCheck(null)
+                    .appendField('.')
+                    .appendField(new Blockly.FieldDropdown(ALL_ELEMENT_PROPS), 'PROP')
+                    .appendField('to');
+
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setInputsInline(true);
+                this.setStyle('ui_blocks');
+                this.setTooltip(`Set the element property using element name`);
+            },
+        },
+        generator: (block, gen) => {
+            const el = block.getFieldValue('ELEMENT');
+            const prop = block.getFieldValue('PROP');
+            const value = gen.valueToCode(block, 'VALUE', Order.NONE);
+
+            return `${gen.getIndent()}screen:childSetProp("${el}", "${prop}", ${value})`;
+        }
+    },
+    'ui_get_prop_byname': {
+        block: {
+            init() {
+                this.appendValueInput('ELEMENT').setCheck("String")
+                    .appendField('get')
+                this.appendDummyInput()
+                    .appendField('.')
+                    .appendField(new Blockly.FieldDropdown(ALL_ELEMENT_PROPS), 'PROP');
+                this.setOutput(true, null);
+                this.setInputsInline(true);
+                this.setStyle('ui_blocks');
+                this.setTooltip(`Get the element property using element name`);
+            },
+        },
+        generator: (block, gen) => {
+            const el = block.getFieldValue('ELEMENT');
+            const prop = block.getFieldValue('PROP');
+            return [`screen:getChild("${el}").${prop}`, Order.ATOMIC];
+        }
+    },
     'ui_navigate': {
         block: {
             init(this: Blockly.Block) {
@@ -133,4 +178,4 @@ export const uiActionsBlocks: Blocks = {
             return `${gen.getIndent()}navigate("${screen}")`;
         }
     }
-};
+}; 

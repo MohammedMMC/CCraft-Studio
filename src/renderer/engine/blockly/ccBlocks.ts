@@ -88,6 +88,11 @@ export function ELEMENT_PROPS(elementName: string): [string, string][] {
     .map((key) => [UI_ELEMENT_PROPS_NAMES[key as keyof typeof UI_ELEMENT_PROPS_NAMES].replace(/\ /g, ''), key]);
 }
 
+export function ALL_ELEMENT_PROPS(): [string, string][] {
+  return Object.keys(UI_ELEMENT_PROPS_NAMES)
+    .map((key) => [UI_ELEMENT_PROPS_NAMES[key as keyof typeof UI_ELEMENT_PROPS_NAMES].replace(/\ /g, ''), key]);
+}
+
 export function valueToType(value: any) {
   if (typeof value === 'boolean') return 'Boolean';
   if (typeof value === 'number') return 'Number';
