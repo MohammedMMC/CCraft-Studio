@@ -577,6 +577,15 @@ function generatePluginsToolbox(project: CCProject | null): Array<Blockly.utils.
         case "advancedperipherals_playerdetector_isPlayerInRange":
           blocksContent.push({ kind: 'label', text: '--- Player Detector ---' });
           break;
+        case "advancedperipherals_inventorymanager_getOwner":
+          blocksContent.push({ kind: 'label', text: '--- Inventory Manager ---' });
+          break;
+        case "advancedperipherals_blockreader_getBlockName":
+          blocksContent.push({ kind: 'label', text: '--- Block Reader ---' });
+          break;
+        case "advancedperipherals_geoscanner_getMaxFuelLevel":
+          blocksContent.push({ kind: 'label', text: '--- Geo Scanner ---' });
+          break;
       }
       if (blocksContent.find(b => b.kind === 'block' && b.type === blockType)) continue;
       blocksContent.push({ kind: 'block', type: blockType });

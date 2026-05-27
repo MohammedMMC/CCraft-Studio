@@ -334,4 +334,192 @@ export const advancedperipheralsBlocks: Blocks = {
             return [`${peripheral}.isPlayersInCubic(${width}, ${height}, ${depth})`, Order.ATOMIC];
         }
     },
+    'advancedperipherals_inventorymanager_getOwner': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get owner");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, ["String", "Null"]);
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Returns the username of the owner of the memory card.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getOwner()`, Order.ATOMIC];
+        }
+    },
+    'advancedperipherals_inventorymanager_isPlayerEquipped': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("is player equipped");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Boolean");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Returns true if the player is wearing atleast one piece of armor.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.isPlayerEquipped()`, Order.ATOMIC];
+        }
+    },
+    'advancedperipherals_inventorymanager_isWearing': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("is player wearing armor");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.appendValueInput("SLOT").setCheck("Number")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("slot");
+                this.setOutput(true, "Boolean");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Returns true if the player is wearing a armor piece on the given slot. Note: (103(Helmet) - 100(Boots)).");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const slot = gen.valueToCode(block, "SLOT", Order.ATOMIC);
+            return [`${peripheral}.isWearing(${slot})`, Order.ATOMIC];
+        }
+    },
+    'advancedperipherals_inventorymanager_getFreeSlot': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get free slot");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Returns the next free slot in the player's inventory. Or -1 if their inventory is full.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getFreeSlot()`, Order.ATOMIC];
+        }
+    },
+    'advancedperipherals_inventorymanager_isSpaceAvailable': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("is space available");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Boolean");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Returns true if space is available in the player's inventory.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.isSpaceAvailable()`, Order.ATOMIC];
+        }
+    },
+    'advancedperipherals_inventorymanager_getEmptySpace': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get empty space");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Returns the number of empty slots in the player's inventory.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getEmptySpace()`, Order.ATOMIC];
+        }
+    },
+    'advancedperipherals_blockreader_getBlockName': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get block name");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "String");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Returns the registry name of the block.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getBlockName()`, Order.ATOMIC];
+        }
+    },
+    'advancedperipherals_blockreader_isTileEntity': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("is tile entity");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, ["Boolean", "Null"]);
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Returns true whether the block is a tile entity or not.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.isTileEntity()`, Order.ATOMIC];
+        }
+    },
+    'advancedperipherals_geoscanner_getMaxFuelLevel': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get max fuel level");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Returns the maximum amount of possible stored fuel.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            return [`${peripheral}.getMaxFuelLevel()`, Order.ATOMIC];
+        }
+    },
+    'advancedperipherals_geoscanner_cost': {
+        block: {
+            init() {
+                this.appendDummyInput()
+                    .appendField("get scan cost");
+                this.appendValueInput("RADIUS").setCheck("Number")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("radius");
+                this.appendValueInput("PERIPHERAL").setCheck("Array")
+                    .setAlign(Blockly.inputs.Align.RIGHT)
+                    .appendField("peripheral");
+                this.setOutput(true, "Number");
+                this.setStyle(`${PLUGIN_ID}_blocks`);
+                this.setTooltip("Returns the cost in FE for a scan with the given radius.");
+            },
+        },
+        generator: (block, gen) => {
+            const peripheral = gen.valueToCode(block, "PERIPHERAL", Order.ATOMIC);
+            const radius = gen.valueToCode(block, "RADIUS", Order.ATOMIC);
+            return [`${peripheral}.cost(${radius})`, Order.ATOMIC];
+        }
+    },
 };
