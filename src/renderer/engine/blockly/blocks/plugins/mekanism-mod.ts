@@ -18,37 +18,37 @@ const EVENTS = [
 ];
 
 export const mekanismBlocks: Blocks = {
-    'mekanism_events': {
-        block: {
-            init() {
-                this.appendValueInput("PERIPHERAL").setCheck("String")
-                    .appendField('when')
-                    .appendField(new Blockly.FieldDropdown(function (this: Blockly.FieldDropdown) {
-                        return EVENTS.map(ev => [ev.replace(/_/g, ' '), ev]);
-                    }), 'EVENT')
-                this.appendStatementInput('DO')
-                    .appendField("do");
-                this.setStyle('events_blocks');
-                this.setTooltip(`Runs when the specified event occurs.`);
-            },
-            onchange(event) {
-                if (event.type !== Blockly.Events.BLOCK_CHANGE) return;
-                const eventField = this.getField('EVENT') as Blockly.FieldDropdown | null;
-                const currentEventName = eventField?.getValue();
-                if (typeof currentEventName !== 'string') return;
+    // 'mekanism_events': {
+    //     block: {
+    //         init() {
+    //             this.appendValueInput("PERIPHERAL").setCheck("String")
+    //                 .appendField('when')
+    //                 .appendField(new Blockly.FieldDropdown(function (this: Blockly.FieldDropdown) {
+    //                     return EVENTS.map(ev => [ev.replace(/_/g, ' '), ev]);
+    //                 }), 'EVENT')
+    //             this.appendStatementInput('DO')
+    //                 .appendField("do");
+    //             this.setStyle('events_blocks');
+    //             this.setTooltip(`Runs when the specified event occurs.`);
+    //         },
+    //         onchange(event) {
+    //             if (event.type !== Blockly.Events.BLOCK_CHANGE) return;
+    //             const eventField = this.getField('EVENT') as Blockly.FieldDropdown | null;
+    //             const currentEventName = eventField?.getValue();
+    //             if (typeof currentEventName !== 'string') return;
 
-                // Update EVENT dropdown options
-                const propOptions = eventField?.getOptions() || [];
-                eventField?.setValue(propOptions.flat().includes(currentEventName) ? currentEventName : propOptions[0][1]);
-            },
-        },
-        generator: (block, gen) => {
-            const eventName = block.getFieldValue('EVENT');
-            const body = gen.statementToCode(block, 'DO');
-            const peripheral = gen.valueToCode(block, 'PERIPHERAL', Order.ATOMIC);
-            return `${gen.getIndent()}screen.events["${peripheral}_${eventName}"] = function()\n${body}\nend`;
-        }
-    },
+    //             // Update EVENT dropdown options
+    //             const propOptions = eventField?.getOptions() || [];
+    //             eventField?.setValue(propOptions.flat().includes(currentEventName) ? currentEventName : propOptions[0][1]);
+    //         },
+    //     },
+    //     generator: (block, gen) => {
+    //         const eventName = block.getFieldValue('EVENT');
+    //         const body = gen.statementToCode(block, 'DO');
+    //         const peripheral = gen.valueToCode(block, 'PERIPHERAL', Order.ATOMIC);
+    //         return `${gen.getIndent()}screen.events["${peripheral}_${eventName}"] = function()\n${body}\nend`;
+    //     }
+    // },
     'mekanism_peripheralNames': {
         block: {
             init() {

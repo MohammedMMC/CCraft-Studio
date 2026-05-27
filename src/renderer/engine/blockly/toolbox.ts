@@ -565,6 +565,18 @@ function generatePluginsToolbox(project: CCProject | null): Array<Blockly.utils.
         case "mekanism_dt_setContainerEditMode":
           blocksContent.push({ kind: 'block', type: blockType, inputs: { MODE: { block: { type: 'mekanism_dtce_modes' } } } });
           break;
+        case "advancedperipherals_ed_getTransferRate":
+          blocksContent.push({ kind: 'label', text: '--- Energy Detector ---' });
+          break;
+        case "advancedperipherals_energydetector_setTransferRateLimit":
+          blocksContent.push({ kind: 'block', type: blockType, inputs: { LIMIT: { block: { type: 'math_number', fields: { NUM: 512 } } } } });
+          break;
+        case "advancedperipherals_environmentdetector_getBiome":
+          blocksContent.push({ kind: 'label', text: '--- Environment Detector ---' });
+          break;
+        case "advancedperipherals_playerdetector_isPlayerInRange":
+          blocksContent.push({ kind: 'label', text: '--- Player Detector ---' });
+          break;
       }
       if (blocksContent.find(b => b.kind === 'block' && b.type === blockType)) continue;
       blocksContent.push({ kind: 'block', type: blockType });
