@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import * as Blockly from 'blockly';
 import { Modal } from '../shared/Modal';
 import { useProjectStore } from '../../stores/projectStore';
-import { useBlocklyStore } from '../../stores/blocklyStore';
-import { luaGenerator } from '../../engine/blockly/luaGenerator';
+import { flushBlocklyWorkspaces } from '../../engine/blockly/flushBlockly';
 import { exportProject, ExportOptions, ExportFile } from '../../engine/luaExport/index';
 
 interface ExportDialogProps {
@@ -59,13 +57,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
   }
 
   const flushLiveWorkspace = () => {
-    const { liveWorkspace, liveScreenId, setXml, setLuaCode } = useBlocklyStore.getState();
-    if (liveWorkspace && liveScreenId) {
-      const xml = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(liveWorkspace));
-      setXml(liveScreenId, xml);
-      const code = luaGenerator.workspaceToCode(liveWorkspace);
-      setLuaCode(liveScreenId, code);
-    }
+    flushBlocklyWorkspaces(project);
   };
 
   const handlePreview = () => {

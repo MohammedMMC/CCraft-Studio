@@ -228,9 +228,7 @@ export const BlocklyWorkspace: React.FC = () => {
   const saveWorkspace = useCallback(() => {
     const screenId = activeScreenRef.current;
     if (!workspaceRef.current || !screenId || suppressSaveRef.current) return;
-    const xml = Blockly.Xml.domToText(
-      Blockly.Xml.workspaceToDom(workspaceRef.current)
-    );
+    const xml = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspaceRef.current));
     setXml(screenId, xml);
     const code = luaGenerator.workspaceToCode(workspaceRef.current);
     setLuaCode(screenId, code);

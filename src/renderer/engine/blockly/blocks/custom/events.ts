@@ -1,8 +1,7 @@
 import * as Blockly from 'blockly';
 import { Blocks } from "../../blocksRegistery";
-import { ELEMENTS } from '../../ccBlocks';
+import { ELEMENTS, getBlocklyActiveScreen } from '../../ccBlocks';
 import { UI_ELEMENT_WITH_TEXT, UIElementType } from '@/models/UIElement';
-import { useProjectStore } from '@/stores/projectStore';
 import { sanitize } from '@/utils/luaHelpers';
 
 const componentsEvents: Record<UIElementType, string[]> = {
@@ -36,7 +35,7 @@ export const eventsBlocks: Blocks = {
                     .appendField(new Blockly.FieldDropdown(ELEMENTS), 'ELEMENT')
                     .appendField(new Blockly.FieldDropdown(function (this: Blockly.FieldDropdown) {
                         const elementName = this.getSourceBlock()?.getFieldValue('ELEMENT') || ELEMENTS()[0][0];
-                        const element = useProjectStore.getState().getActiveScreen()?.uiElements.find(el => el.name === elementName);
+                        const element = getBlocklyActiveScreen()?.uiElements.find(el => el.name === elementName);
 
                         const newOptions = elementName !== "(no elements)"
                             ? [

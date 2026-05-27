@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import * as Blockly from 'blockly';
 import { Modal } from '../shared/Modal';
 import { useProjectStore } from '../../stores/projectStore';
-import { useBlocklyStore } from '../../stores/blocklyStore';
-import { luaGenerator } from '../../engine/blockly/luaGenerator';
+import { flushBlocklyWorkspaces } from '../../engine/blockly/flushBlockly';
 import { exportProject } from '../../engine/luaExport/index';
 import JSZip from "jszip";
 
@@ -21,13 +19,7 @@ export const UploadTempDialog: React.FC<UploadTempDialogProps> = ({ isOpen, onCl
     const [projectUrl, setProjectUrl] = useState<string>("");
 
     const flushLiveWorkspace = () => {
-        const { liveWorkspace, liveScreenId, setXml, setLuaCode } = useBlocklyStore.getState();
-        if (liveWorkspace && liveScreenId) {
-            const xml = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(liveWorkspace));
-            setXml(liveScreenId, xml);
-            const code = luaGenerator.workspaceToCode(liveWorkspace);
-            setLuaCode(liveScreenId, code);
-        }
+        flushBlocklyWorkspaces(project);
     };
 
     useEffect(() => {

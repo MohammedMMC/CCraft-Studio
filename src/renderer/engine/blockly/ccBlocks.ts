@@ -25,6 +25,21 @@ export const TEXT_ALIGNS: [string, string][] = [
   ['right', 'right']
 ];
 
+let activeScreenOverrideId: string | null = null;
+
+export function setBlocklyActiveScreenOverride(screenId: string | null) {
+  activeScreenOverrideId = screenId;
+}
+
+export function getBlocklyActiveScreen() {
+  const store = useProjectStore.getState();
+  const project = store.project;
+  if (activeScreenOverrideId && project) {
+    return project.screens.find(s => s.id === activeScreenOverrideId) ?? store.getActiveScreen();
+  }
+  return store.getActiveScreen();
+}
+
 
 export class FieldCCColor extends FieldColour {
   protected override updateSize_(margin?: number) {
@@ -55,8 +70,7 @@ export function SCREENS(): [string, string][] {
 }
 
 export function ELEMENTS(elementType: UIElementType[] | UIElementType | "any" = "any", filters: (value: UIElement) => boolean = () => true): [string, string][] {
-  const store = useProjectStore.getState();
-  const screen = store.getActiveScreen();
+  const screen = getBlocklyActiveScreen();
   if (!screen) return [['(no elements)', '']];
   const elements = screen.uiElements.filter((el) => {
     if (Array.isArray(elementType)) {
@@ -69,7 +83,7 @@ export function ELEMENTS(elementType: UIElementType[] | UIElementType | "any" = 
 }
 
 export function ELEMENT_COLOR_PROPS(elementName: string): [string, string][] {
-  const screen = useProjectStore.getState().getActiveScreen();
+  const screen = getBlocklyActiveScreen();
   if (!screen) return [['', '']];
   const element = screen.uiElements.find((el) => el.name === elementName);
   if (!element) return [['', '']];
@@ -79,7 +93,7 @@ export function ELEMENT_COLOR_PROPS(elementName: string): [string, string][] {
 }
 
 export function ELEMENT_PROPS(elementName: string): [string, string][] {
-  const screen = useProjectStore.getState().getActiveScreen();
+  const screen = getBlocklyActiveScreen();
   if (!screen) return [['', '']];
   const element = screen.uiElements.find((el) => el.name === elementName);
   if (!element) return [['', '']];

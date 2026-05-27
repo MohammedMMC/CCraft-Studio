@@ -1,9 +1,8 @@
 import * as Blockly from 'blockly';
 import { Blocks } from "../../blocksRegistery";
-import { ALL_ELEMENT_PROPS, ELEMENT_COLOR_PROPS, ELEMENT_PROPS, ELEMENTS, SCREENS, valueToType } from "../../ccBlocks";
+import { ALL_ELEMENT_PROPS, ELEMENT_COLOR_PROPS, ELEMENT_PROPS, ELEMENTS, SCREENS, getBlocklyActiveScreen, valueToType } from "../../ccBlocks";
 import { Order } from "../../luaGenerator";
 import { UI_ELEMENT_COLORS_NAMES, UI_ELEMENT_PROPS_NAMES, UIElement } from '@/models/UIElement';
-import { useProjectStore } from '@/stores/projectStore';
 
 export const uiActionsBlocks: Blocks = {
     'ui_screen_select': {
@@ -54,8 +53,7 @@ export const uiActionsBlocks: Blocks = {
                 propField?.setValue(propOptions.flat().includes(prop) ? prop : propOptions[0][1]);
 
                 // Update Check
-                const store = useProjectStore.getState();
-                const screen = store.getActiveScreen();
+                const screen = getBlocklyActiveScreen();
                 const element = screen?.uiElements.find(el => el.name === elementName);
                 const propValue = element?.[prop as keyof UIElement];
                 if (!element || typeof propValue === 'undefined') return;
@@ -101,8 +99,7 @@ export const uiActionsBlocks: Blocks = {
                 propField?.setValue(propOptions.flat().includes(prop) ? prop : propOptions[0][1]);
 
                 // Update Check
-                const store = useProjectStore.getState();
-                const screen = store.getActiveScreen();
+                const screen = getBlocklyActiveScreen();
                 const element = screen?.uiElements.find(el => el.name === elementName);
                 const propValue = element?.[prop as keyof UIElement];
                 if (!element || typeof propValue === 'undefined') return;
