@@ -132,11 +132,11 @@ export const uiActionsBlocks: Blocks = {
             },
         },
         generator: (block, gen) => {
-            const el = block.getFieldValue('ELEMENT');
+            const el = gen.valueToCode(block, 'ELEMENT', Order.NONE);
             const prop = block.getFieldValue('PROP');
             const value = gen.valueToCode(block, 'VALUE', Order.NONE);
 
-            return `${gen.getIndent()}screen:childSetProp("${el}", "${prop}", ${value})`;
+            return `${gen.getIndent()}screen:childSetProp(${el}, "${prop}", ${value})`;
         }
     },
     'ui_get_prop_byname': {
@@ -154,9 +154,9 @@ export const uiActionsBlocks: Blocks = {
             },
         },
         generator: (block, gen) => {
-            const el = block.getFieldValue('ELEMENT');
+            const el = gen.valueToCode(block, 'ELEMENT', Order.NONE);
             const prop = block.getFieldValue('PROP');
-            return [`screen:getChild("${el}").${prop}`, Order.ATOMIC];
+            return [`screen:getChild(${el}).${prop}`, Order.ATOMIC];
         }
     },
     'ui_navigate': {
