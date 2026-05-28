@@ -1,5 +1,5 @@
 import { CCProject } from '../../models/Project';
-import { COMPONENTS_LIST, generateFunctionsFile, generateHandlersFile, generateLogicFile, generateScreenFile, generateStartupFile, generateVarsFile, getComponentLua } from './templates';
+import { COMPONENTS_LIST, generateFunctionsFile, generateLogicFile, generateScreenFile, generateStartupFile, generateVarsFile, getComponentLua } from './templates';
 import { useBlocklyStore } from '../../stores/blocklyStore';
 import { minifyLua, sanitize } from '../../utils/luaHelpers';
 
@@ -32,11 +32,6 @@ export function exportProject(project: CCProject, options: ExportOptions, exclud
   if (!excludedFiles?.includes('utils/functions.lua')) {
     files.push({ path: 'utils/functions.lua', content: generateFunctionsFile(project.name, project.author, options.mode) });
   }
-  // if (options.mode === 'full' || options.mode === 'codeOnly') {
-  //   if (!excludedFiles?.includes('utils/handlers.lua')) {
-  //     files.push({ path: 'utils/handlers.lua', content: generateHandlersFile(project) });
-  //   }
-  // }
 
   if (options.mode !== 'codeOnly') {
     for (const screen of project.screens) {

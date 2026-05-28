@@ -174,7 +174,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
               {(mode !== 'codeOnly') && (
                 <ExportFileNamePreview name="screens/" filesnames={previewFiles.filter(f => f.path.startsWith('screens/')).map(f => f.path)} onStateChange={changeExcludedFiles} />
               )}
-              <ExportFileNamePreview name="utils/" filesnames={["utils/vars.lua", "utils/functions.lua", "utils/handlers.lua"]} onStateChange={changeExcludedFiles} />
+              <ExportFileNamePreview name="utils/" filesnames={["utils/vars.lua", "utils/functions.lua"]} onStateChange={changeExcludedFiles} />
               <ExportFileNamePreview name="startup.lua" onStateChange={changeExcludedFiles} />
             </div>
           </div>

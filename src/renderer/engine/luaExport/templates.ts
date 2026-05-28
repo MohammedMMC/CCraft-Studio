@@ -74,19 +74,6 @@ export function generateVarsFile(project: CCProject): string {
   return lines.join('\n');
 }
 
-export function generateHandlersFile(project: CCProject): string {
-  let lines = `${generateHeader(project.name, project.author)}${TEMPLATE_DATA["./template/utils/handlers.lua"]}`.split('\n');
-
-  for (const screen of project.screens) {
-    const sn = sanitize(screen.name);
-    lines.push(`handlers["${sn}"] = { onLoad = nil, onButtonClick = {}, onButtonFocus = {}, onButtonRelease = {}, onKeyPress = {}, onTimer = {}, onRedstone = nil, onModemMessage = {} }`);
-  }
-
-  lines.push('');
-
-  return lines.join('\n');
-}
-
 export function generateScreenFile(project: CCProject, screenName: string, uiElements: any[]): string {
   const lines: string[] = [
     '-- =============================================',
