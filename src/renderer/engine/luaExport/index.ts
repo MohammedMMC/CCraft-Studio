@@ -30,7 +30,7 @@ export function exportProject(project: CCProject, options: ExportOptions, exclud
     files.push({ path: 'utils/vars.lua', content: generateVarsFile(project) });
   }
   if (!excludedFiles?.includes('utils/functions.lua')) {
-    files.push({ path: 'utils/functions.lua', content: generateFunctionsFile(project.name, project.author) });
+    files.push({ path: 'utils/functions.lua', content: generateFunctionsFile(project.name, project.author, options.mode) });
   }
   // if (options.mode === 'full' || options.mode === 'codeOnly') {
   //   if (!excludedFiles?.includes('utils/handlers.lua')) {

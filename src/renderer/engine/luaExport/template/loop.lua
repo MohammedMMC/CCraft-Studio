@@ -1,7 +1,10 @@
+setupMonitorsToScreens()
+local mainTimerId = os.startTimer(0.05)
 local isTouching = false
 
 while running do
     drawScreens()
+
     local event, p1, p2, p3, p4, p5 = os.pullEvent()
 
     local isMonitor = event == "monitor_touch"
@@ -28,13 +31,20 @@ while running do
         end
 
         if screen then
-            if event == "timer" then
-                screen.events.onTimer["t_" .. p1]()
+            if event == "timer" and p1 == mainTimerId then
+                local now = os.clock()
+                for _, t in ipairs(screen.events.onTimer) do
+                    if now - t.last >= t.interval then
+                        t.last = now
+                        t.func()
+                    end
+                end
+                mainTimerId = os.startTimer(0.05)
             elseif event == "redstone" then
                 screen.events.onRedstone()
             elseif event == "modem_message" then
                 screen.events.onModemMessage["ch_" .. p1](p2, p3, p4, p5)
-            elseif event == "key" then
+            elseif event == "key" and p1 then
                 keyName = keys.getName(p1)
                 if screen.events.onKeyPress then
                     if screen.events.onKeyPress[keyName] then

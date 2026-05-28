@@ -28,8 +28,30 @@ export function getComponentLua(projectName: string, author: string, componentNa
   return `${generateHeader(projectName, author)}${TEMPLATE_DATA['./template/components/' + componentName + '.lua']}`;
 }
 
-export function generateFunctionsFile(projectName: string, author: string): string {
-  return `${generateHeader(projectName, author)}${TEMPLATE_DATA["./template/utils/functions.lua"]}`;
+export function generateFunctionsFile(projectName: string, author: string, mode: ExportModes): string {
+  const getScreenObjectFunction = `
+  local mainScreen = {
+      events = {
+        -- Main Events
+        onUpdate = function() end,
+        onceLoaded = nil,
+        onceLoadedRunned = false,
+        -- Other Events
+        onKeyPress = {},
+        onTimer = {},
+        onRedstone = function() end,
+        onModemMessage = {}
+      }
+    };
+  function getScreen(name)
+    return mainScreen;
+  end
+  `;
+  if (mode === 'codeOnly') {
+    return `${generateHeader(projectName, author)}${TEMPLATE_DATA["./template/utils/functions.lua"]}\n${getScreenObjectFunction}`;
+  } else {
+    return `${generateHeader(projectName, author)}${TEMPLATE_DATA["./template/utils/functions.lua"]}\n\n${TEMPLATE_DATA["./template/utils/ui_functions.lua"]}`;
+  }
 }
 
 export function generateVarsFile(project: CCProject): string {
@@ -97,7 +119,7 @@ export function generateStartupFile(project: CCProject, mode: ExportModes = 'ful
   lines = lines.replace("-- {PROJECT_START}",
     mode === 'uiOnly'
       ? `drawScreens()`
-      : (`\n` + TEMPLATE_DATA["./template/loop.lua"])
+      : (mode === 'codeOnly' ? (`\n` + TEMPLATE_DATA["./template/co_loop.lua"]) : (`\n` + TEMPLATE_DATA["./template/loop.lua"]))
   );
 
   return lines;

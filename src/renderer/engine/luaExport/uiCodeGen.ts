@@ -190,11 +190,9 @@ export function wrapEvent(screen: string, event: string, meta: string, body: str
     case 'screen_update': return `screen.events.onUpdate = function()\n${ib}\nend`;
     
     case 'key_press': return `screen.events.onKeyPress["${sanitize(eMeta)}"] = function(key)\n${ib}\nend`;
-    case 'timer': return `handlers["${screen}"].onTimer["t_${sanitize(eMeta)}"] = function(timerId)\n${ib}\nend`;
-    case 'redstone': return `handlers["${screen}"].onRedstone = function()\n${ib}\nend`;
-    case 'modem_message': return `handlers["${screen}"].onModemMessage["ch_${sanitize(eMeta)}"] = function(side, ch, replyChannel, msg, dist)\n${ib}\nend`;
-
-    
+    case 'timer': return `table.insert(screen.events.onTimer, { func = function(timerId)\n${ib}\nend, last = 0, interval = ${parseFloat(eMeta) || 1} })`;
+    case 'redstone': return `screen.events.onRedstone = function()\n${ib}\nend`;
+    case 'modem_message': return `screen.events.onModemMessage["ch_${sanitize(eMeta)}"] = function(side, ch, replyChannel, msg, dist)\n${ib}\nend`;
 
     default: return body;
   }

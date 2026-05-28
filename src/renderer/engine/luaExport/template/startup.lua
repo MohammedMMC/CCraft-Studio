@@ -34,5 +34,4 @@ if fs.exists(script_dir .. "logic") then
 end
 
 -- Project Start
-setupMonitorsToScreens()
 -- {PROJECT_START}

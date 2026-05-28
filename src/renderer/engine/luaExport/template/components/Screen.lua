@@ -11,7 +11,7 @@ function Screen:new(name, props)
     obj.events = {
         -- Main Events
         onUpdate = function() end,
-        onceLoaded = null,
+        onceLoaded = nil,
         onceLoadedRunned = false,
         -- Other Events
         onKeyPress = {},
