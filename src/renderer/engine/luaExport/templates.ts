@@ -2,6 +2,7 @@ import { escapeLuaString, sanitize } from '@/utils/luaHelpers';
 import { CCProject } from '@/models/Project';
 import { generateUICode, parseEventCode } from './uiCodeGen';
 import { ExportModes } from '.';
+import { BlocklyState } from '@/stores/blocklyStore';
 
 const TEMPLATE_DATA = import.meta.glob("./template/**/*.lua", {
   eager: true, import: "default",
@@ -99,9 +100,6 @@ export function generateLogicFile(project: CCProject, screenName: string, blockC
 }
 
 export function generateStartupFile(project: CCProject, mode: ExportModes = 'full'): string {
-  const workingScreens = project.screens.filter(s => s.isWorkingScreen);
-  const safeName = sanitize(workingScreens[0]?.name ?? 'Screen 1');
-
   let lines = `${generateHeader(project.name, project.author)}${TEMPLATE_DATA["./template/startup.lua"]}`;
   lines = lines.replace("-- {PROJECT_START}",
     mode === 'uiOnly'
@@ -110,4 +108,63 @@ export function generateStartupFile(project: CCProject, mode: ExportModes = 'ful
   );
 
   return lines;
+}
+
+export function generateAllInOneFile(project: CCProject, mode: ExportModes = 'full', blocklyStore: BlocklyState, excludedFiles: string[] = []): string {
+  const headerText = generateHeader(project.name, project.author);
+  let lines = [];
+
+  if (!excludedFiles.includes('utils/vars.lua')) {
+    lines.push(generateVarsFile(project));
+  }
+  if (!excludedFiles.includes('utils/functions.lua')) {
+    lines.push(generateFunctionsFile(project.name, project.author, mode));
+  }
+
+  if (mode !== 'codeOnly' && !excludedFiles.includes(`components/...`)) {
+    for (const component of COMPONENTS_LIST) {
+      lines.push('\n');
+      lines.push(getComponentLua(project.name, project.author, component));
+    }
+  }
+
+  if (mode !== 'codeOnly') {
+    for (const screen of project.screens) {
+      const safeName = sanitize(screen.name);
+      if (!excludedFiles.includes(`screens/${safeName}.lua`)) {
+        lines.push('\n');
+        lines.push('(function()');
+        lines.push(generateScreenFile(project, screen.name, screen.uiElements));
+        lines.push('end)();');
+      }
+    }
+  }
+
+  if (mode !== 'uiOnly') {
+    for (const screen of project.screens) {
+      const code = blocklyStore.getLuaCode(screen.id);
+      if (code.trim()) {
+        const safeName = sanitize(screen.name);
+        if (!excludedFiles.includes(`logic/${safeName}.lua`)) {
+          lines.push('\n');
+          lines.push('(function()');
+          lines.push(generateLogicFile(project, screen.name, code));
+          lines.push('end)();');
+        }
+      }
+    }
+  }
+
+  lines.push('\n');
+  lines.push(
+    mode === 'uiOnly'
+      ? `drawScreens()`
+      : (
+        mode === 'codeOnly'
+          ? (`\n` + TEMPLATE_DATA["./template/co_loop.lua"])
+          : (`\n` + TEMPLATE_DATA["./template/loop.lua"])
+      )
+  );
+
+  return headerText + lines.join('\n').replace(new RegExp(headerText, "g"), "");
 }

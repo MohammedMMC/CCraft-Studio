@@ -39,6 +39,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
 
   const [mode, setMode] = useState<ExportModes>('full');
   const [minify, setMinify] = useState(false);
+  const [allinone, setAllinone] = useState(false);
   const [previewFiles, setPreviewFiles] = useState<ExportFile[]>([]);
   const [activePreviewIdx, setActivePreviewIdx] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
@@ -62,7 +63,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
 
   const handlePreview = () => {
     flushLiveWorkspace();
-    const options: ExportOptions = { mode, minify };
+    const options: ExportOptions = { mode, minify, allinone };
     const files = exportProject(project, options, previewExcludedFiles);
     if (files.length > 0) {
       setPreviewFiles(files);
@@ -78,7 +79,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
     }
 
     flushLiveWorkspace();
-    const options: ExportOptions = { mode, minify };
+    const options: ExportOptions = { mode, minify, allinone };
     const files = exportProject(project, options, previewExcludedFiles);
 
     if (files.length > 0) {
@@ -92,13 +93,13 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
 
   useEffect(() => {
     flushLiveWorkspace();
-    const options: ExportOptions = { mode, minify };
+    const options: ExportOptions = { mode, minify, allinone };
     const files = exportProject(project, options, previewExcludedFiles);
     if (files.length > 0) {
       setPreviewFiles(files);
       setActivePreviewIdx(0);
     }
-  }, [minify, mode, isOpen]);
+  }, [minify, mode, allinone, isOpen]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Export Lua Program" width="max-w-2xl max-h-screen">
@@ -147,7 +148,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
         </div>
 
         {/* Options */}
-        <div className="space-y-2">
+        <div className="flex flex-row flex-wrap gap-4">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
@@ -158,6 +159,16 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
             <span className="text-xs text-app-text">Minify output</span>
             <span className="text-[10px] text-app-text-dim">(remove comments and extra whitespace)</span>
           </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={allinone}
+              onChange={(e) => setAllinone(e.target.checked)}
+              className="checkbox-field"
+            />
+            <span className="text-xs text-app-text">All-In-One File</span>
+            <span className="text-[10px] text-app-text-dim">(combine all files into one)</span>
+          </label>
         </div>
 
         <div className="flex flex-row gap-3 h-96 min-h-0 overflow-hidden">
@@ -165,16 +176,20 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
           <div className={"bg-app-bg border border-app-border rounded overflow-auto p-3" + (showPreview ? " w-1/4" : " w-full")}>
             <div className="text-xs text-app-text-dim mb-2">Export structure:</div>
             <div className="text-[11px] text-app-text font-mono space-y-0.5">
-              {(mode !== 'codeOnly') && (
-                <ExportFileNamePreview name="components/" filesnames={["..."]} onStateChange={changeExcludedFiles} />
+              {(!allinone) && (
+                <>
+                  {(mode !== 'codeOnly') && (
+                    <ExportFileNamePreview name="components/" filesnames={["..."]} onStateChange={changeExcludedFiles} />
+                  )}
+                  {(mode === 'full' || mode === 'codeOnly') && (previewFiles.filter(f => f.path.startsWith('logic/')).length > 0) && (
+                    <ExportFileNamePreview name="logic/" filesnames={previewFiles.filter(f => f.path.startsWith('logic/')).map(f => f.path)} onStateChange={changeExcludedFiles} />
+                  )}
+                  {(mode !== 'codeOnly') && (
+                    <ExportFileNamePreview name="screens/" filesnames={previewFiles.filter(f => f.path.startsWith('screens/')).map(f => f.path)} onStateChange={changeExcludedFiles} />
+                  )}
+                  <ExportFileNamePreview name="utils/" filesnames={["utils/vars.lua", "utils/functions.lua"]} onStateChange={changeExcludedFiles} />
+                </>
               )}
-              {(mode === 'full' || mode === 'codeOnly') && (previewFiles.filter(f => f.path.startsWith('logic/')).length > 0) && (
-                <ExportFileNamePreview name="logic/" filesnames={previewFiles.filter(f => f.path.startsWith('logic/')).map(f => f.path)} onStateChange={changeExcludedFiles} />
-              )}
-              {(mode !== 'codeOnly') && (
-                <ExportFileNamePreview name="screens/" filesnames={previewFiles.filter(f => f.path.startsWith('screens/')).map(f => f.path)} onStateChange={changeExcludedFiles} />
-              )}
-              <ExportFileNamePreview name="utils/" filesnames={["utils/vars.lua", "utils/functions.lua"]} onStateChange={changeExcludedFiles} />
               <ExportFileNamePreview name="startup.lua" onStateChange={changeExcludedFiles} />
             </div>
           </div>

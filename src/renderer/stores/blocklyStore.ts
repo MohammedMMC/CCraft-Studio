@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type * as Blockly from 'blockly';
 
-interface BlocklyState {
+export interface BlocklyState {
   workspaceXml: Record<string, string>;
   luaCode: Record<string, string>;
   liveWorkspace: Blockly.WorkspaceSvg | null;

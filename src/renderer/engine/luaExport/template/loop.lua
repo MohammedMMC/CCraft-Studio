@@ -1,11 +1,15 @@
 setupMonitorsToScreens()
 local mainTimerId = os.startTimer(0.05)
 local isTouching = false
+local lastEvent = "";
 
 while running do
-    drawScreens()
+    if lastEvent ~= "timer" then
+        drawScreens()
+    end
 
     local event, p1, p2, p3, p4, p5 = os.pullEvent()
+    lastEvent = event
 
     local isMonitor = event == "monitor_touch"
     local screen = getScreen(isMonitor and 'monitor:' .. p1 or 'terminal')
