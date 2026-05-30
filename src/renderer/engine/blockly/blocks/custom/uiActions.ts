@@ -10,14 +10,14 @@ export const uiActionsBlocks: Blocks = {
             init() {
                 this.appendDummyInput()
                     .appendField(new Blockly.FieldDropdown(SCREENS), 'SCREEN');
-                this.setOutput(true, "Screen");
+                this.setOutput(true, "String");
                 this.setStyle('ui_blocks');
                 this.setTooltip('Select a screen');
             },
         },
         generator: (block, gen) => {
             const screen = block.getFieldValue('SCREEN');
-            return [`getScreen("${screen}")`, Order.ATOMIC];
+            return [`"${screen}"`, Order.ATOMIC];
         }
     },
     'ui_set_prop': {
@@ -162,7 +162,7 @@ export const uiActionsBlocks: Blocks = {
     'ui_navigate': {
         block: {
             init(this: Blockly.Block) {
-                this.appendValueInput('SCREEN').setCheck('Screen')
+                this.appendValueInput('SCREEN').setCheck('String')
                     .appendField('navigate to screen');
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
@@ -171,8 +171,8 @@ export const uiActionsBlocks: Blocks = {
             },
         },
         generator: (block, gen) => {
-            const screen = (block.getFieldValue('SCREEN') || '').replace(/[^a-zA-Z0-9_]/g, '_');
-            return `${gen.getIndent()}navigate("${screen}")`;
+            const screen = gen.valueToCode(block, 'SCREEN', Order.NONE);
+            return `${gen.getIndent()}navigate(screen.name, ${screen.replace(/[^a-zA-Z0-9_"]/g, '_')})`;
         }
     }
 }; 

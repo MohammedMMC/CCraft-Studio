@@ -20,8 +20,8 @@ function drawScreens()
     end
 end
 
-function navigate(screen, newScreen)
-    setupMonitorsToScreens(screen.name, newScreen)
+function navigate(oldScreenName, newScreenName)
+    setupMonitorsToScreens(oldScreenName, newScreenName)
     drawScreens()
 end
 
@@ -90,9 +90,20 @@ function setupMonitorsToScreens(oldMon, newMon)
         end
     end)
 
+    for _, monitor in pairs(monitors) do
+        monitor.assigned = false
+    end
+
     for _, scn in pairs(scns) do
         scn.monitor = nil
         scn.width, scn.height = 0, 0
+
+        if scn.name == oldMon then
+            scn.isWorkingScreen = false
+        end
+        if scn.name == newMon then
+            scn.isWorkingScreen = true
+        end
 
         if (scn.isWorkingScreen and scn.displayType ~= 'terminal' and scn.name ~= oldMon) or (scn.name == newMon) then
             for _, monitor in pairs(monitors) do
