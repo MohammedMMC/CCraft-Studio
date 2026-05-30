@@ -126,7 +126,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNewProject }) =>
 
         {/* Version */}
         <div className="mt-10 text-xs text-app-text-dim">
-          v0.5.0-alpha &middot; CCraft Studio
+          v0.6.0-alpha &middot; CCraft Studio
         </div>
       </div>
     </div>

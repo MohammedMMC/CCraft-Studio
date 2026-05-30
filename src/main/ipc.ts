@@ -6,7 +6,7 @@ import keytar from "keytar";
 
 export const WEBSITE_URL = 'https://ccraft.studio';
 export const API_URL = 'https://ccraft.studio/api';
-export const componentsVersion = 'v0.5.0-alpha';
+export const componentsVersion = 'v0.6.0-alpha';
 
 export const DEFAULT_DOCS_DIR = path.join(os.homedir(), 'Documents', 'CCraft-Studio');
 export const APP_DATA_DIR = path.join(process.env.APPDATA || process.env.HOME || '', '.ccraft-studio');
