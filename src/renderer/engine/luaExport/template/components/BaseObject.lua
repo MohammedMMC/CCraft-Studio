@@ -57,7 +57,7 @@ function BaseObject.tokenizeText(text)
     local tokens = {}
     local i = 1
     local formattedStr = tostring(text) --// Added to fix a parsing bug.
-    while i <= #txt do
+    while i <= #formattedStr do
         local match = formattedStr:match("^(\\%d+)", i)
         if match then
             tokens[#tokens + 1] = match
